@@ -1,0 +1,365 @@
+---
+title: "Final Analyses for PEER manuscript"
+author: "Brent Rappaport"
+date: "03/03/2018"
+output: word_document
+---
+
+```{r setup, include = FALSE, echo=FALSE}
+knitr::opts_chunk$set()
+```
+
+```{r load packages, results = "hide", message = FALSE, warning = FALSE, echo=FALSE}
+library(ggplot2)
+library(psych)
+library(knitr)
+library(Rmisc)
+library(tidyverse)
+library(car)
+library(lsr)
+library(lsmeans)
+library(R.utils)
+library(descr)
+library(Hmisc)
+#library(semPlot)
+library(xtable)
+library(lavaan) ##need this to run the analyses
+library(ggthemes) ##to help make graphs
+library(ggrepel) ##to help make graphs
+#library(papaja)
+library(xtable)
+#library(MissMech)
+library(kableExtra)
+library(stargazer)
+select <- dplyr::select
+
+item_wide <- read.csv("/Users/BrentRappaport/Box Sync/WashU/Research/PEER/ANALYSIS/PEER/Rappaport_item_data.csv")
+item_wide <- item_wide[,-1]
+
+data_wide <- read.csv("/Users/BrentRappaport/Box Sync/WashU/Research/PEER/ANALYSIS/PEER/Rappaport_data.csv")
+data_wide <- data_wide[,-1]
+```
+
+##Convert data to long form
+```{r Convert data to long form, echo=F}
+#Convert data to long form
+#data_long <- data_wide[,c(1:2,7190:7229)]
+data_long <- data_wide %>% 
+  gather(c("age_1","age_3","age_5","age_10","age_12","age_14",
+           "PPeer_1","PPeer_3","PPeer_5","PPeer_10","PPeer_12","PPeer_14",
+           "TPeer_1","TPeer_3","TPeer_5","TPeer_10","TPeer_12","TPeer_14",
+           "PAgg_1","PAgg_3","PAgg_5","PAgg_10","PAgg_12","PAgg_14",
+           "TAgg_1","TAgg_3","TAgg_5","TAgg_10","TAgg_12","TAgg_14",
+           "PSw_1","PSw_3","PSw_5","PSw_10","PSw_12","PSw_14",
+           "TSw_1","TSw_3","TSw_5","TSw_10","TSw_12","TSw_14",
+           "PPro_1","PPro_3","PPro_5","PPro_10","PPro_12","PPro_14",
+           "TPro_1","TPro_3","TPro_5","TPro_10","TPro_12","TPro_14",
+           "MDDCORE_1","MDDCORE_3","MDDCORE_5","MDDCORE_10","MDDCORE_12","MDDCORE_14",
+           "MDDPRP_1","MDDPRP_3","MDDPRP_5","MDDPRP_10","MDDPRP_12","MDDPRP_14",
+           "INTL_1","INTL_3","INTL_5","INTL_10","INTL_12","INTL_14",
+           "EXTL_1","EXTL_3","EXTL_5","EXTL_10","EXTL_12","EXTL_14"), 
+         key = "time", value = "value") %>% 
+  separate(time, into = c("variable", "wave")) %>%
+  spread(variable,value)
+
+data_long$wave <- as.integer(data_long$wave)
+
+#sort by id
+data_long <- data_long[order(data_long$ID),] 
+```
+
+
+##Descriptive statistics
+```{r Descriptive statistics, results='asis', echo=F}
+#Descriptive stats of the same variables over time
+Scale_descriptives <- data_long %>%
+  group_by(wave) %>%
+  summarise_at(vars(c(PPeer,TPeer,PAgg,TAgg,PSw,TSw,PPro,TPro)), funs(N=sum(!is.na(.)), Mean=mean(., na.rm=T), SD=sd(., na.rm=T))) %>%
+  select(
+         starts_with("PPeer"),starts_with("TPeer"),
+         starts_with("PAgg"),starts_with("TAgg"),
+         starts_with("PSw"),starts_with("TSw"),
+         starts_with("PPro"),starts_with("TPro"))
+
+Dx_descriptives <- data_long %>%
+  group_by(wave) %>%
+  summarise_at(vars(c(MDDPRP,INTL,EXTL)), funs(N=sum(!is.na(.)), Mean=mean(., na.rm=T), SD=sd(., na.rm=T))) %>%
+  select(starts_with("MDDPRP"),starts_with("INTL"),
+         starts_with("EXTL"))
+
+Scale_descriptives_long <- Scale_descriptives %>%
+  mutate(Wave = row_number()) %>%
+  gather(c(colnames(Scale_descriptives)),
+         key="measure", value = "value") %>%
+        separate(measure, into = c("Scale","stat")) %>%
+        spread(stat, value) %>%
+    arrange(Scale) %>%
+  separate(Scale, into = c("Informant","Measure"), sep=1) %>%
+  select(Measure,Wave,N,Mean,SD,Informant)
+
+Dx_descriptives_long <- Dx_descriptives %>%
+  mutate(Wave = row_number()) %>%
+  gather(c(colnames(Dx_descriptives)),
+         key="measure", value = "value") %>%
+        separate(measure, into = c("Scale","stat")) %>%
+        spread(stat, value) %>%
+    arrange(Scale) %>%
+  select(Scale,Wave,N,Mean,SD)
+
+Scale_descriptives_long[,4:5] <- round(Scale_descriptives_long[,4:5], digits=2)
+Dx_descriptives_long[,4:5] <- round(Dx_descriptives_long[,4:5], digits=2)
+
+kable(Scale_descriptives_long,
+      caption="Table 1. Descriptive statistics for the HBQ peer victimization/rejection scale, aggression scale, social withdrawal scale, prosocial scales.",
+      align=c('l','l','c','c','c','c'))
+kable(Dx_descriptives_long,
+      caption="Table 2. Descriptive statistics for the PAPA/CAPA symptom severity scales.",
+      align=c('l','l','c','c','c'))
+
+
+#HBQ_desc <-knitr::kable(Scale_descriptives,
+#      format="html",
+#      caption="Table 1. Descriptive statistics for the HBQ peer victimization/rejection scale, aggression scale, social withdrawal scale, and prosocial scales.",
+#      align=c('l',rep('c', 26)),
+#      col.names=c(rep(c("N","Mean","SD"), times=9)),
+#      escape=TRUE) %>%
+#        kable_styling(full_width=F) %>%
+#        add_header_above(c("Age"=3, 
+#                           "Peer Victimization/rejection"=6, 
+#                           "Aggression"=6, 
+#                           "Social Withdrawal"=6, 
+#                           "Prosocial"=6)) %>%
+#        add_footnote(c("a"), 
+#                     notation = "alphabet")
+
+#write(HBQ_desc, file = "TABLES/HBQ_desc_table.txt")
+
+# x is a matrix containing the data
+# method : correlation method. "pearson"" or "spearman"" is supported
+# removeTriangle : remove upper or lower triangle
+# results :  if "html" or "latex"
+# the results will be displayed in html or latex format
+corstars <-function(x, method=c("pearson", "spearman"), removeTriangle=c("upper", "lower"),
+                    result=c("none", "html", "latex")){
+  #Compute correlation matrix
+  require(Hmisc)
+  x <- as.matrix(x)
+  correlation_matrix<-rcorr(x, type=method[1])
+  R <- correlation_matrix$r # Matrix of correlation coeficients
+  p <- correlation_matrix$P # Matrix of p-value 
+  
+  ## Define notions for significance levels; spacing is important.
+  mystars <- ifelse(p < .0001, "***", ifelse(p < .001, "*** ", ifelse(p < .01, "**  ", ifelse(p < .05, "*   ", "    "))))
+  
+  ## trunctuate the correlation matrix to two decimal
+  R <- format(round(cbind(rep(-1.11, ncol(x)), R), 2))[,-1]
+  
+  ## build a new matrix that includes the correlations with their apropriate stars
+  Rnew <- matrix(paste(R, mystars, sep=""), ncol=ncol(x))
+  diag(Rnew) <- paste(diag(R), " ", sep="")
+  rownames(Rnew) <- colnames(x)
+  colnames(Rnew) <- paste(colnames(x), "", sep="")
+  
+  ## remove upper triangle of correlation matrix
+  if(removeTriangle[1]=="upper"){
+    Rnew <- as.matrix(Rnew)
+    Rnew[upper.tri(Rnew, diag = TRUE)] <- ""
+    Rnew <- as.data.frame(Rnew)
+  }
+  
+  ## remove lower triangle of correlation matrix
+  else if(removeTriangle[1]=="lower"){
+    Rnew <- as.matrix(Rnew)
+    Rnew[lower.tri(Rnew, diag = TRUE)] <- ""
+    Rnew <- as.data.frame(Rnew)
+  }
+  
+  ## remove last column and return the correlation matrix
+  Rnew <- cbind(Rnew[1:length(Rnew)-1])
+  if (result[1]=="none") return(Rnew)
+  else{
+    if(result[1]=="html") print(xtable(Rnew), type="html")
+    else print(xtable(Rnew), type="latex") 
+  }
+} 
+
+correlation_table <- corstars(data_wide[,c("PPeer_1","PPeer_3","PPeer_5","PPeer_10","PPeer_12","PPeer_14","PPeer_16","PPeer_18",
+                 "TPeer_1","TPeer_3","TPeer_5","TPeer_10","TPeer_12","TPeer_14","TPeer_16","TPeer_18",
+                 "PAgg_1","PAgg_3","PAgg_5","PAgg_10","PAgg_12","PAgg_14","PAgg_16","PAgg_18",
+                 "TAgg_1","TAgg_3","TAgg_5","TAgg_10","TAgg_12","TAgg_14","TAgg_16","TAgg_18",
+                 "PSw_1","PSw_3","PSw_5","PSw_10","PSw_12","PSw_14","PSw_16","PSw_18",
+                 "TSw_1","TSw_3","TSw_5","TSw_10","TSw_12","TSw_14","TSw_16","TSw_18",
+                 "PPro_1","PPro_3","PPro_5","PPro_10","PPro_12","PPro_14","PPro_16","PPro_18",
+                 "TPro_1","TPro_3","TPro_5","TPro_10","TPro_12","TPro_14","TPro_16","TPro_18")],
+                 data_wide[,c("PPeer_1","PPeer_3","PPeer_5","PPeer_10","PPeer_12","PPeer_14","PPeer_16","PPeer_18",
+                 "TPeer_1","TPeer_3","TPeer_5","TPeer_10","TPeer_12","TPeer_14","TPeer_16","TPeer_18",
+                 "PAgg_1","PAgg_3","PAgg_5","PAgg_10","PAgg_12","PAgg_14","PAgg_16","PAgg_18",
+                 "TAgg_1","TAgg_3","TAgg_5","TAgg_10","TAgg_12","TAgg_14","TAgg_16","TAgg_18",
+                 "PSw_1","PSw_3","PSw_5","PSw_10","PSw_12","PSw_14","PSw_16","PSw_18",
+                 "TSw_1","TSw_3","TSw_5","TSw_10","TSw_12","TSw_14","TSw_16","TSw_18",
+                 "PPro_1","PPro_3","PPro_5","PPro_10","PPro_12","PPro_14","PPro_16","PPro_18",
+                 "TPro_1","TPro_3","TPro_5","TPro_10","TPro_12","TPro_14","TPro_16","TPro_18")],
+         method="pearson", removeTriangle="upper")
+```
+
+##Individual Trajectories
+```{r Individual trajectories, eval=FALSE, echo=F}
+ggplot(data_long,aes(age,PPeer+TPeer,group=ID)) +
+  geom_line(alpha=.5) +
+  stat_smooth(aes(group=1),method="lm",size=1,se=T,linetype="longdash") + 
+  labs(x="Age") +
+  theme(text=element_text(lineheight=1, face="bold", size=15), 
+        legend.position="none")
+
+ggplot(data_long,aes(age,PAgg+TAgg,group=ID)) +
+  geom_line(alpha=.5) +
+  stat_smooth(aes(group=1),method="lm",size=1,se=T,linetype="longdash") + 
+  labs(x="Age") +
+  theme(text=element_text(lineheight=1, face="bold", size=15), 
+        legend.position="none")
+
+ggplot(data_long,aes(age,PSw+TSw,group=ID)) +
+  geom_line(alpha=.5) +
+  stat_smooth(aes(group=1),method="lm",size=1,se=T,linetype="longdash") + 
+  labs(x="Age") +
+  theme(text=element_text(lineheight=1, face="bold", size=15), 
+        legend.position="none")
+
+ggplot(data_long,aes(age,PPro+TPro,group=ID)) +
+  geom_line(alpha=.5) +
+  stat_smooth(aes(group=1),method="lm",size=1,se=T,linetype="longdash") + 
+  labs(x="Age") +
+  theme(text=element_text(lineheight=1, face="bold", size=15), 
+        legend.position="none")
+
+ggplot(data_long,aes(age,MDDCORE,group=ID)) +
+  geom_line(alpha=.5) +
+  stat_smooth(aes(group=1),method="lm",size=1,se=T,linetype="longdash") + 
+  labs(x="Age",y="MDD Core Symptoms") +
+  theme(text=element_text(lineheight=1, face="bold", size=15), 
+        legend.position="none")
+
+ggplot(data_long,aes(age,MDDPRP,group=ID)) +
+  geom_line(alpha=.5) +
+  stat_smooth(aes(group=1),method="lm",size=1,se=T,linetype="longdash") + 
+  labs(x="Age",y="Proportion of MDD Symptoms") +
+  theme(text=element_text(lineheight=1, face="bold", size=15), 
+        legend.position="none")
+
+ggplot(data_long,aes(age,INTL,group=ID)) +
+  geom_line(alpha=.5) +
+  stat_smooth(aes(group=1),method="lm",size=1,se=T,linetype="longdash") + 
+  labs(x="Age",y="INTL Symptoms") +
+  theme(text=element_text(lineheight=1, face="bold", size=15), 
+        legend.position="none")
+
+ggplot(data_long,aes(age,EXTL,group=ID)) +
+  geom_line(alpha=.5) +
+  stat_smooth(aes(group=1),method="lm",size=1,se=T,linetype="longdash") + 
+  labs(x="Age",y="EXTL Symptoms") +
+  theme(text=element_text(lineheight=1, face="bold", size=15), 
+        legend.position="none")
+
+```
+
+##Internal consistency
+```{r Internal consistency, results='hide', echo=F}
+#Peer
+##Parent report
+Peer_alphas <- data.frame(matrix(vector(), 6, 4))
+colnames(Peer_alphas) <- c("omega_parent","alpha_parent","omega_teacher","alpha_teacher")
+rownames(Peer_alphas) <- c("Time 1","Time 2","Time 3","Time 4","Time 5","Time 6")
+
+Peer_alphas[1,1:2] <-  omega(plot=F,item_wide[,c("T1hbq17","T1hbq18r","T1hbq19r","T1hbq21r","T1hbq22r","T1hbq23r","T1hbq24","T1hbq25r","T1hbq26r","T1hbq28r","T1hbq29r")],na.rm=T)[c(1,3)]
+Peer_alphas[2,1:2] <-  omega(plot=F,item_wide[,c("T3hbq17","T3hbq18r","T3hbq19r","T3hbq21r","T3hbq22r","T3hbq23r","T3hbq24","T3hbq26r","T3hbq25r","T3hbq28r","T3hbq29r")],na.rm=T)[c(1,3)]
+Peer_alphas[3,1:2] <-  omega(plot=F,item_wide[,c("T5hbq17","T5hbq18r","T5hbq19r","T5hbq21r","T5hbq22r","T5hbq23r","T5hbq24","T5hbq25r","T5hbq26r","T5hbq28r","T5hbq29r")],na.rm=T)[c(1,3)]
+Peer_alphas[4,1:2] <-  omega(plot=F,item_wide[,c("T6hbqPPeer1","T6hbqPPeer2","T6hbqPPeer3","T6hbqPPeer4","T6hbqPPeer5","T6hbqPPeer6","T6hbqPPeer7","T6hbqPPeer8","T6hbqPPeer9","T6hbqPPeer10","T6hbqPPeer11")],na.rm=T)[c(1,3)]
+Peer_alphas[5,1:2] <-  omega(plot=F,item_wide[,c("T8hbqPPeer1","T8hbqPPeer2","T8hbqPPeer3","T8hbqPPeer4","T8hbqPPeer5","T8hbqPPeer6","T8hbqPPeer7","T8hbqPPeer8","T8hbqPPeer9","T8hbqPPeer10","T8hbqPPeer11")],na.rm=T)[c(1,3)]
+Peer_alphas[6,1:2] <-  omega(plot=F,item_wide[,c("T10hbqh14a","T10hbqh14br","T10hbqh14cr","T10hbqh14dr","T10hbqh14er","T10hbqh14fr","T10hbqh14g","T10hbqh14hr","T10hbqh14ir","T10hbqh14jr","T10hbqh14kr")],na.rm=T)[c(1,3)]
+
+##Teacher report
+Peer_alphas[1,3:4] <-  omega(plot=F,item_wide[,c("T1hbqt10","T1hbqt11r","T1hbqt12r","T1hbqt14r","T1hbqt15r","T1hbqt16r","T1hbqt17","T1hbqt18r","T1hbqt19r","T1hbqt21r","T1hbqt22r")],na.rm=T)[c(1,3)]
+Peer_alphas[2,3:4] <- omega(plot=F,item_wide[,c("T3hbqt10","T3hbqt11r","T3hbqt12r","T3hbqt14r","T3hbqt15r","T3hbqt16r","T3hbqt17","T3hbqt18r","T3hbqt19r","T3hbqt21r","T3hbqt22r")],na.rm=T)[c(1,3)]
+Peer_alphas[3,3:4] <- omega(plot=F,item_wide[,c("T5hbqt10","T5hbqt11r","T5hbqt12r","T5hbqt14r","T5hbqt15r","T5hbqt16r","T5hbqt17","T5hbqt18r","T5hbqt19r","T5hbqt21r","T5hbqt22r")],na.rm=T)[c(1,3)]
+Peer_alphas[4,3:4] <- omega(plot=F,item_wide[,c("T6hbqTPeer1","T6hbqTPeer2","T6hbqTPeer3","T6hbqTPeer4","T6hbqTPeer5","T6hbqTPeer6","T6hbqTPeer7","T6hbqTPeer8","T6hbqTPeer9","T6hbqTPeer10","T6hbqTPeer11")],na.rm=T)[c(1,3)]
+Peer_alphas[5,3:4] <- omega(plot=F,item_wide[,c("T8hbqTPeer1","T8hbqTPeer2","T8hbqTPeer3","T8hbqTPeer4","T8hbqTPeer5","T8hbqTPeer6","T8hbqTPeer7","T8hbqTPeer8","T8hbqTPeer9","T8hbqTPeer10","T8hbqTPeer11")],na.rm=T)[c(1,3)]
+Peer_alphas[6,3:4] <- omega(plot=F,item_wide[,c("T10hbqt13a","T10hbqt13br","T10hbqt13cr","T10hbqt13dr","T10hbqt13er","T10hbqt13fr","T10hbqt13g","T10hbqt13hr","T10hbqt13ir","T10hbqt13jr","T10hbqt13kr")],na.rm=T)[c(1,3)]
+Peer_alphas <- round(Peer_alphas, digits=2)
+paste0(min(Peer_alphas[,c(1,3)]),"-", max(Peer_alphas[,c(1,3)])) #omegas
+paste0(min(Peer_alphas[,c(2,4)]),"-", max(Peer_alphas[,c(2,4)])) #alphas
+
+
+#Aggression
+Agg_alphas <- data.frame(matrix(vector(), 6, 4))
+colnames(Agg_alphas) <- c("omega_parent","alpha_parent","omega_teacher","alpha_teacher")
+rownames(Agg_alphas) <- c("Time 1","Time 2","Time 3","Time 4","Time 5","Time 6")
+
+##Parent report
+Agg_alphas[1,1:2] <- omega(plot=F,item_wide[,c("T1hbq70","T1hbq83","T1hbq85","T1hbq96","T1hbq108","T1hbq127","T1hbq135","T1hbq139")],na.rm=T)[c(1,3)]
+Agg_alphas[2,1:2] <- omega(plot=F,item_wide[,c("T3hbq70","T3hbq83","T3hbq85","T3hbq96","T3hbq108","T3hbq127","T3hbq135","T3hbq139")],na.rm=T)[c(1,3)]
+Agg_alphas[3,1:2] <- omega(plot=F,item_wide[,c("T5hbq70","T5hbq83","T5hbq85","T5hbq96","T5hbq108","T5hbq127","T5hbq135","T5hbq139")],na.rm=T)[c(1,3)]
+Agg_alphas[4,1:2] <- omega(plot=F,item_wide[,c("T6hbqPAgg1","T6hbqPAgg2","T6hbqPAgg3","T6hbqPAgg4","T6hbqPAgg5","T6hbqPAgg6","T6hbqPAgg7","T6hbqPAgg8")],na.rm=T)[c(1,3)]
+Agg_alphas[5,1:2] <- omega(plot=F,item_wide[,c("T8hbqPAgg1","T8hbqPAgg2","T8hbqPAgg3","T8hbqPAgg4","T8hbqPAgg5","T8hbqPAgg6","T8hbqPAgg7","T8hbqPAgg8")],na.rm=T)[c(1,3)]
+Agg_alphas[6,1:2] <- omega(plot=F,item_wide[,c("T10hbqs4","T10hbqs20","T10hbqs38","T10hbqs51","T10hbqs80","T10hbqs94","T10hbqs23","T10hbqs89")],na.rm=T)[c(1,3)]
+
+##Teacher report
+Agg_alphas[1,3:4] <- omega(plot=F,item_wide[,c("T1hbqt70","T1hbqt79","T1hbqt81","T1hbqt88","T1hbqt98","T1hbqt114","T1hbqt120","T1hbqt124")],na.rm=T)[c(1,3)]
+Agg_alphas[2,3:4] <- omega(plot=F,item_wide[,c("T3hbqt70","T3hbqt79","T3hbqt81","T3hbqt88","T3hbqt98","T3hbqt114","T3hbqt120","T3hbqt124")],na.rm=T)[c(1,3)]
+Agg_alphas[3,3:4] <- omega(plot=F,item_wide[,c("T5hbqt70","T5hbqt79","T5hbqt81","T5hbqt88","T5hbqt98","T5hbqt114","T5hbqt120","T5hbqt124")],na.rm=T)[c(1,3)]
+Agg_alphas[4,3:4] <- omega(plot=F,item_wide[,c("T6hbqTAgg1","T6hbqTAgg2","T6hbqTAgg3","T6hbqTAgg4","T6hbqTAgg5","T6hbqTAgg6","T6hbqTAgg7","T6hbqTAgg8")],na.rm=T)[c(1,3)]
+Agg_alphas[5,3:4] <- omega(plot=F,item_wide[,c("T8hbqTAgg1","T8hbqTAgg2","T8hbqTAgg3","T8hbqTAgg4","T8hbqTAgg5","T8hbqTAgg6","T8hbqTAgg7","T8hbqTAgg8")],na.rm=T)[c(1,3)]
+Agg_alphas[6,3:4] <- omega(plot=F,item_wide[,c("T10hbqtb4","T10hbqtb16","T10hbqtb30","T10hbqtb41","T10hbqtb67","T10hbqtb79","T10hbqtb19","T10hbqtb74")],na.rm=T)[c(1,3)]
+Agg_alphas <- round(Agg_alphas, digits=2)
+paste0(min(Agg_alphas[,c(1,3)]),"-", max(Agg_alphas[,c(1,3)])) #omegas
+paste0(min(Agg_alphas[,c(2,4)]),"-", max(Agg_alphas[,c(2,4)])) #alphas
+
+
+#Social Withdrawal
+Sw_alphas <- data.frame(matrix(vector(), 6, 4))
+colnames(Sw_alphas) <- c("omega_parent","alpha_parent","omega_teacher","alpha_teacher")
+rownames(Sw_alphas) <- c("Time 1","Time 2","Time 3","Time 4","Time 5","Time 6")
+
+##Parent report
+Sw_alphas[1,1:2] <- omega(plot=F,item_wide[,c("T1hbq76r","T1hbq92r","T1hbq100r","T1hbq106r","T1hbq117r","T1hbq131r","T1hbq144r")],na.rm=T)[c(1,3)]
+Sw_alphas[2,1:2] <- omega(plot=F,item_wide[,c("T3hbq76r","T3hbq92r","T3hbq100r","T3hbq106r","T3hbq117r","T3hbq131r","T3hbq144r")],na.rm=T)[c(1,3)]
+Sw_alphas[3,1:2] <- omega(plot=F,item_wide[,c("T5hbq76r","T5hbq92r","T5hbq100r","T5hbq106r","T5hbq117r","T5hbq131r","T5hbq144r")],na.rm=T)[c(1,3)]
+Sw_alphas[4,1:2] <- omega(plot=F,item_wide[,c("T6hbqPSw1","T6hbqPSw2","T6hbqPSw3","T6hbqPSw4","T6hbqPSw5","T6hbqPSw6","T6hbqPSw7")],na.rm=T)[c(1,3)]
+Sw_alphas[5,1:2] <- omega(plot=F,item_wide[,c("T8hbqPSw1","T8hbqPSw2","T8hbqPSw3","T8hbqPSw4","T8hbqPSw5","T8hbqPSw6","T8hbqPSw7")],na.rm=T)[c(1,3)]
+Sw_alphas[6,1:2] <- omega(plot=F,item_wide[,c("T10hbqs49r","T10hbqs10r","T10hbqs31r","T10hbqs42r","T10hbqs65r","T10hbqs84r","T10hbqs100r")],na.rm=T)[c(1,3)]
+
+##Teacher report
+Sw_alphas[1,3:4] <- omega(plot=F,item_wide[,c("T1hbqt74r","T1hbqt85r","T1hbqt91r","T1hbqt96r","T1hbqt106r","T1hbqt117r","T1hbqt130r")],na.rm=T)[c(1,3)]
+Sw_alphas[2,3:4] <- omega(plot=F,item_wide[,c("T3hbqt74r","T3hbqt85r","T3hbqt91r","T3hbqt96r","T3hbqt106r","T3hbqt117r","T3hbqt130r")],na.rm=T)[c(1,3)]
+Sw_alphas[3,3:4] <- omega(plot=F,item_wide[,c("T5hbqt74r","T5hbqt85r","T5hbqt91r","T5hbqt96r","T5hbqt106r","T5hbqt117r","T5hbqt130r")],na.rm=T)[c(1,3)]
+Sw_alphas[4,3:4] <- omega(plot=F,item_wide[,c("T6hbqTSw1","T6hbqTSw2","T6hbqTSw3","T6hbqTSw4","T6hbqTSw5","T6hbqTSw6","T6hbqTSw7")],na.rm=T)[c(1,3)]
+Sw_alphas[5,3:4] <- omega(plot=F,item_wide[,c("T8hbqTSw1","T8hbqTSw2","T8hbqTSw3","T8hbqTSw4","T8hbqTSw5","T8hbqTSw6","T8hbqTSw7")],na.rm=T)[c(1,3)]
+Sw_alphas[6,3:4] <- omega(plot=F,item_wide[,c("T10hbqtb8r","T10hbqtb26r","T10hbqtb33r","T10hbqtb39r","T10hbqtb54r","T10hbqtb70r","T10hbqtb86r")],na.rm=T)[c(1,3)]
+Sw_alphas <- round(Sw_alphas, digits=2)
+paste0(min(Sw_alphas[,c(1,3)]),"-", max(Sw_alphas[,c(1,3)])) #omegas
+paste0(min(Sw_alphas[,c(2,4)]),"-", max(Sw_alphas[,c(2,4)])) #alphas
+
+
+#Prosocial
+Pro_alphas <- data.frame(matrix(vector(), 6, 4))
+colnames(Pro_alphas) <- c("omega_parent","alpha_parent","omega_teacher","alpha_teacher")
+rownames(Pro_alphas) <- c("Time 1","Time 2","Time 3","Time 4","Time 5","Time 6")
+
+##Parent report
+Pro_alphas[1,1:2] <- omega(plot=F,item_wide[,c("T1hbq49","T1hbq53","T1hbq56","T1hbq58","T1hbq59","T1hbq61")],na.rm=T)[c(1,3)]
+Pro_alphas[2,1:2] <- omega(plot=F,item_wide[,c("T3hbq49","T3hbq53","T3hbq56","T3hbq58","T3hbq59","T3hbq61")],na.rm=T)[c(1,3)]
+Pro_alphas[3,1:2] <- omega(plot=F,item_wide[,c("T5hbq49","T5hbq53","T5hbq56","T5hbq58","T5hbq59","T5hbq61")],na.rm=T)[c(1,3)]
+Pro_alphas[4,1:2] <- omega(plot=F,item_wide[,c("T6hbqPPro1","T6hbqPPro2","T6hbqPPro3","T6hbqPPro4","T6hbqPPro5","T6hbqPPro6")],na.rm=T)[c(1,3)]
+Pro_alphas[5,1:2] <- omega(plot=F,item_wide[,c("T8hbqPPro1","T8hbqPPro2","T8hbqPPro3","T8hbqPPro4","T8hbqPPro5","T8hbqPPro6")],na.rm=T)[c(1,3)]
+Pro_alphas[6,1:2] <- omega(plot=F,item_wide[,c("T10hbqh18c","T10hbqh18d","T10hbqh18e","T10hbqh18h","T10hbqh18i","T10hbqh18j")],na.rm=T)[c(1,3)]
+
+##Teacher report
+Pro_alphas[1,3:4] <- omega(plot=F,item_wide[,c("T1hbqt49","T1hbqt53","T1hbqt56","T1hbqt58","T1hbqt59","T1hbqt60","T1hbqt61")],na.rm=T)[c(1,3)]
+Pro_alphas[2,3:4] <- omega(plot=F,item_wide[,c("T3hbqt49","T3hbqt53","T3hbqt56","T3hbqt58","T3hbqt59","T3hbqt60","T3hbqt61")],na.rm=T)[c(1,3)]
+Pro_alphas[3,3:4] <- omega(plot=F,item_wide[,c("T5hbqt49","T5hbqt53","T5hbqt56","T5hbqt58","T5hbqt59","T5hbqt60","T5hbqt61")],na.rm=T)[c(1,3)]
+Pro_alphas[4,3:4] <- omega(plot=F,item_wide[,c("T6hbqTPro1","T6hbqTPro2","T6hbqTPro3","T6hbqTPro4","T6hbqTPro5","T6hbqTPro6")],na.rm=T)[c(1,3)]
+Pro_alphas[5,3:4] <- omega(plot=F,item_wide[,c("T8hbqTPro1","T8hbqTPro2","T8hbqTPro3","T8hbqTPro4","T8hbqTPro5","T8hbqTPro6")],na.rm=T)[c(1,3)]
+Pro_alphas[6,3:4] <- omega(plot=F,item_wide[,c("T10hbqt17c","T10hbqt17d","T10hbqt17e","T10hbqt17h","T10hbqt17i","T10hbqt17j")],na.rm=T)[c(1,3)]
+Pro_alphas <- round(Pro_alphas, digits=2)
+paste0(min(Pro_alphas[,c(1,3)]),"-", max(Pro_alphas[,c(1,3)])) #omegas
+paste0(min(Pro_alphas[,c(2,4)]),"-", max(Pro_alphas[,c(2,4)])) #alphas
+```
