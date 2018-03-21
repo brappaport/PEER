@@ -1,7 +1,7 @@
 ---
 title: "Results for PEER Manuscript"
 author: "Brent Rappaport"
-date: "03/05/2018"
+date: "03/13/2018"
 output: word_document
 ---
 
@@ -33,6 +33,7 @@ library(kableExtra)
 library(lavaanPlot)
 library(pander)
 select <- dplyr::select
+
 
 data_wide <- read.csv("/Users/BrentRappaport/Box Sync/WashU/Research/PEER/ANALYSIS/PEER/Rappaport_data.csv")
 data_wide <- data_wide[,-1]
@@ -125,19 +126,19 @@ MDDPRP_14~~MDDPRP_14
 
 
 #Covariates
-Peer1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-MDD1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -267,19 +268,19 @@ MDDPRP_14~~MDDPRP_14
 
 
 #Covariates
-Peer1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-MDD1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -411,19 +412,19 @@ MDDPRP_14~~MDDPRP_14
 
 
 #Covariates
-Peer1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-MDD1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -554,19 +555,19 @@ MDDPRP_14~~MDDPRP_14
 
 
 #Covariates
-Peer1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-MDD1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -851,19 +852,19 @@ INTL_14~~INTL_14
 
 
 #Covariates
-Peer1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-INTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -992,19 +993,19 @@ INTL_14~~INTL_14
 
 
 #Covariates
-Peer1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-INTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -1135,19 +1136,19 @@ INTL_14~~INTL_14
 
 
 #Covariates
-Peer1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-INTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -1278,19 +1279,19 @@ INTL_14~~INTL_14
 
 
 #Covariates
-Peer1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-INTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -1421,19 +1422,19 @@ INTL_14~~INTL_14
 
 
 #Covariates
-Peer1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-INTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -1567,19 +1568,19 @@ EXTL_14~~EXTL_14
 
 
 #Covariates
-Peer1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-EXTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -1708,19 +1709,19 @@ EXTL_14~~EXTL_14
 
 
 #Covariates
-Peer1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-EXTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -1853,19 +1854,19 @@ EXTL_14~~EXTL_14
 
 
 #Covariates
-Peer1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-EXTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -1996,19 +1997,19 @@ EXTL_14~~EXTL_14
 
 
 #Covariates
-Peer1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-EXTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -2139,19 +2140,19 @@ EXTL_14~~EXTL_14
 
 
 #Covariates
-Peer1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Peer6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-EXTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -2289,19 +2290,19 @@ MDDPRP_14~~MDDPRP_14
 
 
 #Covariates
-Agg1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-MDD1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -2430,19 +2431,19 @@ MDDPRP_14~~MDDPRP_14
 
 
 #Covariates
-Agg1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-MDD1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -2573,19 +2574,19 @@ MDDPRP_14~~MDDPRP_14
 
 
 #Covariates
-Agg1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-MDD1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -2716,19 +2717,19 @@ MDDPRP_14~~MDDPRP_14
 
 
 #Covariates
-Agg1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-MDD1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -2859,19 +2860,19 @@ MDDPRP_14~~MDDPRP_14
 
 
 #Covariates
-Agg1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-MDD1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -3004,19 +3005,19 @@ INTL_14~~INTL_14
 
 
 #Covariates
-Agg1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-INTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -3145,19 +3146,19 @@ INTL_14~~INTL_14
 
 
 #Covariates
-Agg1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-INTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -3288,19 +3289,19 @@ INTL_14~~INTL_14
 
 
 #Covariates
-Agg1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-INTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -3431,19 +3432,19 @@ INTL_14~~INTL_14
 
 
 #Covariates
-Agg1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-INTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -3574,19 +3575,19 @@ INTL_14~~INTL_14
 
 
 #Covariates
-Agg1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-INTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -3720,19 +3721,19 @@ EXTL_14~~EXTL_14
 
 
 #Covariates
-Agg1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-EXTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -3861,19 +3862,19 @@ EXTL_14~~EXTL_14
 
 
 #Covariates
-Agg1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-EXTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -4004,19 +4005,19 @@ EXTL_14~~EXTL_14
 
 
 #Covariates
-Agg1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-EXTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -4147,19 +4148,19 @@ EXTL_14~~EXTL_14
 
 
 #Covariates
-Agg1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-EXTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -4290,19 +4291,19 @@ EXTL_14~~EXTL_14
 
 
 #Covariates
-Agg1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Agg6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Agg6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-EXTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -4438,19 +4439,19 @@ MDDPRP_14~~MDDPRP_14
 
 
 #Covariates
-Sw1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-MDD1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -4579,19 +4580,19 @@ MDDPRP_14~~MDDPRP_14
 
 
 #Covariates
-Sw1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-MDD1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -4722,19 +4723,19 @@ MDDPRP_14~~MDDPRP_14
 
 
 #Covariates
-Sw1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-MDD1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -4865,19 +4866,19 @@ MDDPRP_14~~MDDPRP_14
 
 
 #Covariates
-Sw1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-MDD1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -5008,19 +5009,19 @@ MDDPRP_14~~MDDPRP_14
 
 
 #Covariates
-Sw1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-MDD1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -5073,7 +5074,7 @@ iSw~~sMDD                      # This estimates the iSw sMDD covariance
 sSw~~sMDD                      # This estimates the sSw sMDD covariance
 '
 
-fit_Sw_MDD <- lavaan(Sw_MDD, data=data_wide, missing="FIML", estimator="MLR")
+#fit_Sw_MDD <- lavaan(Sw_MDD, data=data_wide, missing="FIML", estimator="MLR")
 
 #summary(fit_Sw_MDD, fit.measures=T, standardized=T)
 
@@ -5161,19 +5162,19 @@ INTL_14~~INTL_14
 
 
 #Covariates
-Sw1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-INTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -5302,19 +5303,19 @@ INTL_14~~INTL_14
 
 
 #Covariates
-Sw1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-INTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -5445,19 +5446,19 @@ INTL_14~~INTL_14
 
 
 #Covariates
-Sw1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-INTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -5588,19 +5589,19 @@ INTL_14~~INTL_14
 
 
 #Covariates
-Sw1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-INTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -5731,19 +5732,19 @@ INTL_14~~INTL_14
 
 
 #Covariates
-Sw1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-INTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -5877,19 +5878,19 @@ EXTL_14~~EXTL_14
 
 
 #Covariates
-Sw1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-EXTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -6018,19 +6019,19 @@ EXTL_14~~EXTL_14
 
 
 #Covariates
-Sw1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-EXTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -6161,19 +6162,19 @@ EXTL_14~~EXTL_14
 
 
 #Covariates
-Sw1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-EXTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -6304,19 +6305,19 @@ EXTL_14~~EXTL_14
 
 
 #Covariates
-Sw1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-EXTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -6447,19 +6448,19 @@ EXTL_14~~EXTL_14
 
 
 #Covariates
-Sw1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Sw6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Sw6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-EXTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -6595,19 +6596,19 @@ MDDPRP_14~~MDDPRP_14
 
 
 #Covariates
-Pro1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-MDD1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -6736,19 +6737,19 @@ MDDPRP_14~~MDDPRP_14
 
 
 #Covariates
-Pro1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-MDD1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -6879,19 +6880,19 @@ MDDPRP_14~~MDDPRP_14
 
 
 #Covariates
-Pro1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-MDD1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -7022,19 +7023,19 @@ MDDPRP_14~~MDDPRP_14
 
 
 #Covariates
-Pro1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-MDD1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -7165,19 +7166,19 @@ MDDPRP_14~~MDDPRP_14
 
 
 #Covariates
-Pro1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-MDD1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-MDD6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -7316,19 +7317,19 @@ INTL_14~~INTL_14
 
 
 #Covariates
-Pro1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-INTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -7457,19 +7458,19 @@ INTL_14~~INTL_14
 
 
 #Covariates
-Pro1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-INTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -7604,19 +7605,19 @@ INTL_14~~INTL_14
 
 
 #Covariates
-Pro1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-INTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -7747,19 +7748,19 @@ INTL_14~~INTL_14
 
 
 #Covariates
-Pro1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-INTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -7890,19 +7891,19 @@ INTL_14~~INTL_14
 
 
 #Covariates
-Pro1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-INTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-INTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+INTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -8037,19 +8038,19 @@ EXTL_14~~EXTL_14
 
 
 #Covariates
-Pro1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-EXTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -8178,19 +8179,19 @@ EXTL_14~~EXTL_14
 
 
 #Covariates
-Pro1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-EXTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -8321,19 +8322,19 @@ EXTL_14~~EXTL_14
 
 
 #Covariates
-Pro1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-EXTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -8464,19 +8465,19 @@ EXTL_14~~EXTL_14
 
 
 #Covariates
-Pro1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-EXTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -8607,19 +8608,19 @@ EXTL_14~~EXTL_14
 
 
 #Covariates
-Pro1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-Pro6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Pro6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-EXTL1 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL2 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL3 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL4 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL5 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-EXTL6 ~ sex + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+EXTL6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -8879,8 +8880,8 @@ Pro_EXTL_comparison
 ```
 
 
-##Setup the tables
-```{r Setup the tables, echo=FALSE}
+## Model Tables
+```{r Model Tables, echo=FALSE}
 list_of_fit_stats <- c("npar","df","logl","chisq","cfi.robust","rmsea.robust","srmr","aic","bic")
 
 #Peer_MDD
@@ -9520,78 +9521,81 @@ kable(fitstats_Pro_EXTL, digits=2,
 ```
 
 
-##Extra
-```{r Extra, echo=TRUE, results = 'asis'}
+## Chi-square test table
+```{r Chi-square test table, echo=TRUE, results = 'asis'}
 
 #Combine the fit statistics table with the model parameters table
 #table_Peer_MDD <- bind_rows(parameters_Peer_MDD,fitstats_Peer_MDD)
 
+Chi_test_table <- as.data.frame(matrix(ncol=10, nrow=12))
+colnames(Chi_test_table) <- c("Model",rep(c("∆χ2 to Baseline","∆Df","p value"),3))
 
-# lavTestLRT(fit_Agg_MDD_B,fit_Agg_MDD_IS)
-# lavTestLRT(fit_Agg_MDD_B,fit_Agg_MDD_IR)
-# lavTestLRT(fit_Agg_MDD_B,fit_Agg_MDD_T)
-# lavTestLRT(fit_Agg_MDD_B,fit_Agg_MDD)
-# 
-# lavTestLRT(fit_Agg_INTL_B,fit_Agg_INTL_IS)
-# lavTestLRT(fit_Agg_INTL_B,fit_Agg_INTL_IR)
-# lavTestLRT(fit_Agg_INTL_B,fit_Agg_INTL_T)
-# lavTestLRT(fit_Agg_INTL_B,fit_Agg_INTL)
-# 
-# lavTestLRT(fit_Agg_EXTL_B,fit_Agg_EXTL_IS)
-# lavTestLRT(fit_Agg_EXTL_B,fit_Agg_EXTL_IR)
-# lavTestLRT(fit_Agg_EXTL_B,fit_Agg_EXTL_T)
-# lavTestLRT(fit_Agg_EXTL_B,fit_Agg_EXTL)
-# 
-# lavTestLRT(fit_Agg_EXTL_IS,fit_Agg_EXTL)
-# lavTestLRT(fit_Agg_EXTL_IR,fit_Agg_EXTL)
-# lavTestLRT(fit_Agg_EXTL_T,fit_Agg_EXTL)
-# 
-# lavTestLRT(fit_Sw_MDD_B,fit_Sw_MDD_IS)
-# lavTestLRT(fit_Sw_MDD_B,fit_Sw_MDD_IR)
-# lavTestLRT(fit_Sw_MDD_B,fit_Sw_MDD_T)
-# lavTestLRT(fit_Sw_MDD_B,fit_Sw_MDD)
-# 
-# lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL_IS)
-# lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL_IR)
-# lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL_T)
-# lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL)
-# 
-# lavTestLRT(fit_Sw_INTL_IS,fit_Sw_INTL_IR)
-# lavTestLRT(fit_Sw_INTL_T,fit_Sw_INTL_IR)
-# lavTestLRT(fit_Sw_INTL,fit_Sw_INTL_IR)
-# 
-# lavTestLRT(fit_Sw_EXTL_B,fit_Sw_EXTL_IS)
-# lavTestLRT(fit_Sw_EXTL_B,fit_Sw_EXTL_IR)
-# lavTestLRT(fit_Sw_EXTL_B,fit_Sw_EXTL_T)
-# lavTestLRT(fit_Sw_EXTL_B,fit_Sw_EXTL)
-# 
-# lavTestLRT(fit_Pro_MDD_B,fit_Pro_MDD_IS)
-# lavTestLRT(fit_Pro_MDD_B,fit_Pro_MDD_IR)
-# lavTestLRT(fit_Pro_MDD_B,fit_Pro_MDD_T)
-# lavTestLRT(fit_Pro_MDD_B,fit_Pro_MDD)
-# 
-# lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL_IS)
-# lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL_IR)
-# lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL_T)
-# lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL)
-# 
-# lavTestLRT(fit_Pro_INTL_IS,fit_Pro_INTL_IR)
-# lavTestLRT(fit_Pro_INTL_T,fit_Pro_INTL_IR)
-# lavTestLRT(fit_Pro_INTL,fit_Pro_INTL_IR)
-# 
-# lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL_IS)
-# lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL_IR)
-# lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL_T)
-# lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL)
-# 
-# lavTestLRT(fit_Pro_EXTL_IR,fit_Pro_EXTL_IS)
-# lavTestLRT(fit_Pro_EXTL_T,fit_Pro_EXTL_IS)
-# lavTestLRT(fit_Pro_EXTL,fit_Pro_EXTL_IS)
-# 
-# lavTestLRT(fit_Pro_EXTL_IS,fit_Pro_EXTL)
-# lavTestLRT(fit_Pro_EXTL_IR,fit_Pro_EXTL)
-# lavTestLRT(fit_Pro_EXTL_T,fit_Pro_EXTL)
-# 
+
+Chi_test_table[2,] <- c("Interpersonal Scar", lavTestLRT(fit_Peer_MDD_B,fit_Peer_MDD_IS)[2,5:7],
+                        lavTestLRT(fit_Peer_INTL_B,fit_Peer_INTL_IS)[2,5:7],
+                        lavTestLRT(fit_Peer_EXTL_B,fit_Peer_EXTL_IS)[2,5:7])
+Chi_test_table[3,] <- c("Interpersonal Risk", lavTestLRT(fit_Peer_MDD_B,fit_Peer_MDD_IR)[2,5:7],
+                        lavTestLRT(fit_Peer_INTL_B,fit_Peer_INTL_IR)[2,5:7],
+                        lavTestLRT(fit_Peer_EXTL_B,fit_Peer_EXTL_IR)[2,5:7])
+Chi_test_table[4,] <- c("Transactional", lavTestLRT(fit_Peer_MDD_B,fit_Peer_MDD_T)[2,5:7],
+                        lavTestLRT(fit_Peer_INTL_B,fit_Peer_INTL_T)[2,5:7],
+                        lavTestLRT(fit_Peer_EXTL_B,fit_Peer_EXTL_T)[2,5:7])
+Chi_test_table[5,] <- c("Developmental", lavTestLRT(fit_Peer_MDD_B,fit_Peer_MDD)[2,5:7],
+                        lavTestLRT(fit_Peer_INTL_B,fit_Peer_INTL)[2,5:7],
+                        lavTestLRT(fit_Peer_EXTL_B,fit_Peer_EXTL)[2,5:7])
+
+Chi_test_table[7,] <- c("Interpersonal Scar", lavTestLRT(fit_Agg_MDD_B,fit_Agg_MDD_IS)[2,5:7],
+                        lavTestLRT(fit_Agg_INTL_B,fit_Agg_INTL_IS)[2,5:7],
+                        lavTestLRT(fit_Agg_EXTL_B,fit_Agg_EXTL_IS)[2,5:7])
+Chi_test_table[8,] <- c("Interpersonal Risk", lavTestLRT(fit_Agg_MDD_B,fit_Agg_MDD_IR)[2,5:7],
+                        lavTestLRT(fit_Agg_INTL_B,fit_Agg_INTL_IR)[2,5:7],
+                        lavTestLRT(fit_Agg_EXTL_B,fit_Agg_EXTL_IR)[2,5:7])
+Chi_test_table[9,] <- c("Transactional", lavTestLRT(fit_Agg_MDD_B,fit_Agg_MDD_T)[2,5:7],
+                        lavTestLRT(fit_Agg_INTL_B,fit_Agg_INTL_T)[2,5:7],
+                        lavTestLRT(fit_Agg_EXTL_B,fit_Agg_EXTL_T)[2,5:7])
+Chi_test_table[10,] <- c("Developmental", rep(NA,3),
+                         lavTestLRT(fit_Agg_INTL_B,fit_Agg_INTL)[2,5:7],
+                         lavTestLRT(fit_Agg_EXTL_B,fit_Agg_EXTL)[2,5:7])
+
+Chi_test_table[12,] <- c("Interpersonal Scar", lavTestLRT(fit_Sw_MDD_B,fit_Sw_MDD_IS)[2,5:7],
+                        lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL_IS)[2,5:7],
+                        lavTestLRT(fit_Sw_EXTL_B,fit_Sw_EXTL_IS)[2,5:7])
+Chi_test_table[13,] <- c("Interpersonal Risk", lavTestLRT(fit_Sw_MDD_B,fit_Sw_MDD_IR)[2,5:7],
+                        lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL_IR)[2,5:7],
+                        lavTestLRT(fit_Sw_EXTL_B,fit_Sw_EXTL_IR)[2,5:7])
+Chi_test_table[14,] <- c("Transactional", lavTestLRT(fit_Sw_MDD_B,fit_Sw_MDD_T)[2,5:7],
+                        lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL_T)[2,5:7],
+                        lavTestLRT(fit_Sw_EXTL_B,fit_Sw_EXTL_T)[2,5:7])
+Chi_test_table[15,] <- c("Developmental", rep(NA,3),
+                        lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL)[2,5:7],
+                        lavTestLRT(fit_Sw_EXTL_B,fit_Sw_EXTL)[2,5:7])
+
+Chi_test_table[17,] <- c("Interpersonal Scar", lavTestLRT(fit_Pro_MDD_B,fit_Pro_MDD_IS)[2,5:7],
+                        lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL_IS)[2,5:7],
+                        lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL_IS)[2,5:7])
+Chi_test_table[18,] <- c("Interpersonal Risk", lavTestLRT(fit_Pro_MDD_B,fit_Pro_MDD_IR)[2,5:7],
+                        lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL_IR)[2,5:7],
+                        lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL_IR)[2,5:7])
+Chi_test_table[19,] <- c("Transactional", lavTestLRT(fit_Pro_MDD_B,fit_Pro_MDD_T)[2,5:7],
+                        lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL_T)[2,5:7],
+                        lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL_T)[2,5:7])
+Chi_test_table[20,] <- c("Developmental", lavTestLRT(fit_Pro_MDD_B,fit_Pro_MDD)[2,5:7],
+                        lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL)[2,5:7],
+                        lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL)[2,5:7])
+Chi_test_table[,2:10] <- round(Chi_test_table[,2:10], 2)
+
+Chi_test_table[1,] <- c("Peer Victimization/Rejection",rep("",9))
+Chi_test_table[6,] <- c("Aggression",rep("",9))
+Chi_test_table[11,] <- c("Social Withdrawal",rep("",9))
+Chi_test_table[16,] <- c("Prosocial",rep("",9))
+
+options(knitr.kable.NA="--")
+kable(Chi_test_table, digits=2,
+                        align=c('l',rep('c', 9)),
+                        col.names=c("Model", rep(c("∆χ2 to Baseline","Df","p value"), times=3)),
+      caption="Table 2.Chi-square test of theoretical models compared to baseline models")
+
+
 #         kable_styling(latex_options = "striped", full_width = F) %>%
 #         add_header_above(c("Model Parameters"=1, "Baseline"=2, "Interpersonal Scar"=2, "Interpersonal Risk"=2, 
 #                            "Transactional"=2, "Developmental"=2)) %>%
@@ -9599,5 +9603,51 @@ kable(fitstats_Pro_EXTL, digits=2,
 #         group_rows("Random Effects", 5, 11) %>%
 #         add_footnote(c("Peer: Peer victimization/rejection scores on the HBQ", "MDD: Proportion of depression symptoms on PAPA/CAPA"), 
 #                      notation = "alphabet")
+```
+
+
+## Check basline models for significant intercept and slope correlations
+```{r Check baseline models for significant intercept and slope correlations}
+parameterEstimates(fit_Peer_INTL_B)[c(170:174),c(1:3,5,8)]
+parameterEstimates(fit_Peer_EXTL_B)[c(170:174),c(1:3,5,8)]
+
+parameterEstimates(fit_Agg_MDD_B)[c(170:174),c(1:3,5,8)]
+parameterEstimates(fit_Agg_INTL_B)[c(170:174),c(1:3,5,8)]
+
+parameterEstimates(fit_Sw_MDD_B)[c(170:174),c(1:3,5,8)]
+parameterEstimates(fit_Sw_EXTL_B)[c(170:174),c(1:3,5,8)]
+
+parameterEstimates(fit_Pro_MDD_B)[c(170:174),c(1:3,5,8)]
+parameterEstimates(fit_Pro_INTL_B)[c(170:174),c(1:3,5,8)]
+parameterEstimates(fit_Pro_EXTL_B)[c(170:174),c(1:3,5,8)]
+
+
+lavTestLRT(fit_Peer_MDD_IS, fit_Peer_MDD_IR)
+lavTestLRT(fit_Peer_MDD_T, fit_Peer_MDD_IR)
+lavTestLRT(fit_Peer_MDD, fit_Peer_MDD_IR)
+
+lavTestLRT(fit_Peer_MDD_IS, fit_Peer_MDD_T)
+lavTestLRT(fit_Peer_MDD_IR, fit_Peer_MDD_T)
+lavTestLRT(fit_Peer_MDD, fit_Peer_MDD_T)
+
+lavTestLRT(fit_Agg_EXTL_IS, fit_Agg_EXTL)
+lavTestLRT(fit_Agg_EXTL_IR, fit_Agg_EXTL)
+lavTestLRT(fit_Agg_EXTL_T, fit_Agg_EXTL)
+
+lavTestLRT(fit_Sw_INTL_IS, fit_Sw_INTL_IR)
+lavTestLRT(fit_Sw_INTL_T, fit_Sw_INTL_IR)
+lavTestLRT(fit_Sw_INTL, fit_Sw_INTL_IR)
+
+lavTestLRT(fit_Pro_INTL_IS, fit_Pro_INTL_IR)
+lavTestLRT(fit_Pro_INTL_T, fit_Pro_INTL_IR)
+lavTestLRT(fit_Pro_INTL, fit_Pro_INTL_IR)
+
+lavTestLRT(fit_Pro_EXTL_IR, fit_Pro_EXTL_IS)
+lavTestLRT(fit_Pro_EXTL_T, fit_Pro_EXTL_IS)
+lavTestLRT(fit_Pro_EXTL, fit_Pro_EXTL_IS)
+
+lavTestLRT(fit_Pro_EXTL_IS, fit_Pro_EXTL)
+lavTestLRT(fit_Pro_EXTL_IR, fit_Pro_EXTL)
+lavTestLRT(fit_Pro_EXTL_T, fit_Pro_EXTL)
 ```
 
