@@ -38,17 +38,6 @@ select <- dplyr::select
 data_wide <- read.csv("/Users/BrentRappaport/Box Sync/WashU/Research/PEER/ANALYSIS/PEER/Rappaport_data.csv")
 data_wide <- data_wide[,-1]
 
-#Mutliple MDDPRP by 10 and create new variables
-data_wide <- data_wide %>%
-  mutate(MDDPRP10_1 = MDDPRP_1*10,
-         MDDPRP10_3 = MDDPRP_3*10,
-         MDDPRP10_5 = MDDPRP_5*10,
-         MDDPRP10_10 = MDDPRP_10*10,
-         MDDPRP10_12 = MDDPRP_12*10,
-         MDDPRP10_14 = MDDPRP_14*10,
-         MDDPRP10_16 = MDDPRP_16*10,
-         MDDPRP10_18 = MDDPRP_18*10)
-
 data_wide <- data_wide %>%
   mutate(MDDPRP100_1 = MDDPRP_1*100,
          MDDPRP100_3 = MDDPRP_3*100,
@@ -58,6 +47,8 @@ data_wide <- data_wide %>%
          MDDPRP100_14 = MDDPRP_14*100,
          MDDPRP100_16 = MDDPRP_16*100,
          MDDPRP100_18 = MDDPRP_18*100)
+
+data_wide <- data_wide[,c(1:2,42,44,45,47,141,347:461)]
 ```
 
 ##Explanation of models
@@ -79,12 +70,12 @@ Peer4=~1*PPeer_10+1*TPeer_10
 Peer5=~1*PPeer_12+1*TPeer_12
 Peer6=~1*PPeer_14+1*TPeer_14
 
-MDD1=~1*MDDPRP_1
-MDD2=~1*MDDPRP_3
-MDD3=~1*MDDPRP_5
-MDD4=~1*MDDPRP_10
-MDD5=~1*MDDPRP_12
-MDD6=~1*MDDPRP_14
+MDD1=~1*MDDPRP100_1
+MDD2=~1*MDDPRP100_3
+MDD3=~1*MDDPRP100_5
+MDD4=~1*MDDPRP100_10
+MDD5=~1*MDDPRP100_12
+MDD6=~1*MDDPRP100_14
 
 #Define regressions
 Peer2 ~ 1*Peer1     # This parameter regresses Peer2 perfectly on Peer1
@@ -106,7 +97,7 @@ dPeer3 =~ 1*Peer4
 dPeer4 =~ 1*Peer5
 dPeer5 =~ 1*Peer6
          
-dMDD1 =~ 1*MDD2           # This defines the change score as measured perfectly by scores on MDDPRP2
+dMDD1 =~ 1*MDD2           # This defines the change score as measured perfectly by scores on MDDPRP1002
 dMDD2 =~ 1*MDD3           
 dMDD3 =~ 1*MDD4
 dMDD4 =~ 1*MDD5
@@ -127,12 +118,12 @@ TPeer_10~~TPeer_10
 TPeer_12~~TPeer_12
 TPeer_14~~TPeer_14
 
-MDDPRP_1~~MDDPRP_1          # This estimates the MDD residual variances
-MDDPRP_3~~MDDPRP_3
-MDDPRP_5~~MDDPRP_5
-MDDPRP_10~~MDDPRP_10
-MDDPRP_12~~MDDPRP_12
-MDDPRP_14~~MDDPRP_14
+MDDPRP100_1~~MDDPRP100_1          # This estimates the MDD residual variances
+MDDPRP100_3~~MDDPRP100_3
+MDDPRP100_5~~MDDPRP100_5
+MDDPRP100_10~~MDDPRP100_10
+MDDPRP100_12~~MDDPRP100_12
+MDDPRP100_14~~MDDPRP100_14
 
 
 #Covariates
@@ -221,12 +212,12 @@ Peer4=~1*PPeer_10+1*TPeer_10
 Peer5=~1*PPeer_12+1*TPeer_12
 Peer6=~1*PPeer_14+1*TPeer_14
 
-MDD1=~1*MDDPRP_1
-MDD2=~1*MDDPRP_3
-MDD3=~1*MDDPRP_5
-MDD4=~1*MDDPRP_10
-MDD5=~1*MDDPRP_12
-MDD6=~1*MDDPRP_14
+MDD1=~1*MDDPRP100_1
+MDD2=~1*MDDPRP100_3
+MDD3=~1*MDDPRP100_5
+MDD4=~1*MDDPRP100_10
+MDD5=~1*MDDPRP100_12
+MDD6=~1*MDDPRP100_14
 
 #Define regressions
 Peer2 ~ 1*Peer1     # This parameter regresses PPeer_3 perfectly on PPeer_1
@@ -248,7 +239,7 @@ dPeer3 =~ 1*Peer4
 dPeer4 =~ 1*Peer5
 dPeer5 =~ 1*Peer6
 
-dMDD1 =~ 1*MDD2           # This defines the change score as measured perfectly by scores on MDDPRP_3
+dMDD1 =~ 1*MDD2           # This defines the change score as measured perfectly by scores on MDDPRP100_3
 dMDD2 =~ 1*MDD3           
 dMDD3 =~ 1*MDD4
 dMDD4 =~ 1*MDD5
@@ -269,12 +260,12 @@ TPeer_10~~TPeer_10
 TPeer_12~~TPeer_12
 TPeer_14~~TPeer_14
 
-MDDPRP_1~~MDDPRP_1          # This estimates the MDD residual variances
-MDDPRP_3~~MDDPRP_3
-MDDPRP_5~~MDDPRP_5
-MDDPRP_10~~MDDPRP_10
-MDDPRP_12~~MDDPRP_12
-MDDPRP_14~~MDDPRP_14
+MDDPRP100_1~~MDDPRP100_1          # This estimates the MDD residual variances
+MDDPRP100_3~~MDDPRP100_3
+MDDPRP100_5~~MDDPRP100_5
+MDDPRP100_10~~MDDPRP100_10
+MDDPRP100_12~~MDDPRP100_12
+MDDPRP100_14~~MDDPRP100_14
 
 
 #Covariates
@@ -365,12 +356,12 @@ Peer4=~1*PPeer_10+1*TPeer_10
 Peer5=~1*PPeer_12+1*TPeer_12
 Peer6=~1*PPeer_14+1*TPeer_14
 
-MDD1=~1*MDDPRP_1
-MDD2=~1*MDDPRP_3
-MDD3=~1*MDDPRP_5
-MDD4=~1*MDDPRP_10
-MDD5=~1*MDDPRP_12
-MDD6=~1*MDDPRP_14
+MDD1=~1*MDDPRP100_1
+MDD2=~1*MDDPRP100_3
+MDD3=~1*MDDPRP100_5
+MDD4=~1*MDDPRP100_10
+MDD5=~1*MDDPRP100_12
+MDD6=~1*MDDPRP100_14
 
 #Define regressions
 Peer2 ~ 1*Peer1     # This parameter regresses PPeer_3 perfectly on PPeer_1
@@ -392,7 +383,7 @@ dPeer3 =~ 1*Peer4
 dPeer4 =~ 1*Peer5
 dPeer5 =~ 1*Peer6
 
-dMDD1 =~ 1*MDD2           # This defines the change score as measured perfectly by scores on MDDPRP_3
+dMDD1 =~ 1*MDD2           # This defines the change score as measured perfectly by scores on MDDPRP100_3
 dMDD2 =~ 1*MDD3           
 dMDD3 =~ 1*MDD4
 dMDD4 =~ 1*MDD5
@@ -413,12 +404,12 @@ TPeer_10~~TPeer_10
 TPeer_12~~TPeer_12
 TPeer_14~~TPeer_14
 
-MDDPRP_1~~MDDPRP_1          # This estimates the MDD residual variances
-MDDPRP_3~~MDDPRP_3
-MDDPRP_5~~MDDPRP_5
-MDDPRP_10~~MDDPRP_10
-MDDPRP_12~~MDDPRP_12
-MDDPRP_14~~MDDPRP_14
+MDDPRP100_1~~MDDPRP100_1          # This estimates the MDD residual variances
+MDDPRP100_3~~MDDPRP100_3
+MDDPRP100_5~~MDDPRP100_5
+MDDPRP100_10~~MDDPRP100_10
+MDDPRP100_12~~MDDPRP100_12
+MDDPRP100_14~~MDDPRP100_14
 
 
 #Covariates
@@ -508,12 +499,12 @@ Peer4=~1*PPeer_10+1*TPeer_10
 Peer5=~1*PPeer_12+1*TPeer_12
 Peer6=~1*PPeer_14+1*TPeer_14
 
-MDD1=~1*MDDPRP_1
-MDD2=~1*MDDPRP_3
-MDD3=~1*MDDPRP_5
-MDD4=~1*MDDPRP_10
-MDD5=~1*MDDPRP_12
-MDD6=~1*MDDPRP_14
+MDD1=~1*MDDPRP100_1
+MDD2=~1*MDDPRP100_3
+MDD3=~1*MDDPRP100_5
+MDD4=~1*MDDPRP100_10
+MDD5=~1*MDDPRP100_12
+MDD6=~1*MDDPRP100_14
 
 #Define regressions
 Peer2 ~ 1*Peer1     # This parameter regresses PPeer_3 perfectly on PPeer_1
@@ -535,7 +526,7 @@ dPeer3 =~ 1*Peer4
 dPeer4 =~ 1*Peer5
 dPeer5 =~ 1*Peer6
          
-dMDD1 =~ 1*MDD2           # This defines the change score as measured perfectly by scores on MDDPRP_3
+dMDD1 =~ 1*MDD2           # This defines the change score as measured perfectly by scores on MDDPRP100_3
 dMDD2 =~ 1*MDD3           
 dMDD3 =~ 1*MDD4
 dMDD4 =~ 1*MDD5
@@ -556,12 +547,12 @@ TPeer_10~~TPeer_10
 TPeer_12~~TPeer_12
 TPeer_14~~TPeer_14
 
-MDDPRP_1~~MDDPRP_1          # This estimates the MDD residual variances
-MDDPRP_3~~MDDPRP_3
-MDDPRP_5~~MDDPRP_5
-MDDPRP_10~~MDDPRP_10
-MDDPRP_12~~MDDPRP_12
-MDDPRP_14~~MDDPRP_14
+MDDPRP100_1~~MDDPRP100_1          # This estimates the MDD residual variances
+MDDPRP100_3~~MDDPRP100_3
+MDDPRP100_5~~MDDPRP100_5
+MDDPRP100_10~~MDDPRP100_10
+MDDPRP100_12~~MDDPRP100_12
+MDDPRP100_14~~MDDPRP100_14
 
 
 #Covariates
@@ -653,12 +644,12 @@ Peer4=~1*PPeer_10+1*TPeer_10
 Peer5=~1*PPeer_12+1*TPeer_12
 Peer6=~1*PPeer_14+1*TPeer_14
 
-MDD1=~1*MDDPRP_1
-MDD2=~1*MDDPRP_3
-MDD3=~1*MDDPRP_5
-MDD4=~1*MDDPRP_10
-MDD5=~1*MDDPRP_12
-MDD6=~1*MDDPRP_14
+MDD1=~1*MDDPRP100_1
+MDD2=~1*MDDPRP100_3
+MDD3=~1*MDDPRP100_5
+MDD4=~1*MDDPRP100_10
+MDD5=~1*MDDPRP100_12
+MDD6=~1*MDDPRP100_14
 
 #Define regressions
 Peer2 ~ 1*Peer1
@@ -701,12 +692,12 @@ TPeer_10~~TPeer_10
 TPeer_12~~TPeer_12
 TPeer_14~~TPeer_14
 
-MDDPRP_1~~MDDPRP_1          # This estimates the MDD residual variances
-MDDPRP_3~~MDDPRP_3
-MDDPRP_5~~MDDPRP_5
-MDDPRP_10~~MDDPRP_10
-MDDPRP_12~~MDDPRP_12
-MDDPRP_14~~MDDPRP_14
+MDDPRP100_1~~MDDPRP100_1          # This estimates the MDD residual variances
+MDDPRP100_3~~MDDPRP100_3
+MDDPRP100_5~~MDDPRP100_5
+MDDPRP100_10~~MDDPRP100_10
+MDDPRP100_12~~MDDPRP100_12
+MDDPRP100_14~~MDDPRP100_14
 
 
 #Covariates
@@ -2243,12 +2234,12 @@ Agg4=~1*PAgg_10+1*TAgg_10
 Agg5=~1*PAgg_12+1*TAgg_12
 Agg6=~1*PAgg_14+1*TAgg_14
 
-MDD1=~1*MDDPRP_1
-MDD2=~1*MDDPRP_3
-MDD3=~1*MDDPRP_5
-MDD4=~1*MDDPRP_10
-MDD5=~1*MDDPRP_12
-MDD6=~1*MDDPRP_14
+MDD1=~1*MDDPRP100_1
+MDD2=~1*MDDPRP100_3
+MDD3=~1*MDDPRP100_5
+MDD4=~1*MDDPRP100_10
+MDD5=~1*MDDPRP100_12
+MDD6=~1*MDDPRP100_14
 
 #Define regressions
 Agg2 ~ 1*Agg1     # This parameter regresses Agg2 perfectly on Agg1
@@ -2270,7 +2261,7 @@ dAgg3 =~ 1*Agg4
 dAgg4 =~ 1*Agg5
 dAgg5 =~ 1*Agg6
          
-dMDD1 =~ 1*MDD2           # This defines the change score as measured perfectly by scores on MDDPRP2
+dMDD1 =~ 1*MDD2           # This defines the change score as measured perfectly by scores on MDDPRP1002
 dMDD2 =~ 1*MDD3           
 dMDD3 =~ 1*MDD4
 dMDD4 =~ 1*MDD5
@@ -2291,12 +2282,12 @@ TAgg_10~~TAgg_10
 TAgg_12~~TAgg_12
 TAgg_14~~TAgg_14
 
-MDDPRP_1~~MDDPRP_1          # This estimates the MDD residual variances
-MDDPRP_3~~MDDPRP_3
-MDDPRP_5~~MDDPRP_5
-MDDPRP_10~~MDDPRP_10
-MDDPRP_12~~MDDPRP_12
-MDDPRP_14~~MDDPRP_14
+MDDPRP100_1~~MDDPRP100_1          # This estimates the MDD residual variances
+MDDPRP100_3~~MDDPRP100_3
+MDDPRP100_5~~MDDPRP100_5
+MDDPRP100_10~~MDDPRP100_10
+MDDPRP100_12~~MDDPRP100_12
+MDDPRP100_14~~MDDPRP100_14
 
 
 #Covariates
@@ -2384,12 +2375,12 @@ Agg4=~1*PAgg_10+1*TAgg_10
 Agg5=~1*PAgg_12+1*TAgg_12
 Agg6=~1*PAgg_14+1*TAgg_14
 
-MDD1=~1*MDDPRP_1
-MDD2=~1*MDDPRP_3
-MDD3=~1*MDDPRP_5
-MDD4=~1*MDDPRP_10
-MDD5=~1*MDDPRP_12
-MDD6=~1*MDDPRP_14
+MDD1=~1*MDDPRP100_1
+MDD2=~1*MDDPRP100_3
+MDD3=~1*MDDPRP100_5
+MDD4=~1*MDDPRP100_10
+MDD5=~1*MDDPRP100_12
+MDD6=~1*MDDPRP100_14
 
 #Define regressions
 Agg2 ~ 1*Agg1     # This parameter regresses Agg2 perfectly on Agg1
@@ -2432,12 +2423,12 @@ TAgg_10~~TAgg_10
 TAgg_12~~TAgg_12
 TAgg_14~~TAgg_14
 
-MDDPRP_1~~MDDPRP_1          # This estimates the MDD residual variances
-MDDPRP_3~~MDDPRP_3
-MDDPRP_5~~MDDPRP_5
-MDDPRP_10~~MDDPRP_10
-MDDPRP_12~~MDDPRP_12
-MDDPRP_14~~MDDPRP_14
+MDDPRP100_1~~MDDPRP100_1          # This estimates the MDD residual variances
+MDDPRP100_3~~MDDPRP100_3
+MDDPRP100_5~~MDDPRP100_5
+MDDPRP100_10~~MDDPRP100_10
+MDDPRP100_12~~MDDPRP100_12
+MDDPRP100_14~~MDDPRP100_14
 
 
 #Covariates
@@ -2527,12 +2518,12 @@ Agg4=~1*PAgg_10+1*TAgg_10
 Agg5=~1*PAgg_12+1*TAgg_12
 Agg6=~1*PAgg_14+1*TAgg_14
 
-MDD1=~1*MDDPRP_1
-MDD2=~1*MDDPRP_3
-MDD3=~1*MDDPRP_5
-MDD4=~1*MDDPRP_10
-MDD5=~1*MDDPRP_12
-MDD6=~1*MDDPRP_14
+MDD1=~1*MDDPRP100_1
+MDD2=~1*MDDPRP100_3
+MDD3=~1*MDDPRP100_5
+MDD4=~1*MDDPRP100_10
+MDD5=~1*MDDPRP100_12
+MDD6=~1*MDDPRP100_14
 
 #Define regressions
 Agg2 ~ 1*Agg1     # This parameter regresses PAgg_3 perfectly on PAgg_1
@@ -2554,7 +2545,7 @@ dAgg3 =~ 1*Agg4
 dAgg4 =~ 1*Agg5
 dAgg5 =~ 1*Agg6
 
-dMDD1 =~ 1*MDD2           # This defines the change score as measured perfectly by scores on MDDPRP_3
+dMDD1 =~ 1*MDD2           # This defines the change score as measured perfectly by scores on MDDPRP100_3
 dMDD2 =~ 1*MDD3           
 dMDD3 =~ 1*MDD4
 dMDD4 =~ 1*MDD5
@@ -2575,12 +2566,12 @@ TAgg_10~~TAgg_10
 TAgg_12~~TAgg_12
 TAgg_14~~TAgg_14
 
-MDDPRP_1~~MDDPRP_1          # This estimates the MDD residual variances
-MDDPRP_3~~MDDPRP_3
-MDDPRP_5~~MDDPRP_5
-MDDPRP_10~~MDDPRP_10
-MDDPRP_12~~MDDPRP_12
-MDDPRP_14~~MDDPRP_14
+MDDPRP100_1~~MDDPRP100_1          # This estimates the MDD residual variances
+MDDPRP100_3~~MDDPRP100_3
+MDDPRP100_5~~MDDPRP100_5
+MDDPRP100_10~~MDDPRP100_10
+MDDPRP100_12~~MDDPRP100_12
+MDDPRP100_14~~MDDPRP100_14
 
 
 #Covariates
@@ -2670,12 +2661,12 @@ Agg4=~1*PAgg_10+1*TAgg_10
 Agg5=~1*PAgg_12+1*TAgg_12
 Agg6=~1*PAgg_14+1*TAgg_14
 
-MDD1=~1*MDDPRP_1
-MDD2=~1*MDDPRP_3
-MDD3=~1*MDDPRP_5
-MDD4=~1*MDDPRP_10
-MDD5=~1*MDDPRP_12
-MDD6=~1*MDDPRP_14
+MDD1=~1*MDDPRP100_1
+MDD2=~1*MDDPRP100_3
+MDD3=~1*MDDPRP100_5
+MDD4=~1*MDDPRP100_10
+MDD5=~1*MDDPRP100_12
+MDD6=~1*MDDPRP100_14
 
 #Define regressions
 Agg2 ~ 1*Agg1     # This parameter regresses PAgg_3 perfectly on PAgg_1
@@ -2697,7 +2688,7 @@ dAgg3 =~ 1*Agg4
 dAgg4 =~ 1*Agg5
 dAgg5 =~ 1*Agg6
          
-dMDD1 =~ 1*MDD2           # This defines the change score as measured perfectly by scores on MDDPRP_3
+dMDD1 =~ 1*MDD2           # This defines the change score as measured perfectly by scores on MDDPRP100_3
 dMDD2 =~ 1*MDD3           
 dMDD3 =~ 1*MDD4
 dMDD4 =~ 1*MDD5
@@ -2718,12 +2709,12 @@ TAgg_10~~TAgg_10
 TAgg_12~~TAgg_12
 TAgg_14~~TAgg_14
 
-MDDPRP_1~~MDDPRP_1          # This estimates the MDD residual variances
-MDDPRP_3~~MDDPRP_3
-MDDPRP_5~~MDDPRP_5
-MDDPRP_10~~MDDPRP_10
-MDDPRP_12~~MDDPRP_12
-MDDPRP_14~~MDDPRP_14
+MDDPRP100_1~~MDDPRP100_1          # This estimates the MDD residual variances
+MDDPRP100_3~~MDDPRP100_3
+MDDPRP100_5~~MDDPRP100_5
+MDDPRP100_10~~MDDPRP100_10
+MDDPRP100_12~~MDDPRP100_12
+MDDPRP100_14~~MDDPRP100_14
 
 
 #Covariates
@@ -2813,12 +2804,12 @@ Agg4=~1*PAgg_10+1*TAgg_10
 Agg5=~1*PAgg_12+1*TAgg_12
 Agg6=~1*PAgg_14+1*TAgg_14
 
-MDD1=~1*MDDPRP_1
-MDD2=~1*MDDPRP_3
-MDD3=~1*MDDPRP_5
-MDD4=~1*MDDPRP_10
-MDD5=~1*MDDPRP_12
-MDD6=~1*MDDPRP_14
+MDD1=~1*MDDPRP100_1
+MDD2=~1*MDDPRP100_3
+MDD3=~1*MDDPRP100_5
+MDD4=~1*MDDPRP100_10
+MDD5=~1*MDDPRP100_12
+MDD6=~1*MDDPRP100_14
 
 #Define regressions
 Agg2 ~ 1*Agg1
@@ -2861,12 +2852,12 @@ TAgg_10~~TAgg_10
 TAgg_12~~TAgg_12
 TAgg_14~~TAgg_14
 
-MDDPRP_1~~MDDPRP_1          # This estimates the MDD residual variances
-MDDPRP_3~~MDDPRP_3
-MDDPRP_5~~MDDPRP_5
-MDDPRP_10~~MDDPRP_10
-MDDPRP_12~~MDDPRP_12
-MDDPRP_14~~MDDPRP_14
+MDDPRP100_1~~MDDPRP100_1          # This estimates the MDD residual variances
+MDDPRP100_3~~MDDPRP100_3
+MDDPRP100_5~~MDDPRP100_5
+MDDPRP100_10~~MDDPRP100_10
+MDDPRP100_12~~MDDPRP100_12
+MDDPRP100_14~~MDDPRP100_14
 
 
 #Covariates
@@ -2935,7 +2926,7 @@ iAgg~~sMDD                      # This estimates the iAgg sMDD covariance
 sAgg~~sMDD                      # This estimates the sAgg sMDD covariance
 '
 
-#fit_Agg_MDD <- lavaan(Agg_MDD, data=data_wide, missing="FIML", estimator="MLR")
+fit_Agg_MDD <- lavaan(Agg_MDD, data=data_wide, missing="FIML", estimator="MLR")
 
 #summary(fit_Agg_MDD, fit.measures=T, standardized=T)
 
@@ -4392,12 +4383,12 @@ Sw4=~1*PSw_10+1*TSw_10
 Sw5=~1*PSw_12+1*TSw_12
 Sw6=~1*PSw_14+1*TSw_14
 
-MDD1=~1*MDDPRP_1
-MDD2=~1*MDDPRP_3
-MDD3=~1*MDDPRP_5
-MDD4=~1*MDDPRP_10
-MDD5=~1*MDDPRP_12
-MDD6=~1*MDDPRP_14
+MDD1=~1*MDDPRP100_1
+MDD2=~1*MDDPRP100_3
+MDD3=~1*MDDPRP100_5
+MDD4=~1*MDDPRP100_10
+MDD5=~1*MDDPRP100_12
+MDD6=~1*MDDPRP100_14
 
 #Define regressions
 Sw2 ~ 1*Sw1     # This parameter regresses Sw2 perfectly on Sw1
@@ -4419,7 +4410,7 @@ dSw3 =~ 1*Sw4
 dSw4 =~ 1*Sw5
 dSw5 =~ 1*Sw6
          
-dMDD1 =~ 1*MDD2           # This defines the change score as measured perfectly by scores on MDDPRP2
+dMDD1 =~ 1*MDD2           # This defines the change score as measured perfectly by scores on MDDPRP1002
 dMDD2 =~ 1*MDD3           
 dMDD3 =~ 1*MDD4
 dMDD4 =~ 1*MDD5
@@ -4440,12 +4431,12 @@ TSw_10~~TSw_10
 TSw_12~~TSw_12
 TSw_14~~TSw_14
 
-MDDPRP_1~~MDDPRP_1          # This estimates the MDD residual variances
-MDDPRP_3~~MDDPRP_3
-MDDPRP_5~~MDDPRP_5
-MDDPRP_10~~MDDPRP_10
-MDDPRP_12~~MDDPRP_12
-MDDPRP_14~~MDDPRP_14
+MDDPRP100_1~~MDDPRP100_1          # This estimates the MDD residual variances
+MDDPRP100_3~~MDDPRP100_3
+MDDPRP100_5~~MDDPRP100_5
+MDDPRP100_10~~MDDPRP100_10
+MDDPRP100_12~~MDDPRP100_12
+MDDPRP100_14~~MDDPRP100_14
 
 
 #Covariates
@@ -4533,12 +4524,12 @@ Sw4=~1*PSw_10+1*TSw_10
 Sw5=~1*PSw_12+1*TSw_12
 Sw6=~1*PSw_14+1*TSw_14
 
-MDD1=~1*MDDPRP_1
-MDD2=~1*MDDPRP_3
-MDD3=~1*MDDPRP_5
-MDD4=~1*MDDPRP_10
-MDD5=~1*MDDPRP_12
-MDD6=~1*MDDPRP_14
+MDD1=~1*MDDPRP100_1
+MDD2=~1*MDDPRP100_3
+MDD3=~1*MDDPRP100_5
+MDD4=~1*MDDPRP100_10
+MDD5=~1*MDDPRP100_12
+MDD6=~1*MDDPRP100_14
 
 #Define regressions
 Sw2 ~ 1*Sw1     # This parameter regresses Sw2 perfectly on Sw1
@@ -4581,12 +4572,12 @@ TSw_10~~TSw_10
 TSw_12~~TSw_12
 TSw_14~~TSw_14
 
-MDDPRP_1~~MDDPRP_1          # This estimates the MDD residual variances
-MDDPRP_3~~MDDPRP_3
-MDDPRP_5~~MDDPRP_5
-MDDPRP_10~~MDDPRP_10
-MDDPRP_12~~MDDPRP_12
-MDDPRP_14~~MDDPRP_14
+MDDPRP100_1~~MDDPRP100_1          # This estimates the MDD residual variances
+MDDPRP100_3~~MDDPRP100_3
+MDDPRP100_5~~MDDPRP100_5
+MDDPRP100_10~~MDDPRP100_10
+MDDPRP100_12~~MDDPRP100_12
+MDDPRP100_14~~MDDPRP100_14
 
 
 #Covariates
@@ -4676,12 +4667,12 @@ Sw4=~1*PSw_10+1*TSw_10
 Sw5=~1*PSw_12+1*TSw_12
 Sw6=~1*PSw_14+1*TSw_14
 
-MDD1=~1*MDDPRP_1
-MDD2=~1*MDDPRP_3
-MDD3=~1*MDDPRP_5
-MDD4=~1*MDDPRP_10
-MDD5=~1*MDDPRP_12
-MDD6=~1*MDDPRP_14
+MDD1=~1*MDDPRP100_1
+MDD2=~1*MDDPRP100_3
+MDD3=~1*MDDPRP100_5
+MDD4=~1*MDDPRP100_10
+MDD5=~1*MDDPRP100_12
+MDD6=~1*MDDPRP100_14
 
 #Define regressions
 Sw2 ~ 1*Sw1     # This parameter regresses PSw_3 perfectly on PSw_1
@@ -4703,7 +4694,7 @@ dSw3 =~ 1*Sw4
 dSw4 =~ 1*Sw5
 dSw5 =~ 1*Sw6
 
-dMDD1 =~ 1*MDD2           # This defines the change score as measured perfectly by scores on MDDPRP_3
+dMDD1 =~ 1*MDD2           # This defines the change score as measured perfectly by scores on MDDPRP100_3
 dMDD2 =~ 1*MDD3           
 dMDD3 =~ 1*MDD4
 dMDD4 =~ 1*MDD5
@@ -4724,12 +4715,12 @@ TSw_10~~TSw_10
 TSw_12~~TSw_12
 TSw_14~~TSw_14
 
-MDDPRP_1~~MDDPRP_1          # This estimates the MDD residual variances
-MDDPRP_3~~MDDPRP_3
-MDDPRP_5~~MDDPRP_5
-MDDPRP_10~~MDDPRP_10
-MDDPRP_12~~MDDPRP_12
-MDDPRP_14~~MDDPRP_14
+MDDPRP100_1~~MDDPRP100_1          # This estimates the MDD residual variances
+MDDPRP100_3~~MDDPRP100_3
+MDDPRP100_5~~MDDPRP100_5
+MDDPRP100_10~~MDDPRP100_10
+MDDPRP100_12~~MDDPRP100_12
+MDDPRP100_14~~MDDPRP100_14
 
 
 #Covariates
@@ -4819,12 +4810,12 @@ Sw4=~1*PSw_10+1*TSw_10
 Sw5=~1*PSw_12+1*TSw_12
 Sw6=~1*PSw_14+1*TSw_14
 
-MDD1=~1*MDDPRP_1
-MDD2=~1*MDDPRP_3
-MDD3=~1*MDDPRP_5
-MDD4=~1*MDDPRP_10
-MDD5=~1*MDDPRP_12
-MDD6=~1*MDDPRP_14
+MDD1=~1*MDDPRP100_1
+MDD2=~1*MDDPRP100_3
+MDD3=~1*MDDPRP100_5
+MDD4=~1*MDDPRP100_10
+MDD5=~1*MDDPRP100_12
+MDD6=~1*MDDPRP100_14
 
 #Define regressions
 Sw2 ~ 1*Sw1     # This parameter regresses PSw_3 perfectly on PSw_1
@@ -4846,7 +4837,7 @@ dSw3 =~ 1*Sw4
 dSw4 =~ 1*Sw5
 dSw5 =~ 1*Sw6
          
-dMDD1 =~ 1*MDD2           # This defines the change score as measured perfectly by scores on MDDPRP_3
+dMDD1 =~ 1*MDD2           # This defines the change score as measured perfectly by scores on MDDPRP100_3
 dMDD2 =~ 1*MDD3           
 dMDD3 =~ 1*MDD4
 dMDD4 =~ 1*MDD5
@@ -4867,12 +4858,12 @@ TSw_10~~TSw_10
 TSw_12~~TSw_12
 TSw_14~~TSw_14
 
-MDDPRP_1~~MDDPRP_1          # This estimates the MDD residual variances
-MDDPRP_3~~MDDPRP_3
-MDDPRP_5~~MDDPRP_5
-MDDPRP_10~~MDDPRP_10
-MDDPRP_12~~MDDPRP_12
-MDDPRP_14~~MDDPRP_14
+MDDPRP100_1~~MDDPRP100_1          # This estimates the MDD residual variances
+MDDPRP100_3~~MDDPRP100_3
+MDDPRP100_5~~MDDPRP100_5
+MDDPRP100_10~~MDDPRP100_10
+MDDPRP100_12~~MDDPRP100_12
+MDDPRP100_14~~MDDPRP100_14
 
 
 #Covariates
@@ -4962,12 +4953,12 @@ Sw4=~1*PSw_10+1*TSw_10
 Sw5=~1*PSw_12+1*TSw_12
 Sw6=~1*PSw_14+1*TSw_14
 
-MDD1=~1*MDDPRP_1
-MDD2=~1*MDDPRP_3
-MDD3=~1*MDDPRP_5
-MDD4=~1*MDDPRP_10
-MDD5=~1*MDDPRP_12
-MDD6=~1*MDDPRP_14
+MDD1=~1*MDDPRP100_1
+MDD2=~1*MDDPRP100_3
+MDD3=~1*MDDPRP100_5
+MDD4=~1*MDDPRP100_10
+MDD5=~1*MDDPRP100_12
+MDD6=~1*MDDPRP100_14
 
 #Define regressions
 Sw2 ~ 1*Sw1
@@ -5010,12 +5001,12 @@ TSw_10~~TSw_10
 TSw_12~~TSw_12
 TSw_14~~TSw_14
 
-MDDPRP_1~~MDDPRP_1          # This estimates the MDD residual variances
-MDDPRP_3~~MDDPRP_3
-MDDPRP_5~~MDDPRP_5
-MDDPRP_10~~MDDPRP_10
-MDDPRP_12~~MDDPRP_12
-MDDPRP_14~~MDDPRP_14
+MDDPRP100_1~~MDDPRP100_1          # This estimates the MDD residual variances
+MDDPRP100_3~~MDDPRP100_3
+MDDPRP100_5~~MDDPRP100_5
+MDDPRP100_10~~MDDPRP100_10
+MDDPRP100_12~~MDDPRP100_12
+MDDPRP100_14~~MDDPRP100_14
 
 
 #Covariates
@@ -5084,7 +5075,7 @@ iSw~~sMDD                      # This estimates the iSw sMDD covariance
 sSw~~sMDD                      # This estimates the sSw sMDD covariance
 '
 
-#fit_Sw_MDD <- lavaan(Sw_MDD, data=data_wide, missing="FIML", estimator="MLR")
+fit_Sw_MDD <- lavaan(Sw_MDD, data=data_wide, missing="FIML", estimator="MLR")
 
 #summary(fit_Sw_MDD, fit.measures=T, standardized=T)
 
@@ -6549,12 +6540,12 @@ Pro4=~1*PPro_10+1*TPro_10
 Pro5=~1*PPro_12+1*TPro_12
 Pro6=~1*PPro_14+1*TPro_14
 
-MDD1=~1*MDDPRP_1
-MDD2=~1*MDDPRP_3
-MDD3=~1*MDDPRP_5
-MDD4=~1*MDDPRP_10
-MDD5=~1*MDDPRP_12
-MDD6=~1*MDDPRP_14
+MDD1=~1*MDDPRP100_1
+MDD2=~1*MDDPRP100_3
+MDD3=~1*MDDPRP100_5
+MDD4=~1*MDDPRP100_10
+MDD5=~1*MDDPRP100_12
+MDD6=~1*MDDPRP100_14
 
 #Define regressions
 Pro2 ~ 1*Pro1     # This parameter regresses Pro2 perfectly on Pro1
@@ -6576,7 +6567,7 @@ dPro3 =~ 1*Pro4
 dPro4 =~ 1*Pro5
 dPro5 =~ 1*Pro6
          
-dMDD1 =~ 1*MDD2           # This defines the change score as measured perfectly by scores on MDDPRP2
+dMDD1 =~ 1*MDD2           # This defines the change score as measured perfectly by scores on MDDPRP1002
 dMDD2 =~ 1*MDD3           
 dMDD3 =~ 1*MDD4
 dMDD4 =~ 1*MDD5
@@ -6597,12 +6588,12 @@ TPro_10~~TPro_10
 TPro_12~~TPro_12
 TPro_14~~TPro_14
 
-MDDPRP_1~~MDDPRP_1          # This estimates the MDD residual variances
-MDDPRP_3~~MDDPRP_3
-MDDPRP_5~~MDDPRP_5
-MDDPRP_10~~MDDPRP_10
-MDDPRP_12~~MDDPRP_12
-MDDPRP_14~~MDDPRP_14
+MDDPRP100_1~~MDDPRP100_1          # This estimates the MDD residual variances
+MDDPRP100_3~~MDDPRP100_3
+MDDPRP100_5~~MDDPRP100_5
+MDDPRP100_10~~MDDPRP100_10
+MDDPRP100_12~~MDDPRP100_12
+MDDPRP100_14~~MDDPRP100_14
 
 
 #Covariates
@@ -6690,12 +6681,12 @@ Pro4=~1*PPro_10+1*TPro_10
 Pro5=~1*PPro_12+1*TPro_12
 Pro6=~1*PPro_14+1*TPro_14
 
-MDD1=~1*MDDPRP_1
-MDD2=~1*MDDPRP_3
-MDD3=~1*MDDPRP_5
-MDD4=~1*MDDPRP_10
-MDD5=~1*MDDPRP_12
-MDD6=~1*MDDPRP_14
+MDD1=~1*MDDPRP100_1
+MDD2=~1*MDDPRP100_3
+MDD3=~1*MDDPRP100_5
+MDD4=~1*MDDPRP100_10
+MDD5=~1*MDDPRP100_12
+MDD6=~1*MDDPRP100_14
 
 #Define regressions
 Pro2 ~ 1*Pro1     # This parameter regresses Pro2 perfectly on Pro1
@@ -6738,12 +6729,12 @@ TPro_10~~TPro_10
 TPro_12~~TPro_12
 TPro_14~~TPro_14
 
-MDDPRP_1~~MDDPRP_1          # This estimates the MDD residual variances
-MDDPRP_3~~MDDPRP_3
-MDDPRP_5~~MDDPRP_5
-MDDPRP_10~~MDDPRP_10
-MDDPRP_12~~MDDPRP_12
-MDDPRP_14~~MDDPRP_14
+MDDPRP100_1~~MDDPRP100_1          # This estimates the MDD residual variances
+MDDPRP100_3~~MDDPRP100_3
+MDDPRP100_5~~MDDPRP100_5
+MDDPRP100_10~~MDDPRP100_10
+MDDPRP100_12~~MDDPRP100_12
+MDDPRP100_14~~MDDPRP100_14
 
 
 #Covariates
@@ -6833,12 +6824,12 @@ Pro4=~1*PPro_10+1*TPro_10
 Pro5=~1*PPro_12+1*TPro_12
 Pro6=~1*PPro_14+1*TPro_14
 
-MDD1=~1*MDDPRP_1
-MDD2=~1*MDDPRP_3
-MDD3=~1*MDDPRP_5
-MDD4=~1*MDDPRP_10
-MDD5=~1*MDDPRP_12
-MDD6=~1*MDDPRP_14
+MDD1=~1*MDDPRP100_1
+MDD2=~1*MDDPRP100_3
+MDD3=~1*MDDPRP100_5
+MDD4=~1*MDDPRP100_10
+MDD5=~1*MDDPRP100_12
+MDD6=~1*MDDPRP100_14
 
 #Define regressions
 Pro2 ~ 1*Pro1     # This parameter regresses PPro_3 perfectly on PPro_1
@@ -6860,7 +6851,7 @@ dPro3 =~ 1*Pro4
 dPro4 =~ 1*Pro5
 dPro5 =~ 1*Pro6
 
-dMDD1 =~ 1*MDD2           # This defines the change score as measured perfectly by scores on MDDPRP_3
+dMDD1 =~ 1*MDD2           # This defines the change score as measured perfectly by scores on MDDPRP100_3
 dMDD2 =~ 1*MDD3           
 dMDD3 =~ 1*MDD4
 dMDD4 =~ 1*MDD5
@@ -6881,12 +6872,12 @@ TPro_10~~TPro_10
 TPro_12~~TPro_12
 TPro_14~~TPro_14
 
-MDDPRP_1~~MDDPRP_1          # This estimates the MDD residual variances
-MDDPRP_3~~MDDPRP_3
-MDDPRP_5~~MDDPRP_5
-MDDPRP_10~~MDDPRP_10
-MDDPRP_12~~MDDPRP_12
-MDDPRP_14~~MDDPRP_14
+MDDPRP100_1~~MDDPRP100_1          # This estimates the MDD residual variances
+MDDPRP100_3~~MDDPRP100_3
+MDDPRP100_5~~MDDPRP100_5
+MDDPRP100_10~~MDDPRP100_10
+MDDPRP100_12~~MDDPRP100_12
+MDDPRP100_14~~MDDPRP100_14
 
 
 #Covariates
@@ -6976,12 +6967,12 @@ Pro4=~1*PPro_10+1*TPro_10
 Pro5=~1*PPro_12+1*TPro_12
 Pro6=~1*PPro_14+1*TPro_14
 
-MDD1=~1*MDDPRP_1
-MDD2=~1*MDDPRP_3
-MDD3=~1*MDDPRP_5
-MDD4=~1*MDDPRP_10
-MDD5=~1*MDDPRP_12
-MDD6=~1*MDDPRP_14
+MDD1=~1*MDDPRP100_1
+MDD2=~1*MDDPRP100_3
+MDD3=~1*MDDPRP100_5
+MDD4=~1*MDDPRP100_10
+MDD5=~1*MDDPRP100_12
+MDD6=~1*MDDPRP100_14
 
 #Define regressions
 Pro2 ~ 1*Pro1     # This parameter regresses PPro_3 perfectly on PPro_1
@@ -7003,7 +6994,7 @@ dPro3 =~ 1*Pro4
 dPro4 =~ 1*Pro5
 dPro5 =~ 1*Pro6
          
-dMDD1 =~ 1*MDD2           # This defines the change score as measured perfectly by scores on MDDPRP_3
+dMDD1 =~ 1*MDD2           # This defines the change score as measured perfectly by scores on MDDPRP100_3
 dMDD2 =~ 1*MDD3           
 dMDD3 =~ 1*MDD4
 dMDD4 =~ 1*MDD5
@@ -7024,12 +7015,12 @@ TPro_10~~TPro_10
 TPro_12~~TPro_12
 TPro_14~~TPro_14
 
-MDDPRP_1~~MDDPRP_1          # This estimates the MDD residual variances
-MDDPRP_3~~MDDPRP_3
-MDDPRP_5~~MDDPRP_5
-MDDPRP_10~~MDDPRP_10
-MDDPRP_12~~MDDPRP_12
-MDDPRP_14~~MDDPRP_14
+MDDPRP100_1~~MDDPRP100_1          # This estimates the MDD residual variances
+MDDPRP100_3~~MDDPRP100_3
+MDDPRP100_5~~MDDPRP100_5
+MDDPRP100_10~~MDDPRP100_10
+MDDPRP100_12~~MDDPRP100_12
+MDDPRP100_14~~MDDPRP100_14
 
 
 #Covariates
@@ -7119,12 +7110,12 @@ Pro4=~1*PPro_10+1*TPro_10
 Pro5=~1*PPro_12+1*TPro_12
 Pro6=~1*PPro_14+1*TPro_14
 
-MDD1=~1*MDDPRP_1
-MDD2=~1*MDDPRP_3
-MDD3=~1*MDDPRP_5
-MDD4=~1*MDDPRP_10
-MDD5=~1*MDDPRP_12
-MDD6=~1*MDDPRP_14
+MDD1=~1*MDDPRP100_1
+MDD2=~1*MDDPRP100_3
+MDD3=~1*MDDPRP100_5
+MDD4=~1*MDDPRP100_10
+MDD5=~1*MDDPRP100_12
+MDD6=~1*MDDPRP100_14
 
 #Define regressions
 Pro2 ~ 1*Pro1
@@ -7167,12 +7158,12 @@ TPro_10~~TPro_10
 TPro_12~~TPro_12
 TPro_14~~TPro_14
 
-MDDPRP_1~~MDDPRP_1          # This estimates the MDD residual variances
-MDDPRP_3~~MDDPRP_3
-MDDPRP_5~~MDDPRP_5
-MDDPRP_10~~MDDPRP_10
-MDDPRP_12~~MDDPRP_12
-MDDPRP_14~~MDDPRP_14
+MDDPRP100_1~~MDDPRP100_1          # This estimates the MDD residual variances
+MDDPRP100_3~~MDDPRP100_3
+MDDPRP100_5~~MDDPRP100_5
+MDDPRP100_10~~MDDPRP100_10
+MDDPRP100_12~~MDDPRP100_12
+MDDPRP100_14~~MDDPRP100_14
 
 
 #Covariates
@@ -8751,9 +8742,9 @@ Agg_MDD_comparison[,2] <- fitmeasures(fit_Agg_MDD_B, fit.measures=c("chisq","cfi
 Agg_MDD_comparison[,3] <- fitmeasures(fit_Agg_MDD_IS, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
 Agg_MDD_comparison[,4] <- fitmeasures(fit_Agg_MDD_IR, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
 Agg_MDD_comparison[,5] <- fitmeasures(fit_Agg_MDD_T, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-#Agg_MDD_comparison[,6] <- fitmeasures(fit_Agg_MDD, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
+Agg_MDD_comparison[,6] <- fitmeasures(fit_Agg_MDD, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
 
-Agg_MDD_comparison[,2:5] <- round(Agg_MDD_comparison[,2:5], digits=3)
+Agg_MDD_comparison[,2:6] <- round(Agg_MDD_comparison[,2:6], digits=3)
 
 
 ###Agg/INTL Model comparison
@@ -8796,9 +8787,9 @@ Sw_MDD_comparison[,2] <- fitmeasures(fit_Sw_MDD_B, fit.measures=c("chisq","cfi.r
 Sw_MDD_comparison[,3] <- fitmeasures(fit_Sw_MDD_IS, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
 Sw_MDD_comparison[,4] <- fitmeasures(fit_Sw_MDD_IR, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
 Sw_MDD_comparison[,5] <- fitmeasures(fit_Sw_MDD_T, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-#Sw_MDD_comparison[,6] <- fitmeasures(fit_Sw_MDD, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
+Sw_MDD_comparison[,6] <- fitmeasures(fit_Sw_MDD, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
 
-Sw_MDD_comparison[,2:5] <- round(Sw_MDD_comparison[,2:5], digits=3)
+Sw_MDD_comparison[,2:6] <- round(Sw_MDD_comparison[,2:6], digits=3)
 
 
 ###Sw/INTL Model comparison
@@ -8924,7 +8915,7 @@ fitstats_Peer_MDD[,10:11] <- c(fitmeasures(fit_Peer_MDD, fit.measures=list_of_fi
                                     ifelse(lavTestLRT(fit_Peer_MDD_B,fit_Peer_MDD)[2,7]<.05,
                                     paste0(round(lavTestLRT(fit_Peer_MDD_B,fit_Peer_MDD)[2,5],2),"*"),
                                     (round(lavTestLRT(fit_Peer_MDD_B,fit_Peer_MDD)[2,5],2)))))
-fitstats_Peer_MDD[,2:11] <- apply(fitstats_Peer_MDD[,2:11], 2, as.numeric) #FIX THIS
+fitstats_Peer_MDD[,2:11] <- apply(fitstats_Peer_MDD[,2:11], 2, as.numeric)
 fitstats_Peer_MDD[c(1:4,8:9),2:11] <- round(fitstats_Peer_MDD[c(1:4,8:9),2:11], 0)
 fitstats_Peer_MDD[5:7,2:11] <- round(fitstats_Peer_MDD[5:7,2:11], 3)
 fitstats_Peer_MDD <- as.data.frame(fitstats_Peer_MDD)
@@ -9563,7 +9554,7 @@ Chi_test_table[8,] <- c("Interpersonal Risk", lavTestLRT(fit_Agg_MDD_B,fit_Agg_M
 Chi_test_table[9,] <- c("Transactional", lavTestLRT(fit_Agg_MDD_B,fit_Agg_MDD_T)[2,5:7],
                         lavTestLRT(fit_Agg_INTL_B,fit_Agg_INTL_T)[2,5:7],
                         lavTestLRT(fit_Agg_EXTL_B,fit_Agg_EXTL_T)[2,5:7])
-Chi_test_table[10,] <- c("Developmental", rep(NA,3),
+Chi_test_table[10,] <- c("Developmental",  lavTestLRT(fit_Agg_MDD_B,fit_Agg_MDD)[2,5:7],
                          lavTestLRT(fit_Agg_INTL_B,fit_Agg_INTL)[2,5:7],
                          lavTestLRT(fit_Agg_EXTL_B,fit_Agg_EXTL)[2,5:7])
 
@@ -9576,7 +9567,7 @@ Chi_test_table[13,] <- c("Interpersonal Risk", lavTestLRT(fit_Sw_MDD_B,fit_Sw_MD
 Chi_test_table[14,] <- c("Transactional", lavTestLRT(fit_Sw_MDD_B,fit_Sw_MDD_T)[2,5:7],
                         lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL_T)[2,5:7],
                         lavTestLRT(fit_Sw_EXTL_B,fit_Sw_EXTL_T)[2,5:7])
-Chi_test_table[15,] <- c("Developmental", rep(NA,3),
+Chi_test_table[15,] <- c("Developmental",  lavTestLRT(fit_Sw_MDD_B,fit_Sw_MDD)[2,5:7],
                         lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL)[2,5:7],
                         lavTestLRT(fit_Sw_EXTL_B,fit_Sw_EXTL)[2,5:7])
 
@@ -9589,9 +9580,10 @@ Chi_test_table[18,] <- c("Interpersonal Risk", lavTestLRT(fit_Pro_MDD_B,fit_Pro_
 Chi_test_table[19,] <- c("Transactional", lavTestLRT(fit_Pro_MDD_B,fit_Pro_MDD_T)[2,5:7],
                         lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL_T)[2,5:7],
                         lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL_T)[2,5:7])
-Chi_test_table[20,] <- c("Developmental", lavTestLRT(fit_Pro_MDD_B,fit_Pro_MDD)[2,5:7],
+Chi_test_table[20,] <- c("Developmental", rep(NA,3),
                         lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL)[2,5:7],
                         lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL)[2,5:7])
+#lavTestLRT(fit_Pro_MDD_B,fit_Pro_MDD)[2,5:7],
 Chi_test_table[,2:10] <- round(Chi_test_table[,2:10], 2)
 
 Chi_test_table[1,] <- c("Peer Victimization/Rejection",rep("",9))
@@ -9674,12 +9666,12 @@ Peer4=~1*PPeer_10+1*TPeer_10
 Peer5=~1*PPeer_12+1*TPeer_12
 Peer6=~1*PPeer_14+1*TPeer_14
 
-MDD1=~1*MDDPRP_1
-MDD2=~1*MDDPRP_3
-MDD3=~1*MDDPRP_5
-MDD4=~1*MDDPRP_10
-MDD5=~1*MDDPRP_12
-MDD6=~1*MDDPRP_14
+MDD1=~1*MDDPRP100_1
+MDD2=~1*MDDPRP100_3
+MDD3=~1*MDDPRP100_5
+MDD4=~1*MDDPRP100_10
+MDD5=~1*MDDPRP100_12
+MDD6=~1*MDDPRP100_14
 
 #Estimate residual variances
 PPeer_1~~PPeer_1          # This estimates the PPeer residual variances
@@ -9696,12 +9688,12 @@ TPeer_10~~TPeer_10
 TPeer_12~~TPeer_12
 TPeer_14~~TPeer_14
 
-MDDPRP_1~~MDDPRP_1          # This estimates the MDD residual variances
-MDDPRP_3~~MDDPRP_3
-MDDPRP_5~~MDDPRP_5
-MDDPRP_10~~MDDPRP_10
-MDDPRP_12~~MDDPRP_12
-MDDPRP_14~~MDDPRP_14
+MDDPRP100_1~~MDDPRP100_1          # This estimates the MDD residual variances
+MDDPRP100_3~~MDDPRP100_3
+MDDPRP100_5~~MDDPRP100_5
+MDDPRP100_10~~MDDPRP100_10
+MDDPRP100_12~~MDDPRP100_12
+MDDPRP100_14~~MDDPRP100_14
 
 
 iPeer=~1*Peer1+ 1*Peer2+ 1*Peer3+ 1*Peer4+ 1*Peer5+ 1*Peer6     # This defines the Peer intercept measurement model
@@ -9891,12 +9883,12 @@ Agg4=~1*PAgg_10+1*TAgg_10
 Agg5=~1*PAgg_12+1*TAgg_12
 Agg6=~1*PAgg_14+1*TAgg_14
 
-MDD1=~1*MDDPRP_1
-MDD2=~1*MDDPRP_3
-MDD3=~1*MDDPRP_5
-MDD4=~1*MDDPRP_10
-MDD5=~1*MDDPRP_12
-MDD6=~1*MDDPRP_14
+MDD1=~1*MDDPRP100_1
+MDD2=~1*MDDPRP100_3
+MDD3=~1*MDDPRP100_5
+MDD4=~1*MDDPRP100_10
+MDD5=~1*MDDPRP100_12
+MDD6=~1*MDDPRP100_14
 
 #Estimate residual variances
 PAgg_1~~PAgg_1          # This estimates the PAgg residual variances
@@ -9913,12 +9905,12 @@ TAgg_10~~TAgg_10
 TAgg_12~~TAgg_12
 TAgg_14~~TAgg_14
 
-MDDPRP_1~~MDDPRP_1          # This estimates the MDD residual variances
-MDDPRP_3~~MDDPRP_3
-MDDPRP_5~~MDDPRP_5
-MDDPRP_10~~MDDPRP_10
-MDDPRP_12~~MDDPRP_12
-MDDPRP_14~~MDDPRP_14
+MDDPRP100_1~~MDDPRP100_1          # This estimates the MDD residual variances
+MDDPRP100_3~~MDDPRP100_3
+MDDPRP100_5~~MDDPRP100_5
+MDDPRP100_10~~MDDPRP100_10
+MDDPRP100_12~~MDDPRP100_12
+MDDPRP100_14~~MDDPRP100_14
 
 
 iAgg=~1*Agg1+ 1*Agg2+ 1*Agg3+ 1*Agg4+ 1*Agg5+ 1*Agg6     # This defines the Agg intercept measurement model
@@ -10108,12 +10100,12 @@ Sw4=~1*PSw_10+1*TSw_10
 Sw5=~1*PSw_12+1*TSw_12
 Sw6=~1*PSw_14+1*TSw_14
 
-MDD1=~1*MDDPRP_1
-MDD2=~1*MDDPRP_3
-MDD3=~1*MDDPRP_5
-MDD4=~1*MDDPRP_10
-MDD5=~1*MDDPRP_12
-MDD6=~1*MDDPRP_14
+MDD1=~1*MDDPRP100_1
+MDD2=~1*MDDPRP100_3
+MDD3=~1*MDDPRP100_5
+MDD4=~1*MDDPRP100_10
+MDD5=~1*MDDPRP100_12
+MDD6=~1*MDDPRP100_14
 
 #Estimate residual variances
 PSw_1~~PSw_1          # This estimates the PSw residual variances
@@ -10130,12 +10122,12 @@ TSw_10~~TSw_10
 TSw_12~~TSw_12
 TSw_14~~TSw_14
 
-MDDPRP_1~~MDDPRP_1          # This estimates the MDD residual variances
-MDDPRP_3~~MDDPRP_3
-MDDPRP_5~~MDDPRP_5
-MDDPRP_10~~MDDPRP_10
-MDDPRP_12~~MDDPRP_12
-MDDPRP_14~~MDDPRP_14
+MDDPRP100_1~~MDDPRP100_1          # This estimates the MDD residual variances
+MDDPRP100_3~~MDDPRP100_3
+MDDPRP100_5~~MDDPRP100_5
+MDDPRP100_10~~MDDPRP100_10
+MDDPRP100_12~~MDDPRP100_12
+MDDPRP100_14~~MDDPRP100_14
 
 
 iSw=~1*Sw1+ 1*Sw2+ 1*Sw3+ 1*Sw4+ 1*Sw5+ 1*Sw6     # This defines the Sw intercept measurement model
@@ -10325,12 +10317,12 @@ Pro4=~1*PPro_10+1*TPro_10
 Pro5=~1*PPro_12+1*TPro_12
 Pro6=~1*PPro_14+1*TPro_14
 
-MDD1=~1*MDDPRP_1
-MDD2=~1*MDDPRP_3
-MDD3=~1*MDDPRP_5
-MDD4=~1*MDDPRP_10
-MDD5=~1*MDDPRP_12
-MDD6=~1*MDDPRP_14
+MDD1=~1*MDDPRP100_1
+MDD2=~1*MDDPRP100_3
+MDD3=~1*MDDPRP100_5
+MDD4=~1*MDDPRP100_10
+MDD5=~1*MDDPRP100_12
+MDD6=~1*MDDPRP100_14
 
 #Estimate residual variances
 PPro_1~~PPro_1          # This estimates the PPro residual variances
@@ -10347,12 +10339,12 @@ TPro_10~~TPro_10
 TPro_12~~TPro_12
 TPro_14~~TPro_14
 
-MDDPRP_1~~MDDPRP_1          # This estimates the MDD residual variances
-MDDPRP_3~~MDDPRP_3
-MDDPRP_5~~MDDPRP_5
-MDDPRP_10~~MDDPRP_10
-MDDPRP_12~~MDDPRP_12
-MDDPRP_14~~MDDPRP_14
+MDDPRP100_1~~MDDPRP100_1          # This estimates the MDD residual variances
+MDDPRP100_3~~MDDPRP100_3
+MDDPRP100_5~~MDDPRP100_5
+MDDPRP100_10~~MDDPRP100_10
+MDDPRP100_12~~MDDPRP100_12
+MDDPRP100_14~~MDDPRP100_14
 
 
 iPro=~1*Pro1+ 1*Pro2+ 1*Pro3+ 1*Pro4+ 1*Pro5+ 1*Pro6     # This defines the Pro intercept measurement model
