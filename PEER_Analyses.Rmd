@@ -25,17 +25,16 @@ library(broom)
 library(Hmisc)
 library(xtable)
 library(semPlot)
-library(lavaan) ##need this to run the analyses
-library(ggthemes) ##to help make graphs
-library(ggrepel) ##to help make graphs
+library(lavaan)
+library(ggthemes)
+library(ggrepel)
 library(papaja)
 library(kableExtra)
 library(lavaanPlot)
 library(pander)
 select <- dplyr::select
 
-
-data_wide <- read.csv("/Users/BrentRappaport/Box Sync/WashU/Research/PEER/ANALYSIS/PEER/Rappaport_data.csv")
+data_wide <- read.csv("Rappaport_data.csv")
 data_wide <- data_wide[,-1]
 
 data_wide <- data_wide %>%
@@ -53,10 +52,6 @@ data_wide <- data_wide[,c(1:2,42,44,45,47,141,347:461)]
 
 ##Explanation of models
 5 main models: First, a baseline model where coupling parameters are fixed to 0. Second, an “interpersonal risk” model where coupling coefficients from dMDD ~ Peer (change in MDD symptoms predicted by Peer relations) are non-zero but are fixed across time. Third, an "interpersonal scar" model where coupling coefficients from dPeer ~ MDD (change in Peer relations predicted by MDD) are non-zero but are fixed across time. Fourth, a "transactional" model where coupling cofficients from Peer to dMDD and MDD to dPeer are non-zero but fixed across time. Fifth, a model where all coupling parameters (dPeer ~ MDD and dMDD ~ Peer) are free to vary over time, used to detect developmental changes in the relationship between Peer relations and MDD symptoms.
-
-Problematic assumptions: assumes measurement invariance & equal distance between assessments (which is true for the most part)
-Can test measurement invariance for all HBQ measures, but not for the MDD measures.
-Equal distance assumption should be fine since there is only 1 period that is unequal from the rest. Could try running the model from T6 on to see if the results show up the same.
 
 #Bivariate multiwave latent change model for Peer and MDD
 ###Peer/MDD Baseline model
@@ -193,11 +188,6 @@ sPeer~~sMDD                      # This estimates the sPeer sMDD covariance
 '
 
 fit_Peer_MDD_B <- lavaan(Peer_MDD_B, data=data_wide, missing="FIML", estimator="MLR")
-
-##summary(fit_Peer_MDD_B, fit.measures=T, standardized=T)
-
-#semPaths(fit_Peer_MDD_B, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 
@@ -335,13 +325,6 @@ sPeer~~sMDD                      # This estimates the sPeer sMDD covariance
 '
 
 fit_Peer_MDD_IR <- lavaan(Peer_MDD_IR, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Peer_MDD_IR, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Peer_MDD_IR, fit.measures=c("all"), baseline.model= fit_Peer_MDD_B)
-
-#semPaths(fit_Peer_MDD_IR, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 
@@ -479,13 +462,6 @@ sPeer~~sMDD                      # This estimates the sPeer sMDD covariance
 '
 
 fit_Peer_MDD_IS <- lavaan(Peer_MDD_IS, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Peer_MDD_IS, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Peer_MDD_IS, fit.measures=c("all"), baseline.model= fit_Peer_MDD_B)
-
-#semPaths(fit_Peer_MDD_IS, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Peer/MDD Transactional model
@@ -622,15 +598,6 @@ sPeer~~sMDD                      # This estimates the sPeer sMDD covariance
 '
 
 fit_Peer_MDD_T <- lavaan(Peer_MDD_T, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Peer_MDD_T, fit.measures=T, standardized=T)
-
-#bootstrapLRT(h0=fit_Peer_MDD_B, h1=fit_Peer_MDD_T, type="ordinary")
-
-#fitmeasures(fit_Peer_MDD_T, fit.measures=c("all"), baseline.model= fit_Peer_MDD_B)
-
-#semPaths(fit_Peer_MDD_T, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Peer/MDD Developmental change model
@@ -767,20 +734,6 @@ sPeer~~sMDD                      # This estimates the sPeer sMDD covariance
 '
 
 fit_Peer_MDD <- lavaan(Peer_MDD, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Peer_MDD, fit.measures=T, standardized=T)
-
-#anova(fit_Peer_MDD, fit_Peer_MDD_B)
-
-#Figure 1: Theoretical model
-#semPaths(fit_Peer_MDD, 'mod', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=4, sizeInt=2, sizeLat=3, intercepts=FALSE, residuals=T)
-
-#Figure 2: Model fit to data
-#semPaths(fit_Peer_MDD, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
-
-#fitmeasures(fit_Peer_MDD, fit.measures=c("all"), baseline.model= fit_Peer_MDD_B)
 ```
 
 
@@ -919,11 +872,6 @@ sPeer~~sINTL                      # This estimates the sPeer sINTL covariance
 '
 
 fit_Peer_INTL_B <- lavaan(Peer_INTL_B, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Peer_INTL_B, fit.measures=T, standardized=T)
-
-#semPaths(fit_Peer_INTL_B, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Peer/INTL Interpersonal Risk model
@@ -1060,13 +1008,6 @@ sPeer~~sINTL                      # This estimates the sPeer sINTL covariance
 '
 
 fit_Peer_INTL_IR <- lavaan(Peer_INTL_IR, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Peer_INTL_IR, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Peer_INTL_IR, fit.measures=c("all"), baseline.model= fit_Peer_INTL_B)
-
-#semPaths(fit_Peer_INTL_IR, 'std', 'est', curvePivot=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Peer/INTL Interpersonal Scar model
@@ -1203,13 +1144,6 @@ sPeer~~sINTL                      # This estimates the sPeer sINTL covariance
 '
 
 fit_Peer_INTL_IS <- lavaan(Peer_INTL_IS, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Peer_INTL_IS, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Peer_INTL_IS, fit.measures=c("all"), baseline.model= fit_Peer_INTL_B)
-
-#semPaths(fit_Peer_INTL_IS, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Peer/INTL Transactional model
@@ -1346,13 +1280,6 @@ sPeer~~sINTL                      # This estimates the sPeer sINTL covariance
 '
 
 fit_Peer_INTL_T <- lavaan(Peer_INTL_T, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Peer_INTL_T, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Peer_INTL_T, fit.measures=c("all"), baseline.model= fit_Peer_INTL_B)
-
-#semPaths(fit_Peer_INTL_T, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Peer/INTL Developmental change model
@@ -1489,13 +1416,6 @@ sPeer~~sINTL                      # This estimates the sPeer sINTL covariance
 '
 
 fit_Peer_INTL <- lavaan(Peer_INTL, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Peer_INTL, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Peer_INTL, fit.measures=c("all"), baseline.model= fit_Peer_INTL_B)
-
-#semPaths(fit_Peer_INTL, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 
@@ -1635,11 +1555,6 @@ sPeer~~sEXTL                      # This estimates the sPeer sEXTL covariance
 '
 
 fit_Peer_EXTL_B <- lavaan(Peer_EXTL_B, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Peer_EXTL_B, fit.measures=T, standardized=T)
-
-#semPaths(fit_Peer_EXTL_B, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Peer/EXTL Interpersonal Risk model
@@ -1776,15 +1691,6 @@ sPeer~~sEXTL                      # This estimates the sPeer sEXTL covariance
 '
 
 fit_Peer_EXTL_IR <- lavaan(Peer_EXTL_IR, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Peer_EXTL_IR, fit.measures=T, standardized=T)
-
-#anova(fit_Peer_EXTL_IR, fit_Peer_EXTL_B)
-
-#fitmeasures(fit_Peer_EXTL_IR, fit.measures=c("all"), baseline.model= fit_Peer_EXTL_B)
-
-#semPaths(fit_Peer_EXTL_IR, 'std', 'est', curvePivot=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Peer/EXTL Interpersonal Scar model
@@ -1921,13 +1827,6 @@ sPeer~~sEXTL                      # This estimates the sPeer sEXTL covariance
 '
 
 fit_Peer_EXTL_IS <- lavaan(Peer_EXTL_IS, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Peer_EXTL_IS, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Peer_EXTL_IS, fit.measures=c("all"), baseline.model= fit_Peer_EXTL_B)
-
-#semPaths(fit_Peer_EXTL_IS, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Peer/EXTL Transactional model
@@ -2064,13 +1963,6 @@ sPeer~~sEXTL                      # This estimates the sPeer sEXTL covariance
 '
 
 fit_Peer_EXTL_T <- lavaan(Peer_EXTL_T, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Peer_EXTL_T, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Peer_EXTL_T, fit.measures=c("all"), baseline.model= fit_Peer_EXTL_B)
-
-#semPaths(fit_Peer_EXTL_T, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Peer/EXTL Developmental change model
@@ -2207,15 +2099,6 @@ sPeer~~sEXTL                      # This estimates the sPeer sEXTL covariance
 '
 
 fit_Peer_EXTL <- lavaan(Peer_EXTL, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Peer_EXTL, fit.measures=T, standardized=T)
-
-#anova(fit_Peer_EXTL, fit_Peer_EXTL_B)
-
-#fitmeasures(fit_Peer_EXTL, fit.measures=c("all"), baseline.model= fit_Peer_EXTL_B)
-
-#semPaths(fit_Peer_EXTL, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 
@@ -2357,11 +2240,6 @@ sAgg~~sMDD                      # This estimates the sAgg sMDD covariance
 '
 
 fit_Agg_MDD_B <- lavaan(Agg_MDD_B, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Agg_MDD_B, fit.measures=T, standardized=T)
-
-#semPaths(fit_Agg_MDD_B, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Agg/MDD Interpersonal Risk model
@@ -2498,13 +2376,6 @@ sAgg~~sMDD                      # This estimates the sAgg sMDD covariance
 '
 
 fit_Agg_MDD_IR <- lavaan(Agg_MDD_IR, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Agg_MDD_IR, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Agg_MDD_IR, fit.measures=c("all"), baseline.model= fit_Agg_MDD_B)
-
-#semPaths(fit_Agg_MDD_IR, 'std', 'est', curvePivot=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Agg/MDD Interpersonal Scar model
@@ -2641,13 +2512,6 @@ sAgg~~sMDD                      # This estimates the sAgg sMDD covariance
 '
 
 fit_Agg_MDD_IS <- lavaan(Agg_MDD_IS, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Agg_MDD_IS, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Agg_MDD_IS, fit.measures=c("all"), baseline.model= fit_Agg_MDD_B)
-
-#semPaths(fit_Agg_MDD_IS, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Agg/MDD Transactional model
@@ -2784,13 +2648,6 @@ sAgg~~sMDD                      # This estimates the sAgg sMDD covariance
 '
 
 fit_Agg_MDD_T <- lavaan(Agg_MDD_T, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Agg_MDD_T, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Agg_MDD_T, fit.measures=c("all"), baseline.model= fit_Agg_MDD_B)
-
-#semPaths(fit_Agg_MDD_T, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-##         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Agg/MDD Developmental change model
@@ -2927,13 +2784,6 @@ sAgg~~sMDD                      # This estimates the sAgg sMDD covariance
 '
 
 fit_Agg_MDD <- lavaan(Agg_MDD, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Agg_MDD, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Agg_MDD, fit.measures=c("all"), baseline.model= fit_Agg_MDD_B)
-
-#semPaths(fit_Agg_MDD, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 
@@ -3072,11 +2922,6 @@ sAgg~~sINTL                      # This estimates the sAgg sINTL covariance
 '
 
 fit_Agg_INTL_B <- lavaan(Agg_INTL_B, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Agg_INTL_B, fit.measures=T, standardized=T)
-
-#semPaths(fit_Agg_INTL_B, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Agg/INTL Interpersonal Risk model
@@ -3213,13 +3058,6 @@ sAgg~~sINTL                      # This estimates the sAgg sINTL covariance
 '
 
 fit_Agg_INTL_IR <- lavaan(Agg_INTL_IR, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Agg_INTL_IR, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Agg_INTL_IR, fit.measures=c("all"), baseline.model= fit_Agg_INTL_B)
-
-#semPaths(fit_Agg_INTL_IR, 'std', 'est', curvePivot=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Agg/INTL Interpersonal Scar model
@@ -3356,13 +3194,6 @@ sAgg~~sINTL                      # This estimates the sAgg sINTL covariance
 '
 
 fit_Agg_INTL_IS <- lavaan(Agg_INTL_IS, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Agg_INTL_IS, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Agg_INTL_IS, fit.measures=c("all"), baseline.model= fit_Agg_INTL_B)
-
-#semPaths(fit_Agg_INTL_IS, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Agg/INTL Transactional model
@@ -3499,13 +3330,6 @@ sAgg~~sINTL                      # This estimates the sAgg sINTL covariance
 '
 
 fit_Agg_INTL_T <- lavaan(Agg_INTL_T, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Agg_INTL_T, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Agg_INTL_T, fit.measures=c("all"), baseline.model= fit_Agg_INTL_B)
-
-#semPaths(fit_Agg_INTL_T, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Agg/INTL Developmental change model
@@ -3642,13 +3466,6 @@ sAgg~~sINTL                      # This estimates the sAgg sINTL covariance
 '
 
 fit_Agg_INTL <- lavaan(Agg_INTL, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Agg_INTL, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Agg_INTL, fit.measures=c("all"), baseline.model= fit_Agg_INTL_B)
-
-#semPaths(fit_Agg_INTL, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 
@@ -3788,11 +3605,6 @@ sAgg~~sEXTL                      # This estimates the sAgg sEXTL covariance
 '
 
 fit_Agg_EXTL_B <- lavaan(Agg_EXTL_B, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Agg_EXTL_B, fit.measures=T, standardized=T)
-
-#semPaths(fit_Agg_EXTL_B, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Agg/EXTL Interpersonal Risk model
@@ -3929,13 +3741,6 @@ sAgg~~sEXTL                      # This estimates the sAgg sEXTL covariance
 '
 
 fit_Agg_EXTL_IR <- lavaan(Agg_EXTL_IR, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Agg_EXTL_IR, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Agg_EXTL_IR, fit.measures=c("all"), baseline.model= fit_Agg_EXTL_B)
-
-#semPaths(fit_Agg_EXTL_IR, 'std', 'est', curvePivot=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Agg/EXTL Interpersonal Scar model
@@ -4072,13 +3877,6 @@ sAgg~~sEXTL                      # This estimates the sAgg sEXTL covariance
 '
 
 fit_Agg_EXTL_IS <- lavaan(Agg_EXTL_IS, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Agg_EXTL_IS, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Agg_EXTL_IS, fit.measures=c("all"), baseline.model= fit_Agg_EXTL_B)
-
-#semPaths(fit_Agg_EXTL_IS, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Agg/EXTL Transactional model
@@ -4215,13 +4013,6 @@ sAgg~~sEXTL                      # This estimates the sAgg sEXTL covariance
 '
 
 fit_Agg_EXTL_T <- lavaan(Agg_EXTL_T, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Agg_EXTL_T, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Agg_EXTL_T, fit.measures=c("all"), baseline.model= fit_Agg_EXTL_B)
-
-#semPaths(fit_Agg_EXTL_T, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Agg/EXTL Developmental change model
@@ -4358,16 +4149,6 @@ sAgg~~sEXTL                      # This estimates the sAgg sEXTL covariance
 '
 
 fit_Agg_EXTL <- lavaan(Agg_EXTL, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Agg_EXTL, fit.measures=T, standardized=T)
-
-#anova(fit_Agg_EXTL, fit_Agg_EXTL_B)
-#anova(fit_Agg_EXTL, fit_Agg_EXTL_T)
-
-#fitmeasures(fit_Agg_EXTL, fit.measures=c("all"), baseline.model= fit_Agg_EXTL_B)
-
-#semPaths(fit_Agg_EXTL, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 
