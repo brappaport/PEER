@@ -1,7 +1,7 @@
 ---
-title: "Results for PEER Manuscript"
-author: "Brent Rappaport"
-date: "03/13/2018"
+title: "Analyses for Bivariate latent change score analysis of peer relations from early childhood to adolescence: Leading or lagging indicators of psychopathology"
+author: "Brent Rappaport, brappaport@wustl.edu"
+date: "05/30/2018"
 output: word_document
 ---
 
@@ -34,24 +34,339 @@ library(lavaanPlot)
 library(pander)
 select <- dplyr::select
 
+#Load data
 data_wide <- read.csv("Rappaport_data.csv")
 data_wide <- data_wide[,-1]
 
-data_wide <- data_wide %>%
-  mutate(MDDPRP100_1 = MDDPRP_1*100,
-         MDDPRP100_3 = MDDPRP_3*100,
-         MDDPRP100_5 = MDDPRP_5*100,
-         MDDPRP100_10 = MDDPRP_10*100,
-         MDDPRP100_12 = MDDPRP_12*100,
-         MDDPRP100_14 = MDDPRP_14*100,
-         MDDPRP100_16 = MDDPRP_16*100,
-         MDDPRP100_18 = MDDPRP_18*100)
-
-data_wide <- data_wide[,c(1:2,42,44,45,47,141,347:461)]
+#Install correct version of lavaan if needed (lavaan 0.5-23.1097)
+# require(devtools)
+# install_version("lavaan", version= "0.5-23.1097", repos="http://cran.us.r-project.org")
 ```
 
-##Explanation of models
-5 main models: First, a baseline model where coupling parameters are fixed to 0. Second, an “interpersonal risk” model where coupling coefficients from dMDD ~ Peer (change in MDD symptoms predicted by Peer relations) are non-zero but are fixed across time. Third, an "interpersonal scar" model where coupling coefficients from dPeer ~ MDD (change in Peer relations predicted by MDD) are non-zero but are fixed across time. Fourth, a "transactional" model where coupling cofficients from Peer to dMDD and MDD to dPeer are non-zero but fixed across time. Fifth, a model where all coupling parameters (dPeer ~ MDD and dMDD ~ Peer) are free to vary over time, used to detect developmental changes in the relationship between Peer relations and MDD symptoms.
+# Function "lavTestLRT"
+```{r function lavTestLRT}
+lav_test_diff_SatorraBentler2001 <- function(m1, m0) {
+  
+  # extract information from m1 and m2
+  T1 <- m1@test[[1]]$stat
+  r1 <- m1@test[[1]]$df
+  c1 <- m1@test[[2]]$scaling.factor
+  if(r1 == 0) { # saturated model
+    c1 <- 1
+  }
+  
+  T0 <- m0@test[[1]]$stat
+  r0 <- m0@test[[1]]$df
+  c0 <- m0@test[[2]]$scaling.factor
+  
+  # m = difference between the df's
+  m = r0 - r1
+  
+  # compute c_d
+  cd <- (r0 * c0 - r1 * c1) / m
+  
+  # warn if cd is negative
+  if(cd < 0) {
+    warning("lavaan WARNING: scaling factor is negative")
+    cd <- as.numeric(NA)
+  }
+  
+  # compute scaled difference test      
+  T.delta <- (T0 - T1)/cd
+  
+  list(T.delta = T.delta, scaling.factor = cd, df.delta = m)
+}
+
+lavTestLRT <- function(object, ..., method = "default", A.method = "delta",
+                       scaled.shifted = TRUE,
+                       H1 = TRUE, type = "Chisq", model.names = NULL) {
+
+    if(object@optim$npar > 0L && !object@optim$converged)
+        stop("lavaan ERROR: model did not converge")
+    type <- tolower(type)
+    method <- tolower( gsub("[-_\\.]", "", method ) )
+
+    # NOTE: if we add additional arguments, it is not the same generic
+    # anova() function anymore, and match.call will be screwed up
+
+    mcall <- match.call(expand.dots = TRUE)
+    dots <- list(...)
+  
+    modp <- if(length(dots))
+        sapply(dots, is, "lavaan") else logical(0)
+
+    # some general properties (taken from the first model)
+    estimator <- object@Options$estimator
+    likelihood <- object@Options$likelihood
+    ngroups <- object@Data@ngroups
+    nobs <- object@SampleStats@nobs
+    ntotal <- object@SampleStats@ntotal
+
+    # shortcut for single argument (just plain LRT)
+    if(!any(modp)) {
+        if(type == "cf") {
+            warning("lavaan WARNING: `type' argument is ignored for a single model")
+        }
+        aic <- bic <- c(NA, NA)
+        if(estimator == "ML") {
+            aic <- c(NA, AIC(object))
+            bic <- c(NA, BIC(object))
+        }
+
+        val <- data.frame(Df = c(0, object@test[[1L]]$df),
+                          AIC = aic,
+                          BIC = bic,
+                          Chisq = c(0, object@test[[1L]]$stat),
+                          "Chisq diff" = c(NA, object@test[[1L]]$stat),
+                          "Df diff" = c(NA, object@test[[1L]]$df),
+                          "Pr(>Chisq)" = c(NA, object@test[[1L]]$pvalue),
+                          row.names = c("Saturated", "Model"),
+                          check.names = FALSE)
+        attr(val, "heading") <- "Chi Square Test Statistic (unscaled)\n"
+        class(val) <- c("anova", class(val))
+        return(val)
+    }
+
+    # list of models
+    mods <- c(list(object), dots[modp])
+    if(!is.null(model.names)) {
+        names(mods) <- model.names
+    } else {
+        names(mods) <- sapply(as.list(mcall)[which(c(FALSE, TRUE, modp))], 
+                              deparse)
+    }
+
+    ## put them in order (using number of free parameters)
+    #nfreepar <- sapply(mods, function(x) x@optim$npar)
+    #if(any(duplicated(nfreepar))) { ## FIXME: what to do here?
+    #    # what, same number of free parameters?
+    #    # maybe, we need to count number of constraints
+    #    ncon <- sapply(mods, function(x) { nrow(x@Model@con.jac) })
+    #    nfreepar <- nfreepar - ncon
+    #}
+
+    # put them in order (using degrees of freedom)
+    ndf <- sapply(mods, function(x) x@test[[1]]$df)    
+    mods <- mods[order(ndf)]
+
+    # here come the checks
+    if(TRUE) {
+        # 1. same set of observed variables?
+        ov.names <- lapply(mods, function(x) { sort(lavNames(x)) })
+        OV <- ov.names[[1L]] # the observed variable names of the first model
+        if(!all(sapply(ov.names, function(x) identical(x, OV)))) {
+            warning("lavaan WARNING: some models are based on a different set of observed variables")
+        }
+        ## wow FIXME: we may need to reorder the rows/columns first!!
+        #COVS <- lapply(mods, function(x) slot(slot(x, "Sample"), "cov")[[1]])
+        #if(!all(sapply(COVS, all.equal, COVS[[1]]))) {
+        #    stop("lavaan ERROR: models must be fit to the same data")
+        #}
+        # 2. nested models? *different* npars?
+     
+        # TODO!
+        
+        # 3. all meanstructure?
+        mean.structure <- sapply(mods, inspect, "meanstructure")
+        if(sum(mean.structure) > 0L && 
+           sum(mean.structure) < length(mean.structure)) {
+            warning("lavaan WARNING: not all models have a meanstructure")
+        }
+    }
+
+    mods.scaled <- unlist( lapply(mods, function(x) {
+        any(c("satorra.bentler", "yuan.bentler", 
+              "mean.var.adjusted", "scaled.shifted") %in% 
+            unlist(sapply(slot(x, "test"), "[", "test")) ) }))
+
+    if(all(mods.scaled)) {
+        scaled <- TRUE
+        # which type?
+        TEST <- object@test[[2]]$test
+    } else if(!all(mods.scaled)) {
+        scaled <- FALSE
+        TEST <- "standard"
+    } else {
+        stop("lavaan ERROR: some models (but not all) have scaled test statistics")
+    }
+
+    # which models have used a MEANSTRUCTURE?
+    mods.meanstructure <- sapply(mods, function(x) { 
+                                 unlist(slot(slot(x, "Model"), 
+                                                     "meanstructure"))})
+    if(all(mods.meanstructure)) {
+        meanstructure <- "ok"
+    } else if(sum(mods.meanstructure) == 0) {
+        meanstructure <- "ok"
+    } else {
+        stop("lavaan ERROR: some models (but not all) have a meanstructure")
+    }
+
+    # collect statistics for each model
+    if(type == "chisq") {
+        Df <- sapply(mods, function(x) slot(x, "test")[[1]]$df)
+    } else if(type == "cf") {
+        Df <- rep(as.numeric(NA), length(mods))
+    } else {
+        stop("lavaan ERROR: test type unknown: ", type)
+    }
+    
+
+    if(type == "chisq") {
+        STAT <- sapply(mods, function(x) slot(x, "test")[[1]]$stat)
+    } else if(type == "cf") {
+        tmp <- lapply(mods, lavTablesFitCf)
+        STAT <- unlist(tmp)
+        Df  <- unlist(lapply(tmp, attr, "DF"))
+    } else {
+        stop("lavaan ERROR: test type unknown: ", type)
+    }
+
+    # difference statistics
+    STAT.delta  <- c(NA, diff(STAT)) 
+    Df.delta     <- c(NA, diff(Df))
+    
+    # correction for scaled test statistics
+    if(type == "chisq" && scaled) {
+
+        # select method
+        if(method == "default") {
+            if(estimator == "PML") {
+                method <- "mean.var.adjusted.PLRT"
+            } else if(TEST %in% c("satorra.bentler", "yuan.bentler")) {
+                method <- "satorra.bentler.2001"
+            } else {
+                method <- "satorra.2000"
+            }
+        } else if(method == "meanvaradjustedplrt" ||
+                  method == "mean.var.adjusted.PLRT") {
+            method <- "mean.var.adjusted.PLRT"
+            stopifnot(estimator == "PML")
+        } else if(method == "satorra2000") {
+            method <- "satorra.2000"
+        } else if(method == "satorrabentler2001") {
+            method <- "satorra.bentler.2001"
+        } else if(method == "satorrabentler2010") {
+            method <- "satorra.bentler.2010"
+        } else {
+            stop("lavaan ERROR: unknown method for scaled difference test: ", method)
+        }
+
+        if(method == "satorra.bentler.2001") {
+            # use formula from Satorra & Bentler 2001
+            for(m in seq_len(length(mods) - 1L)) {
+                out <- lav_test_diff_SatorraBentler2001(mods[[m]], mods[[m+1]])
+                STAT.delta[m+1] <- out$T.delta
+                  Df.delta[m+1] <- out$df.delta
+            }
+        } else if (method == "mean.var.adjusted.PLRT") {
+            for(m in seq_len(length(mods) - 1L)) {
+                out <- ctr_pml_plrt_nested(mods[[m]], mods[[m+1]])
+                STAT.delta[m+1] <- out$FSMA.PLRT
+                  Df.delta[m+1] <- out$adj.df
+            }
+        } else if(method == "satorra.bentler.2010") {
+            for(m in seq_len(length(mods) - 1L)) {
+                out <- lav_test_diff_SatorraBentler2010(mods[[m]], mods[[m+1]])
+                STAT.delta[m+1] <- out$T.delta
+                  Df.delta[m+1] <- out$df.delta
+            }
+        } else if(method == "satorra.2000") {
+            for(m in seq_len(length(mods) - 1L)) {
+                if(TEST %in% c("satorra.bentler", "yuan.bentler")) {
+                    Satterthwaite <- FALSE
+                } else {
+                    Satterthwaite <- TRUE
+                }
+                out <- lav_test_diff_Satorra2000(mods[[m]], mods[[m+1]],
+                                                 H1 = TRUE,
+                                                 Satterthwaite = Satterthwaite,
+                                                 scaled.shifted = scaled.shifted,
+                                                 A.method = A.method)
+                STAT.delta[m+1] <- out$T.delta
+                  Df.delta[m+1] <- out$df.delta
+            }
+        }
+    }
+
+    # Pvalue
+    Pvalue.delta <- pchisq(STAT.delta, Df.delta, lower.tail = FALSE)
+
+    aic <- bic <- rep(NA, length(mods))
+    if(estimator == "ML") {
+        aic <- sapply(mods, FUN=AIC)
+        bic <- sapply(mods, FUN=BIC)
+    } else if(estimator == "PML") {
+        OUT <- lapply(mods, ctr_pml_aic_bic)
+        aic <- sapply(OUT, "[[", "PL_AIC")
+        bic <- sapply(OUT, "[[", "PL_BIC")
+    }
+
+    if(estimator == "PML") {
+        val <- data.frame(Df = Df,
+                          PL_AIC = aic,
+                          PL_BIC = bic,
+                          Chisq = STAT,
+                          "Chisq diff" = STAT.delta,
+                          "Df diff" = Df.delta,
+                          "Pr(>Chisq)" = Pvalue.delta,
+                          row.names = names(mods),
+                          check.names = FALSE)
+    } else {
+        val <- data.frame(Df = Df,
+                          AIC = aic,
+                          BIC = bic,
+                          Chisq = STAT,
+                          "Chisq diff" = STAT.delta,
+                          "Df diff" = Df.delta,
+                          "Pr(>Chisq)" = Pvalue.delta,
+                          row.names = names(mods), 
+                          check.names = FALSE)
+    }
+
+    # catch Df.delta == 0 cases (reported by Florian Zsok in Zurich)
+    # but only if there are no inequality constraints! (0.6-1)
+    idx <- which(val[,"Df diff"] == 0)
+    if(length(idx) > 0L) {
+        # remove models with inequality constraints
+        ineq.idx <- which(sapply(lapply(mods, function(x) slot(slot(x, "Model"), "x.cin.idx")), length) > 0L)
+        rm.idx <- which(idx %in% ineq.idx)
+        if(length(rm.idx) > 0L) {
+            idx <- idx[-rm.idx]
+        }
+    }
+    if(length(idx) > 0L) {
+        val[idx, "Pr(>Chisq)"] <- as.numeric(NA)
+        warning("lavaan WARNING: some models have the same degrees of freedom")
+    }
+
+    if(type == "chisq") {
+
+        if(scaled) {
+            attr(val, "heading") <- 
+                paste("Scaled Chi Square Difference Test (method = \"",
+                      method, "\")\n", sep="")
+        } else {
+            attr(val, "heading") <- "Chi Square Difference Test\n"
+        }
+    } else if(type == "cf") {
+        colnames(val)[c(3,4)] <- c("Cf", "Cf diff")
+        attr(val, "heading") <- "Cf Difference Test\n"
+    }
+    class(val) <- c("anova", class(val))
+
+    return(val)
+
+}
+```
+
+# Explanation of models
+5 main models:
+1) First, a baseline model where coupling parameters are fixed to 0.
+2) Second, an “interpersonal risk” model (_IR) where coupling coefficients from dMDD ~ Peer (change in MDD symptoms predicted by Peer relations) are non-zero but are fixed across time. 
+3) Third, an "interpersonal scar" model (_IS) where coupling coefficients from dPeer ~ MDD (change in Peer relations predicted by MDD) are non-zero but are fixed across time. 
+4) Fourth, a "transactional" model (_T) where coupling cofficients from Peer to dMDD and MDD to dPeer are non-zero but fixed across time. 
+5) Fifth, a "developmental" model where all coupling parameters (dPeer ~ MDD and dMDD ~ Peer) are free to vary over time, used to detect developmental changes in the relationship between Peer relations and MDD symptoms.
 
 #Bivariate multiwave latent change model for Peer and MDD
 ###Peer/MDD Baseline model
@@ -92,7 +407,7 @@ dPeer3 =~ 1*Peer4
 dPeer4 =~ 1*Peer5
 dPeer5 =~ 1*Peer6
          
-dMDD1 =~ 1*MDD2           # This defines the change score as measured perfectly by scores on MDDPRP1002
+dMDD1 =~ 1*MDD2           # This defines the change score as measured perfectly by scores on MDD2
 dMDD2 =~ 1*MDD3           
 dMDD3 =~ 1*MDD4
 dMDD4 =~ 1*MDD5
@@ -668,19 +983,19 @@ MDDPRP100_14~~MDDPRP100_14
 
 
 #Covariates
-Peer1 ~ sex_01 + ethin + T1Income_to_Need_c + IQ + T1_ACES_sum + first_MDDBP
-Peer2 ~ sex_01 + ethin + T1Income_to_Need_c + IQ + T1_ACES_sum + first_MDDBP
-Peer3 ~ sex_01 + ethin + T1Income_to_Need_c + IQ + T1_ACES_sum + first_MDDBP
-Peer4 ~ sex_01 + ethin + T1Income_to_Need_c + IQ + T1_ACES_sum + first_MDDBP
-Peer5 ~ sex_01 + ethin + T1Income_to_Need_c + IQ + T1_ACES_sum + first_MDDBP
-Peer6 ~ sex_01 + ethin + T1Income_to_Need_c + IQ + T1_ACES_sum + first_MDDBP
+Peer1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+Peer6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
-MDD1 ~ sex_01 + ethin + T1Income_to_Need_c + IQ + T1_ACES_sum + first_MDDBP
-MDD2 ~ sex_01 + ethin + T1Income_to_Need_c + IQ + T1_ACES_sum + first_MDDBP
-MDD3 ~ sex_01 + ethin + T1Income_to_Need_c + IQ + T1_ACES_sum + first_MDDBP
-MDD4 ~ sex_01 + ethin + T1Income_to_Need_c + IQ + T1_ACES_sum + first_MDDBP
-MDD5 ~ sex_01 + ethin + T1Income_to_Need_c + IQ + T1_ACES_sum + first_MDDBP
-MDD6 ~ sex_01 + ethin + T1Income_to_Need_c + IQ + T1_ACES_sum + first_MDDBP
+MDD1 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD2 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD3 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD4 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD5 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+MDD6 ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 
 
 #Dynamics
@@ -2144,7 +2459,7 @@ dAgg3 =~ 1*Agg4
 dAgg4 =~ 1*Agg5
 dAgg5 =~ 1*Agg6
          
-dMDD1 =~ 1*MDD2           # This defines the change score as measured perfectly by scores on MDDPRP1002
+dMDD1 =~ 1*MDD2           # This defines the change score as measured perfectly by scores on MDD2
 dMDD2 =~ 1*MDD3           
 dMDD3 =~ 1*MDD4
 dMDD4 =~ 1*MDD5
@@ -2749,17 +3064,17 @@ dMDD4~MDD4
 dMDD5~MDD5
 
 #Estimate coupling parameter
-dMDD1~Agg1         # This estimates the Agg to MDD coupling parameter
-dMDD2~Agg2
-dMDD3~Agg3
-dMDD4~Agg4
-dMDD5~Agg5
+dMDD1~-13.701*Agg1         # This estimates the Agg to MDD coupling parameter
+dMDD2~-11.519*Agg2
+dMDD3~-0.389*Agg3
+dMDD4~-6.948*Agg4
+dMDD5~1.287*Agg5
 
-dAgg1~MDD1         # This estimates the MDD to Agg coupling parameter
-dAgg2~MDD2
-dAgg3~MDD3
-dAgg4~MDD4
-dAgg5~MDD5
+dAgg1~0.116*MDD1         # This estimates the MDD to Agg coupling parameter
+dAgg2~0.093*MDD2
+dAgg3~0.078*MDD3
+dAgg4~0.068*MDD4
+dAgg5~0.064*MDD5
 
 iAgg=~1*Agg1                   # This defines the Agg intercept measurement model
 sAgg=~1*dAgg1+ 1*dAgg2+ 1*dAgg3+ 1*dAgg4+ 1*dAgg5 # This defines the Agg slope measurement model
@@ -4191,7 +4506,7 @@ dSw3 =~ 1*Sw4
 dSw4 =~ 1*Sw5
 dSw5 =~ 1*Sw6
          
-dMDD1 =~ 1*MDD2           # This defines the change score as measured perfectly by scores on MDDPRP1002
+dMDD1 =~ 1*MDD2           # This defines the change score as measured perfectly by scores on MDD2
 dMDD2 =~ 1*MDD3           
 dMDD3 =~ 1*MDD4
 dMDD4 =~ 1*MDD5
@@ -4287,11 +4602,6 @@ sSw~~sMDD                      # This estimates the sSw sMDD covariance
 '
 
 fit_Sw_MDD_B <- lavaan(Sw_MDD_B, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Sw_MDD_B, fit.measures=T, standardized=T)
-
-#semPaths(fit_Sw_MDD_B, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Sw/MDD Interpersonal Risk model
@@ -4428,13 +4738,6 @@ sSw~~sMDD                      # This estimates the sSw sMDD covariance
 '
 
 fit_Sw_MDD_IR <- lavaan(Sw_MDD_IR, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Sw_MDD_IR, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Sw_MDD_IR, fit.measures=c("all"), baseline.model= fit_Sw_MDD_B)
-
-#semPaths(fit_Sw_MDD_IR, 'std', 'est', curvePivot=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Sw/MDD Interpersonal Scar model
@@ -4571,13 +4874,6 @@ sSw~~sMDD                      # This estimates the sSw sMDD covariance
 '
 
 fit_Sw_MDD_IS <- lavaan(Sw_MDD_IS, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Sw_MDD_IS, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Sw_MDD_IS, fit.measures=c("all"), baseline.model= fit_Sw_MDD_B)
-
-#semPaths(fit_Sw_MDD_IS, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Sw/MDD Transactional model
@@ -4714,13 +5010,6 @@ sSw~~sMDD                      # This estimates the sSw sMDD covariance
 '
 
 fit_Sw_MDD_T <- lavaan(Sw_MDD_T, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Sw_MDD_T, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Sw_MDD_T, fit.measures=c("all"), baseline.model= fit_Sw_MDD_B)
-
-#semPaths(fit_Sw_MDD_T, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Sw/MDD Developmental change model
@@ -4822,17 +5111,17 @@ dMDD4~MDD4
 dMDD5~MDD5
 
 #Estimate coupling parameter
-dMDD1~Sw1         # This estimates the Sw to MDD coupling parameter
-dMDD2~Sw2
-dMDD3~Sw3
-dMDD4~Sw4
-dMDD5~Sw5
+dMDD1~-3.723*Sw1         # This estimates the Sw to MDD coupling parameter
+dMDD2~4.142*Sw2
+dMDD3~-0.079*Sw3
+dMDD4~2.251*Sw4
+dMDD5~2.700*Sw5
 
-dSw1~MDD1         # This estimates the MDD to Sw coupling parameter
-dSw2~MDD2
-dSw3~MDD3
-dSw4~MDD4
-dSw5~MDD5
+dSw1~0.016*MDD1         # This estimates the MDD to Sw coupling parameter
+dSw2~0.022*MDD2
+dSw3~0.008*MDD3
+dSw4~0.017*MDD4
+dSw5~0.016*MDD5
 
 iSw=~1*Sw1                   # This defines the Sw intercept measurement model
 sSw=~1*dSw1+ 1*dSw2+ 1*dSw3+ 1*dSw4+ 1*dSw5 # This defines the Sw slope measurement model
@@ -4857,20 +5146,6 @@ sSw~~sMDD                      # This estimates the sSw sMDD covariance
 '
 
 fit_Sw_MDD <- lavaan(Sw_MDD, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Sw_MDD, fit.measures=T, standardized=T)
-
-##anova(fit_Sw_MDD, fit_Sw_MDD_B)
-
-#Figure 1: Theoretical model
-#semPaths(fit_Sw_MDD, 'mod', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=4, sizeInt=2, sizeLat=3, intercepts=FALSE, residuals=T)
-
-#Figure 2: Model fit to data
-#semPaths(fit_Sw_MDD, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
-
-#fitmeasures(fit_Sw_MDD, fit.measures=c("all"), baseline.model= fit_Sw_MDD_B)
 ```
 
 
@@ -5010,11 +5285,6 @@ sSw~~sINTL                      # This estimates the sSw sINTL covariance
 '
 
 fit_Sw_INTL_B <- lavaan(Sw_INTL_B, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Sw_INTL_B, fit.measures=T, standardized=T)
-
-#semPaths(fit_Sw_INTL_B, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Sw/INTL Interpersonal Risk model
@@ -5151,13 +5421,6 @@ sSw~~sINTL                      # This estimates the sSw sINTL covariance
 '
 
 fit_Sw_INTL_IR <- lavaan(Sw_INTL_IR, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Sw_INTL_IR, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Sw_INTL_IR, fit.measures=c("all"), baseline.model= fit_Sw_INTL_B)
-
-#semPaths(fit_Sw_INTL_IR, 'std', 'est', curvePivot=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Sw/INTL Interpersonal Scar model
@@ -5294,13 +5557,6 @@ sSw~~sINTL                      # This estimates the sSw sINTL covariance
 '
 
 fit_Sw_INTL_IS <- lavaan(Sw_INTL_IS, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Sw_INTL_IS, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Sw_INTL_IS, fit.measures=c("all"), baseline.model= fit_Sw_INTL_B)
-
-#semPaths(fit_Sw_INTL_IS, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Sw/INTL Transactional model
@@ -5437,13 +5693,6 @@ sSw~~sINTL                      # This estimates the sSw sINTL covariance
 '
 
 fit_Sw_INTL_T <- lavaan(Sw_INTL_T, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Sw_INTL_T, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Sw_INTL_T, fit.measures=c("all"), baseline.model= fit_Sw_INTL_B)
-
-#semPaths(fit_Sw_INTL_T, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Sw/INTL Developmental change model
@@ -5580,13 +5829,6 @@ sSw~~sINTL                      # This estimates the sSw sINTL covariance
 '
 
 fit_Sw_INTL <- lavaan(Sw_INTL, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Sw_INTL, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Sw_INTL, fit.measures=c("all"), baseline.model= fit_Sw_INTL_B)
-
-#semPaths(fit_Sw_INTL, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 
@@ -5726,11 +5968,6 @@ sSw~~sEXTL                      # This estimates the sSw sEXTL covariance
 '
 
 fit_Sw_EXTL_B <- lavaan(Sw_EXTL_B, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Sw_EXTL_B, fit.measures=T, standardized=T)
-
-#semPaths(fit_Sw_EXTL_B, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Sw/EXTL Interpersonal Risk model
@@ -5867,13 +6104,6 @@ sSw~~sEXTL                      # This estimates the sSw sEXTL covariance
 '
 
 fit_Sw_EXTL_IR <- lavaan(Sw_EXTL_IR, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Sw_EXTL_IR, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Sw_EXTL_IR, fit.measures=c("all"), baseline.model= fit_Sw_EXTL_B)
-
-#semPaths(fit_Sw_EXTL_IR, 'std', 'est', curvePivot=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Sw/EXTL Interpersonal Scar model
@@ -6010,13 +6240,6 @@ sSw~~sEXTL                      # This estimates the sSw sEXTL covariance
 '
 
 fit_Sw_EXTL_IS <- lavaan(Sw_EXTL_IS, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Sw_EXTL_IS, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Sw_EXTL_IS, fit.measures=c("all"), baseline.model= fit_Sw_EXTL_B)
-
-#semPaths(fit_Sw_EXTL_IS, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Sw/EXTL Transactional model
@@ -6153,13 +6376,6 @@ sSw~~sEXTL                      # This estimates the sSw sEXTL covariance
 '
 
 fit_Sw_EXTL_T <- lavaan(Sw_EXTL_T, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Sw_EXTL_T, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Sw_EXTL_T, fit.measures=c("all"), baseline.model= fit_Sw_EXTL_B)
-
-#semPaths(fit_Sw_EXTL_T, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Sw/EXTL Developmental change model
@@ -6296,13 +6512,6 @@ sSw~~sEXTL                      # This estimates the sSw sEXTL covariance
 '
 
 fit_Sw_EXTL <- lavaan(Sw_EXTL, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Sw_EXTL, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Sw_EXTL, fit.measures=c("all"), baseline.model= fit_Sw_EXTL_B)
-
-#semPaths(fit_Sw_EXTL, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 
@@ -6348,7 +6557,7 @@ dPro3 =~ 1*Pro4
 dPro4 =~ 1*Pro5
 dPro5 =~ 1*Pro6
          
-dMDD1 =~ 1*MDD2           # This defines the change score as measured perfectly by scores on MDDPRP1002
+dMDD1 =~ 1*MDD2           # This defines the change score as measured perfectly by scores on MDD2
 dMDD2 =~ 1*MDD3           
 dMDD3 =~ 1*MDD4
 dMDD4 =~ 1*MDD5
@@ -6444,11 +6653,6 @@ sPro~~sMDD                      # This estimates the sPro sMDD covariance
 '
 
 fit_Pro_MDD_B <- lavaan(Pro_MDD_B, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Pro_MDD_B, fit.measures=T, standardized=T)
-
-#semPaths(fit_Pro_MDD_B, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Pro/MDD Interpersonal Risk model
@@ -6585,13 +6789,6 @@ sPro~~sMDD                      # This estimates the sPro sMDD covariance
 '
 
 fit_Pro_MDD_IR <- lavaan(Pro_MDD_IR, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Pro_MDD_IR, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Pro_MDD_IR, fit.measures=c("all"), baseline.model= fit_Pro_MDD_B)
-
-#semPaths(fit_Pro_MDD_IR, 'std', 'est', curvePivot=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Pro/MDD Interpersonal Scar model
@@ -6728,13 +6925,6 @@ sPro~~sMDD                      # This estimates the sPro sMDD covariance
 '
 
 fit_Pro_MDD_IS <- lavaan(Pro_MDD_IS, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Pro_MDD_IS, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Pro_MDD_IS, fit.measures=c("all"), baseline.model= fit_Pro_MDD_B)
-
-#semPaths(fit_Pro_MDD_IS, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Pro/MDD Transactional model
@@ -6871,13 +7061,6 @@ sPro~~sMDD                      # This estimates the sPro sMDD covariance
 '
 
 fit_Pro_MDD_T <- lavaan(Pro_MDD_T, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Pro_MDD_T, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Pro_MDD_T, fit.measures=c("all"), baseline.model= fit_Pro_MDD_B)
-
-#semPaths(fit_Pro_MDD_T, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Pro/MDD Developmental change model
@@ -7014,18 +7197,6 @@ sPro~~sMDD                      # This estimates the sPro sMDD covariance
 '
 
 fit_Pro_MDD <- lavaan(Pro_MDD, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Pro_MDD, fit.measures=T, standardized=T)
-
-#Figure 1: Theoretical model
-#semPaths(fit_Pro_MDD, 'mod', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=4, sizeInt=2, sizeLat=3, intercepts=FALSE, residuals=T)
-
-#Figure 2: Model fit to data
-#semPaths(fit_Pro_MDD, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
-
-#fitmeasures(fit_Pro_MDD, fit.measures=c("all"), baseline.model= fit_Pro_MDD_B)
 ```
 
 
@@ -7165,11 +7336,6 @@ sPro~~sINTL                      # This estimates the sPro sINTL covariance
 '
 
 fit_Pro_INTL_B <- lavaan(Pro_INTL_B, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Pro_INTL_B, fit.measures=T, standardized=T)
-
-#semPaths(fit_Pro_INTL_B, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Pro/INTL Interpersonal Risk model
@@ -7306,17 +7472,6 @@ sPro~~sINTL                      # This estimates the sPro sINTL covariance
 '
 
 fit_Pro_INTL_IR <- lavaan(Pro_INTL_IR, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Pro_INTL_IR, fit.measures=T, standardized=T)
-
-#anova(fit_Pro_INTL_IR, fit_Pro_INTL_B)
-
-#modificationindices(fit_Pro_INTL_IR, standardized = T, power = T)
-
-#fitmeasures(fit_Pro_INTL_IR, fit.measures=c("all"), baseline.model= fit_Pro_INTL_B)
-
-#semPaths(fit_Pro_INTL_IR, 'std', 'est', curvePivot=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Pro/INTL Interpersonal Scar model
@@ -7453,13 +7608,6 @@ sPro~~sINTL                      # This estimates the sPro sINTL covariance
 '
 
 fit_Pro_INTL_IS <- lavaan(Pro_INTL_IS, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Pro_INTL_IS, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Pro_INTL_IS, fit.measures=c("all"), baseline.model= fit_Pro_INTL_B)
-
-#semPaths(fit_Pro_INTL_IS, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Pro/INTL Transactional model
@@ -7596,13 +7744,6 @@ sPro~~sINTL                      # This estimates the sPro sINTL covariance
 '
 
 fit_Pro_INTL_T <- lavaan(Pro_INTL_T, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Pro_INTL_T, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Pro_INTL_T, fit.measures=c("all"), baseline.model= fit_Pro_INTL_B)
-
-#semPaths(fit_Pro_INTL_T, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Pro/INTL Developmental change model
@@ -7739,13 +7880,6 @@ sPro~~sINTL                      # This estimates the sPro sINTL covariance
 '
 
 fit_Pro_INTL <- lavaan(Pro_INTL, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Pro_INTL, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Pro_INTL, fit.measures=c("all"), baseline.model= fit_Pro_INTL_B)
-
-#semPaths(fit_Pro_INTL, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 
@@ -7886,11 +8020,6 @@ sPro~~sEXTL                      # This estimates the sPro sEXTL covariance
 '
 
 fit_Pro_EXTL_B <- lavaan(Pro_EXTL_B, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Pro_EXTL_B, fit.measures=T, standardized=T)
-
-#semPaths(fit_Pro_EXTL_B, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Pro/EXTL Interpersonal Risk model
@@ -8027,13 +8156,6 @@ sPro~~sEXTL                      # This estimates the sPro sEXTL covariance
 '
 
 fit_Pro_EXTL_IR <- lavaan(Pro_EXTL_IR, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Pro_EXTL_IR, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Pro_EXTL_IR, fit.measures=c("all"), baseline.model= fit_Pro_EXTL_B)
-
-#semPaths(fit_Pro_EXTL_IR, 'std', 'est', curvePivot=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Pro/EXTL Interpersonal Scar model
@@ -8170,13 +8292,6 @@ sPro~~sEXTL                      # This estimates the sPro sEXTL covariance
 '
 
 fit_Pro_EXTL_IS <- lavaan(Pro_EXTL_IS, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Pro_EXTL_IS, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Pro_EXTL_IS, fit.measures=c("all"), baseline.model= fit_Pro_EXTL_B)
-
-#semPaths(fit_Pro_EXTL_IS, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Pro/EXTL Transactional model
@@ -8313,13 +8428,6 @@ sPro~~sEXTL                      # This estimates the sPro sEXTL covariance
 '
 
 fit_Pro_EXTL_T <- lavaan(Pro_EXTL_T, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Pro_EXTL_T, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Pro_EXTL_T, fit.measures=c("all"), baseline.model= fit_Pro_EXTL_B)
-
-#semPaths(fit_Pro_EXTL_T, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
 ###Pro/EXTL Developmental change model
@@ -8456,214 +8564,11 @@ sPro~~sEXTL                      # This estimates the sPro sEXTL covariance
 '
 
 fit_Pro_EXTL <- lavaan(Pro_EXTL, data=data_wide, missing="FIML", estimator="MLR")
-
-#summary(fit_Pro_EXTL, fit.measures=T, standardized=T)
-
-#fitmeasures(fit_Pro_EXTL, fit.measures=c("all"), baseline.model= fit_Pro_EXTL_B)
-
-#semPaths(fit_Pro_EXTL, 'std', 'est', curveAdjacent=T, layout="tree", orthogonal=T, rescale=T,
-#         label.cex=T, label.scale=T, normalize=FALSE, sizeMan=3, sizeInt=1, sizeLat=3, intercepts=FALSE)
 ```
 
-
-##Model comparisons
-```{r Model comparison, echo=FALSE, eval=FALSE}
-###Peer/MDD Model comparison
-Peer_MDD_comparison <- matrix(ncol=6,nrow=7)
-Peer_MDD_comparison <- as.data.frame(Peer_MDD_comparison)
-Peer_MDD_comparison[,1] <- c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr")
-colnames(Peer_MDD_comparison) <- c("Fit_Statistics","Baseline","Interpersonal_Scar","Interpersonal_Risk","Transactional","Developmental")
-
-Peer_MDD_comparison[,2] <- fitmeasures(fit_Peer_MDD_B, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Peer_MDD_comparison[,3] <- fitmeasures(fit_Peer_MDD_IS, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Peer_MDD_comparison[,4] <- fitmeasures(fit_Peer_MDD_IR, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Peer_MDD_comparison[,5] <- fitmeasures(fit_Peer_MDD_T, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Peer_MDD_comparison[,6] <- fitmeasures(fit_Peer_MDD, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-
-Peer_MDD_comparison[,2:6] <- round(Peer_MDD_comparison[,2:6], digits=3)
-
-
-###Peer/INTL Model comparison
-Peer_INTL_comparison <- matrix(ncol=6,nrow=7)
-Peer_INTL_comparison <- as.data.frame(Peer_INTL_comparison)
-Peer_INTL_comparison[,1] <- c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr")
-colnames(Peer_INTL_comparison) <- c("Fit_Statistics","Baseline","Interpersonal_Scar","Interpersonal_Risk","Transactional","Developmental")
-
-Peer_INTL_comparison[,2] <- fitmeasures(fit_Peer_INTL_B, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Peer_INTL_comparison[,3] <- fitmeasures(fit_Peer_INTL_IS, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Peer_INTL_comparison[,4] <- fitmeasures(fit_Peer_INTL_IR, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Peer_INTL_comparison[,5] <- fitmeasures(fit_Peer_INTL_T, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Peer_INTL_comparison[,6] <- fitmeasures(fit_Peer_INTL, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-
-Peer_INTL_comparison[,2:6] <- round(Peer_INTL_comparison[,2:6], digits=3)
-
-
-###Peer/EXTL Model comparison
-Peer_EXTL_comparison <- matrix(ncol=6,nrow=7)
-Peer_EXTL_comparison <- as.data.frame(Peer_EXTL_comparison)
-Peer_EXTL_comparison[,1] <- c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr")
-colnames(Peer_EXTL_comparison) <- c("Fit_Statistics","Baseline","Interpersonal_Scar","Interpersonal_Risk","Transactional","Developmental")
-
-Peer_EXTL_comparison[,2] <- fitmeasures(fit_Peer_EXTL_B, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Peer_EXTL_comparison[,3] <- fitmeasures(fit_Peer_EXTL_IS, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Peer_EXTL_comparison[,4] <- fitmeasures(fit_Peer_EXTL_IR, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Peer_EXTL_comparison[,5] <- fitmeasures(fit_Peer_EXTL_T, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Peer_EXTL_comparison[,6] <- fitmeasures(fit_Peer_EXTL, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-
-Peer_EXTL_comparison[,2:6] <- round(Peer_EXTL_comparison[,2:6], digits=3)
-
-
-###Agg/MDD Model comparison
-Agg_MDD_comparison <- matrix(ncol=6,nrow=7)
-Agg_MDD_comparison <- as.data.frame(Agg_MDD_comparison)
-Agg_MDD_comparison[,1] <- c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr")
-colnames(Agg_MDD_comparison) <- c("Fit_Statistics","Baseline","Interpersonal_Scar","Interpersonal_Risk","Transactional","Developmental")
-
-Agg_MDD_comparison[,2] <- fitmeasures(fit_Agg_MDD_B, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Agg_MDD_comparison[,3] <- fitmeasures(fit_Agg_MDD_IS, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Agg_MDD_comparison[,4] <- fitmeasures(fit_Agg_MDD_IR, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Agg_MDD_comparison[,5] <- fitmeasures(fit_Agg_MDD_T, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Agg_MDD_comparison[,6] <- fitmeasures(fit_Agg_MDD, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-
-Agg_MDD_comparison[,2:6] <- round(Agg_MDD_comparison[,2:6], digits=3)
-
-
-###Agg/INTL Model comparison
-Agg_INTL_comparison <- matrix(ncol=6,nrow=7)
-Agg_INTL_comparison <- as.data.frame(Agg_INTL_comparison)
-Agg_INTL_comparison[,1] <- c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr")
-colnames(Agg_INTL_comparison) <- c("Fit_Statistics","Baseline","Interpersonal_Scar","Interpersonal_Risk","Transactional","Developmental")
-
-Agg_INTL_comparison[,2] <- fitmeasures(fit_Agg_INTL_B, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Agg_INTL_comparison[,3] <- fitmeasures(fit_Agg_INTL_IS, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Agg_INTL_comparison[,4] <- fitmeasures(fit_Agg_INTL_IR, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Agg_INTL_comparison[,5] <- fitmeasures(fit_Agg_INTL_T, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Agg_INTL_comparison[,6] <- fitmeasures(fit_Agg_INTL, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-
-Agg_INTL_comparison[,2:6] <- round(Agg_INTL_comparison[,2:6], digits=3)
-
-
-###Agg/EXTL Model comparison
-Agg_EXTL_comparison <- matrix(ncol=6,nrow=7)
-Agg_EXTL_comparison <- as.data.frame(Agg_EXTL_comparison)
-Agg_EXTL_comparison[,1] <- c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr")
-colnames(Agg_EXTL_comparison) <- c("Fit_Statistics","Baseline","Interpersonal_Scar","Interpersonal_Risk","Transactional","Developmental")
-
-Agg_EXTL_comparison[,2] <- fitmeasures(fit_Agg_EXTL_B, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Agg_EXTL_comparison[,3] <- fitmeasures(fit_Agg_EXTL_IS, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Agg_EXTL_comparison[,4] <- fitmeasures(fit_Agg_EXTL_IR, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Agg_EXTL_comparison[,5] <- fitmeasures(fit_Agg_EXTL_T, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Agg_EXTL_comparison[,6] <- fitmeasures(fit_Agg_EXTL, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-
-Agg_EXTL_comparison[,2:6] <- round(Agg_EXTL_comparison[,2:6], digits=3)
-
-
-###Sw/MDD Model comparison
-Sw_MDD_comparison <- matrix(ncol=6,nrow=7)
-Sw_MDD_comparison <- as.data.frame(Sw_MDD_comparison)
-Sw_MDD_comparison[,1] <- c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr")
-colnames(Sw_MDD_comparison) <- c("Fit_Statistics","Baseline","Interpersonal_Scar","Interpersonal_Risk","Transactional","Developmental")
-
-Sw_MDD_comparison[,2] <- fitmeasures(fit_Sw_MDD_B, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Sw_MDD_comparison[,3] <- fitmeasures(fit_Sw_MDD_IS, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Sw_MDD_comparison[,4] <- fitmeasures(fit_Sw_MDD_IR, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Sw_MDD_comparison[,5] <- fitmeasures(fit_Sw_MDD_T, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Sw_MDD_comparison[,6] <- fitmeasures(fit_Sw_MDD, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-
-Sw_MDD_comparison[,2:6] <- round(Sw_MDD_comparison[,2:6], digits=3)
-
-
-###Sw/INTL Model comparison
-Sw_INTL_comparison <- matrix(ncol=6,nrow=7)
-Sw_INTL_comparison <- as.data.frame(Sw_INTL_comparison)
-Sw_INTL_comparison[,1] <- c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr")
-colnames(Sw_INTL_comparison) <- c("Fit_Statistics","Baseline","Interpersonal_Scar","Interpersonal_Risk","Transactional","Developmental")
-
-Sw_INTL_comparison[,2] <- fitmeasures(fit_Sw_INTL_B, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Sw_INTL_comparison[,3] <- fitmeasures(fit_Sw_INTL_IS, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Sw_INTL_comparison[,4] <- fitmeasures(fit_Sw_INTL_IR, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Sw_INTL_comparison[,5] <- fitmeasures(fit_Sw_INTL_T, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Sw_INTL_comparison[,6] <- fitmeasures(fit_Sw_INTL, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-
-Sw_INTL_comparison[,2:6] <- round(Sw_INTL_comparison[,2:6], digits=3)
-
-
-###Sw/EXTL Model comparison
-Sw_EXTL_comparison <- matrix(ncol=6,nrow=7)
-Sw_EXTL_comparison <- as.data.frame(Sw_EXTL_comparison)
-Sw_EXTL_comparison[,1] <- c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr")
-colnames(Sw_EXTL_comparison) <- c("Fit_Statistics","Baseline","Interpersonal_Scar","Interpersonal_Risk","Transactional","Developmental")
-
-Sw_EXTL_comparison[,2] <- fitmeasures(fit_Sw_EXTL_B, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Sw_EXTL_comparison[,3] <- fitmeasures(fit_Sw_EXTL_IS, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Sw_EXTL_comparison[,4] <- fitmeasures(fit_Sw_EXTL_IR, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Sw_EXTL_comparison[,5] <- fitmeasures(fit_Sw_EXTL_T, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Sw_EXTL_comparison[,6] <- fitmeasures(fit_Sw_EXTL, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-
-Sw_EXTL_comparison[,2:6] <- round(Sw_EXTL_comparison[,2:6], digits=3)
-
-
-###Pro/MDD Model comparison
-Pro_MDD_comparison <- matrix(ncol=6,nrow=7)
-Pro_MDD_comparison <- as.data.frame(Pro_MDD_comparison)
-Pro_MDD_comparison[,1] <- c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr")
-colnames(Pro_MDD_comparison) <- c("Fit_Statistics","Baseline","Interpersonal_Scar","Interpersonal_Risk","Transactional","Developmental")
-
-Pro_MDD_comparison[,2] <- fitmeasures(fit_Pro_MDD_B, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Pro_MDD_comparison[,3] <- fitmeasures(fit_Pro_MDD_IS, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Pro_MDD_comparison[,4] <- fitmeasures(fit_Pro_MDD_IR, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Pro_MDD_comparison[,5] <- fitmeasures(fit_Pro_MDD_T, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Pro_MDD_comparison[,6] <- fitmeasures(fit_Pro_MDD, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-
-Pro_MDD_comparison[,2:6] <- round(Pro_MDD_comparison[,2:6], digits=3)
-
-
-###Pro/INTL Model comparison
-Pro_INTL_comparison <- matrix(ncol=6,nrow=7)
-Pro_INTL_comparison <- as.data.frame(Pro_INTL_comparison)
-Pro_INTL_comparison[,1] <- c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr")
-colnames(Pro_INTL_comparison) <- c("Fit_Statistics","Baseline","Interpersonal_Scar","Interpersonal_Risk","Transactional","Developmental")
-
-Pro_INTL_comparison[,2] <- fitmeasures(fit_Pro_INTL_B, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Pro_INTL_comparison[,3] <- fitmeasures(fit_Pro_INTL_IS, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Pro_INTL_comparison[,4] <- fitmeasures(fit_Pro_INTL_IR, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Pro_INTL_comparison[,5] <- fitmeasures(fit_Pro_INTL_T, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Pro_INTL_comparison[,6] <- fitmeasures(fit_Pro_INTL, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-
-Pro_INTL_comparison[,2:6] <- round(Pro_INTL_comparison[,2:6], digits=3)
-
-
-###Pro/EXTL Model comparison
-Pro_EXTL_comparison <- matrix(ncol=6,nrow=7)
-Pro_EXTL_comparison <- as.data.frame(Pro_EXTL_comparison)
-Pro_EXTL_comparison[,1] <- c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr")
-colnames(Pro_EXTL_comparison) <- c("Fit_Statistics","Baseline","Interpersonal_Scar","Interpersonal_Risk","Transactional","Developmental")
-
-Pro_EXTL_comparison[,2] <- fitmeasures(fit_Pro_EXTL_B, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Pro_EXTL_comparison[,3] <- fitmeasures(fit_Pro_EXTL_IS, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Pro_EXTL_comparison[,4] <- fitmeasures(fit_Pro_EXTL_IR, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Pro_EXTL_comparison[,5] <- fitmeasures(fit_Pro_EXTL_T, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-Pro_EXTL_comparison[,6] <- fitmeasures(fit_Pro_EXTL, fit.measures=c("chisq","cfi.robust","rmsea.robust","logl","bic","aic","srmr"))
-
-Pro_EXTL_comparison[,2:6] <- round(Pro_EXTL_comparison[,2:6], digits=3)
-
-Peer_MDD_comparison
-Peer_INTL_comparison
-Peer_EXTL_comparison
-Agg_MDD_comparison
-Agg_INTL_comparison
-Agg_EXTL_comparison
-Sw_MDD_comparison
-Sw_INTL_comparison
-Sw_EXTL_comparison
-Pro_MDD_comparison
-Pro_INTL_comparison
-Pro_EXTL_comparison
-```
-
-
-## Model Tables
-```{r Model Tables, echo=FALSE}
+# Model Tables
+### Peer/MDD Table
+```{r Peer/MDD Table, echo=FALSE}
 list_of_fit_stats <- c("npar","df","logl","chisq","cfi.robust","rmsea.robust","srmr","aic","bic")
 
 #Peer_MDD
@@ -8704,27 +8609,27 @@ fitstats_Peer_MDD[,1] <- c("Parameters","Df","Log Likelihood","χ2","CFI","RMSEA
 
 # Make table of parameters
 # Select only the necessary parameters, removing the 'label', 'se', and 'z' columns
-out_Peer_MDD_B <- parameterEstimates(fit_Peer_MDD_B)[c(129:148,155:158,165:168,169:174),] %>%
+out_Peer_MDD_B <- parameterEstimates(fit_Peer_MDD_B, standardized=T)[c(129:148,155:158,165:168,169:174),] %>%
   select(-label,-se,-z) %>%
     mutate(est = if_else(pvalue<.01, paste0(round(est,3),"**"), if_else(pvalue<.05, paste0(round(est,3),"*"), paste0(round(est,3)))))
 rownames(out_Peer_MDD_B) <- seq(length=nrow(out_Peer_MDD_B))
 
-out_Peer_MDD_IS <- parameterEstimates(fit_Peer_MDD_IS)[c(129:148,155:158,165:168,169:174),] %>%
+out_Peer_MDD_IS <- parameterEstimates(fit_Peer_MDD_IS, standardized=T)[c(129:148,155:158,165:168,169:174),] %>%
   select(-label,-se,-z) %>%
     mutate(est = if_else(pvalue<.01, paste0(round(est,3),"**"), if_else(pvalue<.05, paste0(round(est,3),"*"), paste0(round(est,3)))))
 rownames(out_Peer_MDD_IS) <- seq(length=nrow(out_Peer_MDD_IS))
 
-out_Peer_MDD_IR <- parameterEstimates(fit_Peer_MDD_IR)[c(129:148,155:158,165:168,169:174),] %>%
+out_Peer_MDD_IR <- parameterEstimates(fit_Peer_MDD_IR, standardized=T)[c(129:148,155:158,165:168,169:174),] %>%
   select(-label,-se,-z) %>%
     mutate(est = if_else(pvalue<.01, paste0(round(est,3),"**"), if_else(pvalue<.05, paste0(round(est,3),"*"), paste0(round(est,3)))))
 rownames(out_Peer_MDD_IR) <- seq(length=nrow(out_Peer_MDD_IR))
 
-out_Peer_MDD_T <- parameterEstimates(fit_Peer_MDD_T)[c(129:148,155:158,165:168,169:174),] %>%
+out_Peer_MDD_T <- parameterEstimates(fit_Peer_MDD_T, standardized=T)[c(129:148,155:158,165:168,169:174),] %>%
   select(-label,-se,-z) %>%
     mutate(est = if_else(pvalue<.01, paste0(round(est,3),"**"), if_else(pvalue<.05, paste0(round(est,3),"*"), paste0(round(est,3)))))
 rownames(out_Peer_MDD_T) <- seq(length=nrow(out_Peer_MDD_T))
 
-out_Peer_MDD <- parameterEstimates(fit_Peer_MDD)[c(129:148,155:158,165:168,169:174),] %>%
+out_Peer_MDD <- parameterEstimates(fit_Peer_MDD, standardized=T)[c(129:148,155:158,165:168,169:174),] %>%
   select(-se,-z) %>%
     mutate(est = round(est,3))
 rownames(out_Peer_MDD) <- seq(length=nrow(out_Peer_MDD))
@@ -8733,50 +8638,51 @@ rownames(out_Peer_MDD) <- seq(length=nrow(out_Peer_MDD))
 parameters_Peer_MDD <- NULL
 parameters_Peer_MDD$Model_Parameters <- c("Intercept mean","Slope mean","Self-feedback","Coupling",
                         "Intercept Variance","Slope Variance","Correlation ρ01",
-                        "Correlation ρp0m0","Correlation ρp1m1",
-                        "Correlation ρp0m1","Correlation ρp1m0")
+                        "Correlation ρp0m1","Correlation ρp1m0",
+                        "Correlation ρp0m0","Correlation ρp1m1")
+
 # Fill the table with the appropriate values
 parameters_Peer_MDD$Peer_B <- c(out_Peer_MDD_B[21,4],out_Peer_MDD_B[23,4],out_Peer_MDD_B[1,4],out_Peer_MDD_B[11,4],
-                     out_Peer_MDD_B[22,4],out_Peer_MDD_B[24,4],out_Peer_MDD_B[32,4],
-                     out_Peer_MDD_B[31,4],out_Peer_MDD_B[34,4],
-                     out_Peer_MDD_B[33,4],out_Peer_MDD_B[30,4])
+                     out_Peer_MDD_B[22,4],out_Peer_MDD_B[24,4],out_Peer_MDD_B[32,9],
+                     out_Peer_MDD_B[33,9],out_Peer_MDD_B[30,9],
+                     out_Peer_MDD_B[31,9],out_Peer_MDD_B[34,9])
 parameters_Peer_MDD$Peer_IS <- c(out_Peer_MDD_IS[21,4],out_Peer_MDD_IS[23,4],out_Peer_MDD_IS[1,4],out_Peer_MDD_IS[11,4],
-                     out_Peer_MDD_IS[22,4],out_Peer_MDD_IS[24,4],out_Peer_MDD_IS[32,4],
-                     out_Peer_MDD_IS[31,4],out_Peer_MDD_IS[34,4],
-                     out_Peer_MDD_IS[33,4],out_Peer_MDD_IS[30,4])
+                     out_Peer_MDD_IS[22,4],out_Peer_MDD_IS[24,4],out_Peer_MDD_IS[32,9],
+                     out_Peer_MDD_IS[33,9],out_Peer_MDD_IS[30,9],
+                     out_Peer_MDD_IS[31,9],out_Peer_MDD_IS[34,9])
 parameters_Peer_MDD$Peer_IR <- c(out_Peer_MDD_IR[21,4],out_Peer_MDD_IR[23,4],out_Peer_MDD_IR[1,4],out_Peer_MDD_IR[11,4],
-                     out_Peer_MDD_IR[22,4],out_Peer_MDD_IR[24,4],out_Peer_MDD_IR[32,4],
-                     out_Peer_MDD_IR[31,4],out_Peer_MDD_IR[34,4],
-                     out_Peer_MDD_IR[33,4],out_Peer_MDD_IR[30,4])
+                     out_Peer_MDD_IR[22,4],out_Peer_MDD_IR[24,4],out_Peer_MDD_IR[32,9],
+                     out_Peer_MDD_IR[33,9],out_Peer_MDD_IR[30,9],
+                     out_Peer_MDD_IR[31,9],out_Peer_MDD_IR[34,9])
 parameters_Peer_MDD$Peer_T <- c(out_Peer_MDD_T[21,4],out_Peer_MDD_T[23,4],out_Peer_MDD_T[1,4],out_Peer_MDD_T[11,4],
-                     out_Peer_MDD_T[22,4],out_Peer_MDD_T[24,4],out_Peer_MDD_T[32,4],
-                     out_Peer_MDD_T[31,4],out_Peer_MDD_T[34,4],
-                     out_Peer_MDD_T[33,4],out_Peer_MDD_T[30,4])
+                     out_Peer_MDD_T[22,4],out_Peer_MDD_T[24,4],out_Peer_MDD_T[32,9],
+                     out_Peer_MDD_T[33,9],out_Peer_MDD_T[30,9],
+                     out_Peer_MDD_T[31,9],out_Peer_MDD_T[34,9])
 parameters_Peer_MDD$Peer_D <- c(out_Peer_MDD[21,4],out_Peer_MDD[23,4],out_Peer_MDD[1,4],mean(as.numeric(out_Peer_MDD[11:15,4])),
-                     out_Peer_MDD[22,4],out_Peer_MDD[24,4],out_Peer_MDD[32,4],
-                     out_Peer_MDD[31,4],out_Peer_MDD[34,4],
-                     out_Peer_MDD[33,4],out_Peer_MDD[30,4])
+                     out_Peer_MDD[22,4],out_Peer_MDD[24,4],out_Peer_MDD[32,9],
+                     out_Peer_MDD[33,9],out_Peer_MDD[30,9],
+                     out_Peer_MDD[31,9],out_Peer_MDD[34,9])
 
 parameters_Peer_MDD$MDD_B <- c(out_Peer_MDD_B[25,4],out_Peer_MDD_B[27,4],out_Peer_MDD_B[6,4],out_Peer_MDD_B[16,4],
-                     out_Peer_MDD_B[26,4],out_Peer_MDD_B[28,4],out_Peer_MDD_B[29,4],
-                     out_Peer_MDD_B[31,4],out_Peer_MDD_B[34,4],
-                     out_Peer_MDD_B[33,4],out_Peer_MDD_B[30,4])
+                     out_Peer_MDD_B[26,4],out_Peer_MDD_B[28,4],out_Peer_MDD_B[29,9],
+                     out_Peer_MDD_B[33,9],out_Peer_MDD_B[30,9],
+                     out_Peer_MDD_B[31,9],out_Peer_MDD_B[34,9])
 parameters_Peer_MDD$MDD_IS <- c(out_Peer_MDD_IS[25,4],out_Peer_MDD_IS[27,4],out_Peer_MDD_IS[6,4],out_Peer_MDD_IS[16,4],
-                     out_Peer_MDD_IS[26,4],out_Peer_MDD_IS[28,4],out_Peer_MDD_IS[29,4],
-                     out_Peer_MDD_IS[31,4],out_Peer_MDD_IS[34,4],
-                     out_Peer_MDD_IS[33,4],out_Peer_MDD_IS[30,4])
+                     out_Peer_MDD_IS[26,4],out_Peer_MDD_IS[28,4],out_Peer_MDD_IS[29,9],
+                     out_Peer_MDD_IS[33,9],out_Peer_MDD_IS[30,9],
+                     out_Peer_MDD_IS[31,9],out_Peer_MDD_IS[34,9])
 parameters_Peer_MDD$MDD_IR <- c(out_Peer_MDD_IR[25,4],out_Peer_MDD_IR[27,4],out_Peer_MDD_IR[6,4],out_Peer_MDD_IR[16,4],
-                     out_Peer_MDD_IR[26,4],out_Peer_MDD_IR[28,4],out_Peer_MDD_IR[29,4],
-                     out_Peer_MDD_IR[31,4],out_Peer_MDD_IR[34,4],
-                     out_Peer_MDD_IR[33,4],out_Peer_MDD_IR[30,4])
+                     out_Peer_MDD_IR[26,4],out_Peer_MDD_IR[28,4],out_Peer_MDD_IR[29,9],
+                     out_Peer_MDD_IR[33,9],out_Peer_MDD_IR[30,9],
+                     out_Peer_MDD_IR[31,9],out_Peer_MDD_IR[34,9])
 parameters_Peer_MDD$MDD_T <- c(out_Peer_MDD_T[25,4],out_Peer_MDD_T[27,4],out_Peer_MDD_T[6,4],out_Peer_MDD_T[16,4],
-                     out_Peer_MDD_T[26,4],out_Peer_MDD_T[28,4],out_Peer_MDD_T[29,4],
-                     out_Peer_MDD_T[31,4],out_Peer_MDD_T[34,4],
-                     out_Peer_MDD_T[33,4],out_Peer_MDD_T[30,4])
+                     out_Peer_MDD_T[26,4],out_Peer_MDD_T[28,4],out_Peer_MDD_T[29,9],
+                     out_Peer_MDD_T[33,9],out_Peer_MDD_T[30,9],
+                     out_Peer_MDD_T[31,9],out_Peer_MDD_T[34,9])
 parameters_Peer_MDD$MDD_D <- c(out_Peer_MDD[25,4],out_Peer_MDD[27,4],out_Peer_MDD[6,4],mean(as.numeric(out_Peer_MDD[16:20,4])),
-                     out_Peer_MDD[26,4],out_Peer_MDD[28,4],out_Peer_MDD[29,4],
-                     out_Peer_MDD[31,4],out_Peer_MDD[34,4],
-                     out_Peer_MDD[33,4],out_Peer_MDD[30,4])
+                     out_Peer_MDD[26,4],out_Peer_MDD[28,4],out_Peer_MDD[29,9],
+                     out_Peer_MDD[33,9],out_Peer_MDD[30,9],
+                     out_Peer_MDD[31,9],out_Peer_MDD[34,9])
 parameters_Peer_MDD <- as.data.frame(parameters_Peer_MDD)
 parameters_Peer_MDD[,-1] <- apply(parameters_Peer_MDD[,-1], 2, as.character)
 parameters_Peer_MDD[4,][is.na(parameters_Peer_MDD[4,])] <- "--"
@@ -8788,11 +8694,14 @@ options(knitr.kable.NA="")
 kable(parameters_Peer_MDD, digits=2,
                         align=c('l',rep('c', 10)),
                         col.names=c(" ", rep(c("Peer","MDD"), times=5)))
-kable(fitstats_Peer_MDD, digits=2,
+kable(fitstats_Peer_MDD, digits=3,
                         align=c('l',rep('c', 10)),
                         col.names=c(" ", rep(c("Peer","MDD"), times=5)))
+```
 
 
+### Agg/EXTL Table
+```{r Agg/EXTL Table, echo=FALSE}
 #Agg_EXTL
 # Make table of fit statistics
 fitstats_Agg_EXTL <- as.data.frame(matrix(ncol=11,nrow=10))
@@ -8823,7 +8732,7 @@ fitstats_Agg_EXTL[,10:11] <- c(fitmeasures(fit_Agg_EXTL, fit.measures=list_of_fi
                                     ifelse(lavTestLRT(fit_Agg_EXTL_B,fit_Agg_EXTL)[2,7]<.05,
                                     paste0(round(lavTestLRT(fit_Agg_EXTL_B,fit_Agg_EXTL)[2,5],2),"*"),
                                     (round(lavTestLRT(fit_Agg_EXTL_B,fit_Agg_EXTL)[2,5],2)))))
-fitstats_Agg_EXTL[,2:11] <- apply(fitstats_Agg_EXTL[,2:11], 2, as.numeric) #FIX THIS
+fitstats_Agg_EXTL[,2:11] <- apply(fitstats_Agg_EXTL[,2:11], 2, as.numeric)
 fitstats_Agg_EXTL[c(1:4,8:9),2:11] <- round(fitstats_Agg_EXTL[c(1:4,8:9),2:11], 0)
 fitstats_Agg_EXTL[5:7,2:11] <- round(fitstats_Agg_EXTL[5:7,2:11], 3)
 fitstats_Agg_EXTL <- as.data.frame(fitstats_Agg_EXTL)
@@ -8831,27 +8740,27 @@ fitstats_Agg_EXTL[,1] <- c("Parameters","Df","Log Likelihood","χ2","CFI","RMSEA
 
 # Make table of parameters
 # Select only the necessary parameters, removing the 'label', 'se', and 'z' columns
-out_Agg_EXTL_B <- parameterEstimates(fit_Agg_EXTL_B)[c(129:148,155:158,165:168,169:174),] %>%
+out_Agg_EXTL_B <- parameterEstimates(fit_Agg_EXTL_B, standardized=T)[c(129:148,155:158,165:168,169:174),] %>%
   select(-label,-se,-z) %>%
     mutate(est = if_else(pvalue<.01, paste0(round(est,3),"**"), if_else(pvalue<.05, paste0(round(est,3),"*"), paste0(round(est,3)))))
 rownames(out_Agg_EXTL_B) <- seq(length=nrow(out_Agg_EXTL_B))
 
-out_Agg_EXTL_IS <- parameterEstimates(fit_Agg_EXTL_IS)[c(129:148,155:158,165:168,169:174),] %>%
+out_Agg_EXTL_IS <- parameterEstimates(fit_Agg_EXTL_IS, standardized=T)[c(129:148,155:158,165:168,169:174),] %>%
   select(-label,-se,-z) %>%
     mutate(est = if_else(pvalue<.01, paste0(round(est,3),"**"), if_else(pvalue<.05, paste0(round(est,3),"*"), paste0(round(est,3)))))
 rownames(out_Agg_EXTL_IS) <- seq(length=nrow(out_Agg_EXTL_IS))
 
-out_Agg_EXTL_IR <- parameterEstimates(fit_Agg_EXTL_IR)[c(129:148,155:158,165:168,169:174),] %>%
+out_Agg_EXTL_IR <- parameterEstimates(fit_Agg_EXTL_IR, standardized=T)[c(129:148,155:158,165:168,169:174),] %>%
   select(-label,-se,-z) %>%
     mutate(est = if_else(pvalue<.01, paste0(round(est,3),"**"), if_else(pvalue<.05, paste0(round(est,3),"*"), paste0(round(est,3)))))
 rownames(out_Agg_EXTL_IR) <- seq(length=nrow(out_Agg_EXTL_IR))
 
-out_Agg_EXTL_T <- parameterEstimates(fit_Agg_EXTL_T)[c(129:148,155:158,165:168,169:174),] %>%
+out_Agg_EXTL_T <- parameterEstimates(fit_Agg_EXTL_T, standardized=T)[c(129:148,155:158,165:168,169:174),] %>%
   select(-label,-se,-z) %>%
     mutate(est = if_else(pvalue<.01, paste0(round(est,3),"**"), if_else(pvalue<.05, paste0(round(est,3),"*"), paste0(round(est,3)))))
 rownames(out_Agg_EXTL_T) <- seq(length=nrow(out_Agg_EXTL_T))
 
-out_Agg_EXTL <- parameterEstimates(fit_Agg_EXTL)[c(129:148,155:158,165:168,169:174),] %>%
+out_Agg_EXTL <- parameterEstimates(fit_Agg_EXTL, standardized=T)[c(129:148,155:158,165:168,169:174),] %>%
   select(-se,-z) %>%
     mutate(est = round(est,3))
 rownames(out_Agg_EXTL) <- seq(length=nrow(out_Agg_EXTL))
@@ -8860,50 +8769,50 @@ rownames(out_Agg_EXTL) <- seq(length=nrow(out_Agg_EXTL))
 parameters_Agg_EXTL <- NULL
 parameters_Agg_EXTL$Model_Parameters <- c("Intercept mean","Slope mean","Self-feedback","Coupling",
                         "Intercept Variance","Slope Variance","Correlation ρ01",
-                        "Correlation ρp0m0","Correlation ρp1m1",
-                        "Correlation ρp0m1","Correlation ρp1m0")
+                        "Correlation ρp0m1","Correlation ρp1m0",
+                        "Correlation ρp0m0","Correlation ρp1m1")
 # Fill the table with the appropriate values
 parameters_Agg_EXTL$Agg_B <- c(out_Agg_EXTL_B[21,4],out_Agg_EXTL_B[23,4],out_Agg_EXTL_B[1,4],out_Agg_EXTL_B[11,4],
-                     out_Agg_EXTL_B[22,4],out_Agg_EXTL_B[24,4],out_Agg_EXTL_B[32,4],
-                     out_Agg_EXTL_B[31,4],out_Agg_EXTL_B[34,4],
-                     out_Agg_EXTL_B[33,4],out_Agg_EXTL_B[30,4])
+                     out_Agg_EXTL_B[22,4],out_Agg_EXTL_B[24,4],out_Agg_EXTL_B[32,9],
+                     out_Agg_EXTL_B[33,9],out_Agg_EXTL_B[30,9],
+                     out_Agg_EXTL_B[31,9],out_Agg_EXTL_B[34,9])
 parameters_Agg_EXTL$Agg_IS <- c(out_Agg_EXTL_IS[21,4],out_Agg_EXTL_IS[23,4],out_Agg_EXTL_IS[1,4],out_Agg_EXTL_IS[11,4],
-                     out_Agg_EXTL_IS[22,4],out_Agg_EXTL_IS[24,4],out_Agg_EXTL_IS[32,4],
-                     out_Agg_EXTL_IS[31,4],out_Agg_EXTL_IS[34,4],
-                     out_Agg_EXTL_IS[33,4],out_Agg_EXTL_IS[30,4])
+                     out_Agg_EXTL_IS[22,4],out_Agg_EXTL_IS[24,4],out_Agg_EXTL_IS[32,9],
+                     out_Agg_EXTL_IS[33,9],out_Agg_EXTL_IS[30,9],
+                     out_Agg_EXTL_IS[31,9],out_Agg_EXTL_IS[34,9])
 parameters_Agg_EXTL$Agg_IR <- c(out_Agg_EXTL_IR[21,4],out_Agg_EXTL_IR[23,4],out_Agg_EXTL_IR[1,4],out_Agg_EXTL_IR[11,4],
-                     out_Agg_EXTL_IR[22,4],out_Agg_EXTL_IR[24,4],out_Agg_EXTL_IR[32,4],
-                     out_Agg_EXTL_IR[31,4],out_Agg_EXTL_IR[34,4],
-                     out_Agg_EXTL_IR[33,4],out_Agg_EXTL_IR[30,4])
+                     out_Agg_EXTL_IR[22,4],out_Agg_EXTL_IR[24,4],out_Agg_EXTL_IR[32,9],
+                     out_Agg_EXTL_IR[33,9],out_Agg_EXTL_IR[30,9],
+                     out_Agg_EXTL_IR[31,9],out_Agg_EXTL_IR[34,9])
 parameters_Agg_EXTL$Agg_T <- c(out_Agg_EXTL_T[21,4],out_Agg_EXTL_T[23,4],out_Agg_EXTL_T[1,4],out_Agg_EXTL_T[11,4],
-                     out_Agg_EXTL_T[22,4],out_Agg_EXTL_T[24,4],out_Agg_EXTL_T[32,4],
-                     out_Agg_EXTL_T[31,4],out_Agg_EXTL_T[34,4],
-                     out_Agg_EXTL_T[33,4],out_Agg_EXTL_T[30,4])
+                     out_Agg_EXTL_T[22,4],out_Agg_EXTL_T[24,4],out_Agg_EXTL_T[32,9],
+                     out_Agg_EXTL_T[33,9],out_Agg_EXTL_T[30,9],
+                     out_Agg_EXTL_T[31,9],out_Agg_EXTL_T[34,9])
 parameters_Agg_EXTL$Agg_D <- c(out_Agg_EXTL[21,4],out_Agg_EXTL[23,4],out_Agg_EXTL[1,4],mean(as.numeric(out_Agg_EXTL[11:15,4])),
-                     out_Agg_EXTL[22,4],out_Agg_EXTL[24,4],out_Agg_EXTL[32,4],
-                     out_Agg_EXTL[31,4],out_Agg_EXTL[34,4],
-                     out_Agg_EXTL[33,4],out_Agg_EXTL[30,4])
+                     out_Agg_EXTL[22,4],out_Agg_EXTL[24,4],out_Agg_EXTL[32,9],
+                     out_Agg_EXTL[33,9],out_Agg_EXTL[30,9],
+                     out_Agg_EXTL[31,9],out_Agg_EXTL[34,9])
 
 parameters_Agg_EXTL$EXTL_B <- c(out_Agg_EXTL_B[25,4],out_Agg_EXTL_B[27,4],out_Agg_EXTL_B[6,4],out_Agg_EXTL_B[16,4],
-                     out_Agg_EXTL_B[26,4],out_Agg_EXTL_B[28,4],out_Agg_EXTL_B[29,4],
-                     out_Agg_EXTL_B[31,4],out_Agg_EXTL_B[34,4],
-                     out_Agg_EXTL_B[33,4],out_Agg_EXTL_B[30,4])
+                     out_Agg_EXTL_B[26,4],out_Agg_EXTL_B[28,4],out_Agg_EXTL_B[29,9],
+                     out_Agg_EXTL_B[33,9],out_Agg_EXTL_B[30,9],
+                     out_Agg_EXTL_B[31,9],out_Agg_EXTL_B[34,9])
 parameters_Agg_EXTL$EXTL_IS <- c(out_Agg_EXTL_IS[25,4],out_Agg_EXTL_IS[27,4],out_Agg_EXTL_IS[6,4],out_Agg_EXTL_IS[16,4],
-                     out_Agg_EXTL_IS[26,4],out_Agg_EXTL_IS[28,4],out_Agg_EXTL_IS[29,4],
-                     out_Agg_EXTL_IS[31,4],out_Agg_EXTL_IS[34,4],
-                     out_Agg_EXTL_IS[33,4],out_Agg_EXTL_IS[30,4])
+                     out_Agg_EXTL_IS[26,4],out_Agg_EXTL_IS[28,4],out_Agg_EXTL_IS[29,9],
+                     out_Agg_EXTL_IS[33,9],out_Agg_EXTL_IS[30,9],
+                     out_Agg_EXTL_IS[31,9],out_Agg_EXTL_IS[34,9])
 parameters_Agg_EXTL$EXTL_IR <- c(out_Agg_EXTL_IR[25,4],out_Agg_EXTL_IR[27,4],out_Agg_EXTL_IR[6,4],out_Agg_EXTL_IR[16,4],
-                     out_Agg_EXTL_IR[26,4],out_Agg_EXTL_IR[28,4],out_Agg_EXTL_IR[29,4],
-                     out_Agg_EXTL_IR[31,4],out_Agg_EXTL_IR[34,4],
-                     out_Agg_EXTL_IR[33,4],out_Agg_EXTL_IR[30,4])
+                     out_Agg_EXTL_IR[26,4],out_Agg_EXTL_IR[28,4],out_Agg_EXTL_IR[29,9],
+                     out_Agg_EXTL_IR[33,9],out_Agg_EXTL_IR[30,9],
+                     out_Agg_EXTL_IR[31,9],out_Agg_EXTL_IR[34,9])
 parameters_Agg_EXTL$EXTL_T <- c(out_Agg_EXTL_T[25,4],out_Agg_EXTL_T[27,4],out_Agg_EXTL_T[6,4],out_Agg_EXTL_T[16,4],
-                     out_Agg_EXTL_T[26,4],out_Agg_EXTL_T[28,4],out_Agg_EXTL_T[29,4],
-                     out_Agg_EXTL_T[31,4],out_Agg_EXTL_T[34,4],
-                     out_Agg_EXTL_T[33,4],out_Agg_EXTL_T[30,4])
+                     out_Agg_EXTL_T[26,4],out_Agg_EXTL_T[28,4],out_Agg_EXTL_T[29,9],
+                     out_Agg_EXTL_T[33,9],out_Agg_EXTL_T[30,9],
+                     out_Agg_EXTL_T[31,9],out_Agg_EXTL_T[34,9])
 parameters_Agg_EXTL$EXTL_D <- c(out_Agg_EXTL[25,4],out_Agg_EXTL[27,4],out_Agg_EXTL[6,4],mean(as.numeric(out_Agg_EXTL[16:20,4])),
-                     out_Agg_EXTL[26,4],out_Agg_EXTL[28,4],out_Agg_EXTL[29,4],
-                     out_Agg_EXTL[31,4],out_Agg_EXTL[34,4],
-                     out_Agg_EXTL[33,4],out_Agg_EXTL[30,4])
+                     out_Agg_EXTL[26,4],out_Agg_EXTL[28,4],out_Agg_EXTL[29,9],
+                     out_Agg_EXTL[33,9],out_Agg_EXTL[30,9],
+                     out_Agg_EXTL[31,9],out_Agg_EXTL[34,9])
 parameters_Agg_EXTL <- as.data.frame(parameters_Agg_EXTL)
 parameters_Agg_EXTL[,-1] <- apply(parameters_Agg_EXTL[,-1], 2, as.character)
 parameters_Agg_EXTL[4,][is.na(parameters_Agg_EXTL[4,])] <- "--"
@@ -8915,396 +8824,14 @@ options(knitr.kable.NA="")
 kable(parameters_Agg_EXTL, digits=2,
                         align=c('l',rep('c', 10)),
                         col.names=c(" ", rep(c("Agg","EXTL"), times=5)))
-kable(fitstats_Agg_EXTL, digits=2,
+kable(fitstats_Agg_EXTL, digits=3,
                         align=c('l',rep('c', 10)),
                         col.names=c(" ", rep(c("Agg","EXTL"), times=5)))
 
-
-#Sw_INTL
-# Make table of fit statistics
-fitstats_Sw_INTL <- as.data.frame(matrix(ncol=11,nrow=10))
-colnames(fitstats_Sw_INTL) <- c("Model_Parameters","Sw_B","INTL_B","Sw_IS","INTL_IS","Sw_IR","INTL_IR","Sw_T","INTL_T","Sw_D","INTL_D")
-fitstats_Sw_INTL[,1] <- c(list_of_fit_stats,"∆χ2 to baseline")
-fitstats_Sw_INTL[,2:3] <- c(fitmeasures(fit_Sw_INTL_B, fit.measures=list_of_fit_stats),"--")
-fitstats_Sw_INTL[,4:5] <- c(fitmeasures(fit_Sw_INTL_IS, fit.measures=list_of_fit_stats),
-                             ifelse(lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL_IS)[2,7]<.01,
-                                    paste0(round(lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL_IS)[2,5],2),"**"),
-                                    ifelse(lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL_IS)[2,7]<.05,
-                                    paste0(round(lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL_IS)[2,5],2),"*"),
-                                    (round(lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL_IS)[2,5],2)))))
-fitstats_Sw_INTL[,6:7] <- c(fitmeasures(fit_Sw_INTL_IR, fit.measures=list_of_fit_stats),
-                             ifelse(lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL_IR)[2,7]<.01,
-                                    paste0(round(lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL_IR)[2,5],2),"**"),
-                                    ifelse(lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL_IR)[2,7]<.05,
-                                    paste0(round(lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL_IR)[2,5],2),"*"),
-                                    (round(lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL_IR)[2,5],2)))))
-fitstats_Sw_INTL[,8:9] <- c(fitmeasures(fit_Sw_INTL_T, fit.measures=list_of_fit_stats),
-                             ifelse(lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL_T)[2,7]<.01,
-                                    paste0(round(lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL_T)[2,5],2),"**"),
-                                    ifelse(lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL_T)[2,7]<.05,
-                                    paste0(round(lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL_T)[2,5],2),"*"),
-                                    (round(lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL_T)[2,5],2)))))
-fitstats_Sw_INTL[,10:11] <- c(fitmeasures(fit_Sw_INTL, fit.measures=list_of_fit_stats),
-                             ifelse(lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL)[2,7]<.01,
-                                    paste0(round(lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL)[2,5],2),"**"),
-                                    ifelse(lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL)[2,7]<.05,
-                                    paste0(round(lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL)[2,5],2),"*"),
-                                    (round(lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL)[2,5],2)))))
-fitstats_Sw_INTL[,2:11] <- apply(fitstats_Sw_INTL[,2:11], 2, as.numeric) #FIX THIS
-fitstats_Sw_INTL[c(1:4,8:9),2:11] <- round(fitstats_Sw_INTL[c(1:4,8:9),2:11], 0)
-fitstats_Sw_INTL[5:7,2:11] <- round(fitstats_Sw_INTL[5:7,2:11], 3)
-fitstats_Sw_INTL <- as.data.frame(fitstats_Sw_INTL)
-fitstats_Sw_INTL[,1] <- c("Parameters","Df","Log Likelihood","χ2","CFI","RMSEA","SRMR","AIC","BIC","∆χ2 to Baseline")
-
-# Make table of parameters
-# Select only the necessary parameters, removing the 'label', 'se', and 'z' columns
-out_Sw_INTL_B <- parameterEstimates(fit_Sw_INTL_B)[c(129:148,155:158,165:168,169:174),] %>%
-  select(-label,-se,-z) %>%
-    mutate(est = if_else(pvalue<.01, paste0(round(est,3),"**"), if_else(pvalue<.05, paste0(round(est,3),"*"), paste0(round(est,3)))))
-rownames(out_Sw_INTL_B) <- seq(length=nrow(out_Sw_INTL_B))
-
-out_Sw_INTL_IS <- parameterEstimates(fit_Sw_INTL_IS)[c(129:148,155:158,165:168,169:174),] %>%
-  select(-label,-se,-z) %>%
-    mutate(est = if_else(pvalue<.01, paste0(round(est,3),"**"), if_else(pvalue<.05, paste0(round(est,3),"*"), paste0(round(est,3)))))
-rownames(out_Sw_INTL_IS) <- seq(length=nrow(out_Sw_INTL_IS))
-
-out_Sw_INTL_IR <- parameterEstimates(fit_Sw_INTL_IR)[c(129:148,155:158,165:168,169:174),] %>%
-  select(-label,-se,-z) %>%
-    mutate(est = if_else(pvalue<.01, paste0(round(est,3),"**"), if_else(pvalue<.05, paste0(round(est,3),"*"), paste0(round(est,3)))))
-rownames(out_Sw_INTL_IR) <- seq(length=nrow(out_Sw_INTL_IR))
-
-out_Sw_INTL_T <- parameterEstimates(fit_Sw_INTL_T)[c(129:148,155:158,165:168,169:174),] %>%
-  select(-label,-se,-z) %>%
-    mutate(est = if_else(pvalue<.01, paste0(round(est,3),"**"), if_else(pvalue<.05, paste0(round(est,3),"*"), paste0(round(est,3)))))
-rownames(out_Sw_INTL_T) <- seq(length=nrow(out_Sw_INTL_T))
-
-out_Sw_INTL <- parameterEstimates(fit_Sw_INTL)[c(129:148,155:158,165:168,169:174),] %>%
-  select(-se,-z) %>%
-    mutate(est = round(est,3))
-rownames(out_Sw_INTL) <- seq(length=nrow(out_Sw_INTL))
-
-# Create blank output table
-parameters_Sw_INTL <- NULL
-parameters_Sw_INTL$Model_Parameters <- c("Intercept mean","Slope mean","Self-feedback","Coupling",
-                        "Intercept Variance","Slope Variance","Correlation ρ01",
-                        "Correlation ρp0m0","Correlation ρp1m1",
-                        "Correlation ρp0m1","Correlation ρp1m0")
-# Fill the table with the appropriate values
-parameters_Sw_INTL$Sw_B <- c(out_Sw_INTL_B[21,4],out_Sw_INTL_B[23,4],out_Sw_INTL_B[1,4],out_Sw_INTL_B[11,4],
-                     out_Sw_INTL_B[22,4],out_Sw_INTL_B[24,4],out_Sw_INTL_B[32,4],
-                     out_Sw_INTL_B[31,4],out_Sw_INTL_B[34,4],
-                     out_Sw_INTL_B[33,4],out_Sw_INTL_B[30,4])
-parameters_Sw_INTL$Sw_IS <- c(out_Sw_INTL_IS[21,4],out_Sw_INTL_IS[23,4],out_Sw_INTL_IS[1,4],out_Sw_INTL_IS[11,4],
-                     out_Sw_INTL_IS[22,4],out_Sw_INTL_IS[24,4],out_Sw_INTL_IS[32,4],
-                     out_Sw_INTL_IS[31,4],out_Sw_INTL_IS[34,4],
-                     out_Sw_INTL_IS[33,4],out_Sw_INTL_IS[30,4])
-parameters_Sw_INTL$Sw_IR <- c(out_Sw_INTL_IR[21,4],out_Sw_INTL_IR[23,4],out_Sw_INTL_IR[1,4],out_Sw_INTL_IR[11,4],
-                     out_Sw_INTL_IR[22,4],out_Sw_INTL_IR[24,4],out_Sw_INTL_IR[32,4],
-                     out_Sw_INTL_IR[31,4],out_Sw_INTL_IR[34,4],
-                     out_Sw_INTL_IR[33,4],out_Sw_INTL_IR[30,4])
-parameters_Sw_INTL$Sw_T <- c(out_Sw_INTL_T[21,4],out_Sw_INTL_T[23,4],out_Sw_INTL_T[1,4],out_Sw_INTL_T[11,4],
-                     out_Sw_INTL_T[22,4],out_Sw_INTL_T[24,4],out_Sw_INTL_T[32,4],
-                     out_Sw_INTL_T[31,4],out_Sw_INTL_T[34,4],
-                     out_Sw_INTL_T[33,4],out_Sw_INTL_T[30,4])
-parameters_Sw_INTL$Sw_D <- c(out_Sw_INTL[21,4],out_Sw_INTL[23,4],out_Sw_INTL[1,4],mean(as.numeric(out_Sw_INTL[11:15,4])),
-                     out_Sw_INTL[22,4],out_Sw_INTL[24,4],out_Sw_INTL[32,4],
-                     out_Sw_INTL[31,4],out_Sw_INTL[34,4],
-                     out_Sw_INTL[33,4],out_Sw_INTL[30,4])
-
-parameters_Sw_INTL$INTL_B <- c(out_Sw_INTL_B[25,4],out_Sw_INTL_B[27,4],out_Sw_INTL_B[6,4],out_Sw_INTL_B[16,4],
-                     out_Sw_INTL_B[26,4],out_Sw_INTL_B[28,4],out_Sw_INTL_B[29,4],
-                     out_Sw_INTL_B[31,4],out_Sw_INTL_B[34,4],
-                     out_Sw_INTL_B[33,4],out_Sw_INTL_B[30,4])
-parameters_Sw_INTL$INTL_IS <- c(out_Sw_INTL_IS[25,4],out_Sw_INTL_IS[27,4],out_Sw_INTL_IS[6,4],out_Sw_INTL_IS[16,4],
-                     out_Sw_INTL_IS[26,4],out_Sw_INTL_IS[28,4],out_Sw_INTL_IS[29,4],
-                     out_Sw_INTL_IS[31,4],out_Sw_INTL_IS[34,4],
-                     out_Sw_INTL_IS[33,4],out_Sw_INTL_IS[30,4])
-parameters_Sw_INTL$INTL_IR <- c(out_Sw_INTL_IR[25,4],out_Sw_INTL_IR[27,4],out_Sw_INTL_IR[6,4],out_Sw_INTL_IR[16,4],
-                     out_Sw_INTL_IR[26,4],out_Sw_INTL_IR[28,4],out_Sw_INTL_IR[29,4],
-                     out_Sw_INTL_IR[31,4],out_Sw_INTL_IR[34,4],
-                     out_Sw_INTL_IR[33,4],out_Sw_INTL_IR[30,4])
-parameters_Sw_INTL$INTL_T <- c(out_Sw_INTL_T[25,4],out_Sw_INTL_T[27,4],out_Sw_INTL_T[6,4],out_Sw_INTL_T[16,4],
-                     out_Sw_INTL_T[26,4],out_Sw_INTL_T[28,4],out_Sw_INTL_T[29,4],
-                     out_Sw_INTL_T[31,4],out_Sw_INTL_T[34,4],
-                     out_Sw_INTL_T[33,4],out_Sw_INTL_T[30,4])
-parameters_Sw_INTL$INTL_D <- c(out_Sw_INTL[25,4],out_Sw_INTL[27,4],out_Sw_INTL[6,4],mean(as.numeric(out_Sw_INTL[16:20,4])),
-                     out_Sw_INTL[26,4],out_Sw_INTL[28,4],out_Sw_INTL[29,4],
-                     out_Sw_INTL[31,4],out_Sw_INTL[34,4],
-                     out_Sw_INTL[33,4],out_Sw_INTL[30,4])
-parameters_Sw_INTL <- as.data.frame(parameters_Sw_INTL)
-parameters_Sw_INTL[,-1] <- apply(parameters_Sw_INTL[,-1], 2, as.character)
-parameters_Sw_INTL[4,][is.na(parameters_Sw_INTL[4,])] <- "--"
-parameters_Sw_INTL <- parameters_Sw_INTL %>%
-  select("Model_Parameters",ends_with("_B"),ends_with("_IS"),ends_with("_IR"),ends_with("_T"),ends_with("_D"))
-
-#Make the table
-options(knitr.kable.NA="")
-kable(parameters_Sw_INTL, digits=2,
-                        align=c('l',rep('c', 10)),
-                        col.names=c(" ", rep(c("Sw","INTL"), times=5)))
-kable(fitstats_Sw_INTL, digits=2,
-                        align=c('l',rep('c', 10)),
-                        col.names=c(" ", rep(c("Sw","INTL"), times=5)))
-
-
-
-#Pro_INTL
-# Make table of fit statistics
-fitstats_Pro_INTL <- as.data.frame(matrix(ncol=11,nrow=10))
-colnames(fitstats_Pro_INTL) <- c("Model_Parameters","Pro_B","INTL_B","Pro_IS","INTL_IS","Pro_IR","INTL_IR","Pro_T","INTL_T","Pro_D","INTL_D")
-fitstats_Pro_INTL[,1] <- c(list_of_fit_stats,"∆χ2 to baseline")
-fitstats_Pro_INTL[,2:3] <- c(fitmeasures(fit_Pro_INTL_B, fit.measures=list_of_fit_stats),"--")
-fitstats_Pro_INTL[,4:5] <- c(fitmeasures(fit_Pro_INTL_IS, fit.measures=list_of_fit_stats),
-                             ifelse(lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL_IS)[2,7]<.01,
-                                    paste0(round(lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL_IS)[2,5],2),"**"),
-                                    ifelse(lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL_IS)[2,7]<.05,
-                                    paste0(round(lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL_IS)[2,5],2),"*"),
-                                    (round(lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL_IS)[2,5],2)))))
-fitstats_Pro_INTL[,6:7] <- c(fitmeasures(fit_Pro_INTL_IR, fit.measures=list_of_fit_stats),
-                             ifelse(lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL_IR)[2,7]<.01,
-                                    paste0(round(lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL_IR)[2,5],2),"**"),
-                                    ifelse(lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL_IR)[2,7]<.05,
-                                    paste0(round(lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL_IR)[2,5],2),"*"),
-                                    (round(lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL_IR)[2,5],2)))))
-fitstats_Pro_INTL[,8:9] <- c(fitmeasures(fit_Pro_INTL_T, fit.measures=list_of_fit_stats),
-                             ifelse(lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL_T)[2,7]<.01,
-                                    paste0(round(lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL_T)[2,5],2),"**"),
-                                    ifelse(lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL_T)[2,7]<.05,
-                                    paste0(round(lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL_T)[2,5],2),"*"),
-                                    (round(lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL_T)[2,5],2)))))
-fitstats_Pro_INTL[,10:11] <- c(fitmeasures(fit_Pro_INTL, fit.measures=list_of_fit_stats),
-                             ifelse(lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL)[2,7]<.01,
-                                    paste0(round(lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL)[2,5],2),"**"),
-                                    ifelse(lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL)[2,7]<.05,
-                                    paste0(round(lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL)[2,5],2),"*"),
-                                    (round(lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL)[2,5],2)))))
-fitstats_Pro_INTL[,2:11] <- apply(fitstats_Pro_INTL[,2:11], 2, as.numeric) #FIX THIS
-fitstats_Pro_INTL[c(1:4,8:9),2:11] <- round(fitstats_Pro_INTL[c(1:4,8:9),2:11], 0)
-fitstats_Pro_INTL[5:7,2:11] <- round(fitstats_Pro_INTL[5:7,2:11], 3)
-fitstats_Pro_INTL <- as.data.frame(fitstats_Pro_INTL)
-fitstats_Pro_INTL[,1] <- c("Parameters","Df","Log Likelihood","χ2","CFI","RMSEA","SRMR","AIC","BIC","∆χ2 to Baseline")
-
-# Make table of parameters
-# Select only the necessary parameters, removing the 'label', 'se', and 'z' columns
-out_Pro_INTL_B <- parameterEstimates(fit_Pro_INTL_B)[c(129:148,155:158,165:168,169:174),] %>%
-  select(-label,-se,-z) %>%
-    mutate(est = if_else(pvalue<.01, paste0(round(est,3),"**"), if_else(pvalue<.05, paste0(round(est,3),"*"), paste0(round(est,3)))))
-rownames(out_Pro_INTL_B) <- seq(length=nrow(out_Pro_INTL_B))
-
-out_Pro_INTL_IS <- parameterEstimates(fit_Pro_INTL_IS)[c(129:148,155:158,165:168,169:174),] %>%
-  select(-label,-se,-z) %>%
-    mutate(est = if_else(pvalue<.01, paste0(round(est,3),"**"), if_else(pvalue<.05, paste0(round(est,3),"*"), paste0(round(est,3)))))
-rownames(out_Pro_INTL_IS) <- seq(length=nrow(out_Pro_INTL_IS))
-
-out_Pro_INTL_IR <- parameterEstimates(fit_Pro_INTL_IR)[c(129:148,155:158,165:168,169:174),] %>%
-  select(-label,-se,-z) %>%
-    mutate(est = if_else(pvalue<.01, paste0(round(est,3),"**"), if_else(pvalue<.05, paste0(round(est,3),"*"), paste0(round(est,3)))))
-rownames(out_Pro_INTL_IR) <- seq(length=nrow(out_Pro_INTL_IR))
-
-out_Pro_INTL_T <- parameterEstimates(fit_Pro_INTL_T)[c(129:148,155:158,165:168,169:174),] %>%
-  select(-label,-se,-z) %>%
-    mutate(est = if_else(pvalue<.01, paste0(round(est,3),"**"), if_else(pvalue<.05, paste0(round(est,3),"*"), paste0(round(est,3)))))
-rownames(out_Pro_INTL_T) <- seq(length=nrow(out_Pro_INTL_T))
-
-out_Pro_INTL <- parameterEstimates(fit_Pro_INTL)[c(129:148,155:158,165:168,169:174),] %>%
-  select(-se,-z) %>%
-    mutate(est = round(est,3))
-rownames(out_Pro_INTL) <- seq(length=nrow(out_Pro_INTL))
-
-# Create blank output table
-parameters_Pro_INTL <- NULL
-parameters_Pro_INTL$Model_Parameters <- c("Intercept mean","Slope mean","Self-feedback","Coupling",
-                        "Intercept Variance","Slope Variance","Correlation ρ01",
-                        "Correlation ρp0m0","Correlation ρp1m1",
-                        "Correlation ρp0m1","Correlation ρp1m0")
-# Fill the table with the appropriate values
-parameters_Pro_INTL$Pro_B <- c(out_Pro_INTL_B[21,4],out_Pro_INTL_B[23,4],out_Pro_INTL_B[1,4],out_Pro_INTL_B[11,4],
-                     out_Pro_INTL_B[22,4],out_Pro_INTL_B[24,4],out_Pro_INTL_B[32,4],
-                     out_Pro_INTL_B[31,4],out_Pro_INTL_B[34,4],
-                     out_Pro_INTL_B[33,4],out_Pro_INTL_B[30,4])
-parameters_Pro_INTL$Pro_IS <- c(out_Pro_INTL_IS[21,4],out_Pro_INTL_IS[23,4],out_Pro_INTL_IS[1,4],out_Pro_INTL_IS[11,4],
-                     out_Pro_INTL_IS[22,4],out_Pro_INTL_IS[24,4],out_Pro_INTL_IS[32,4],
-                     out_Pro_INTL_IS[31,4],out_Pro_INTL_IS[34,4],
-                     out_Pro_INTL_IS[33,4],out_Pro_INTL_IS[30,4])
-parameters_Pro_INTL$Pro_IR <- c(out_Pro_INTL_IR[21,4],out_Pro_INTL_IR[23,4],out_Pro_INTL_IR[1,4],out_Pro_INTL_IR[11,4],
-                     out_Pro_INTL_IR[22,4],out_Pro_INTL_IR[24,4],out_Pro_INTL_IR[32,4],
-                     out_Pro_INTL_IR[31,4],out_Pro_INTL_IR[34,4],
-                     out_Pro_INTL_IR[33,4],out_Pro_INTL_IR[30,4])
-parameters_Pro_INTL$Pro_T <- c(out_Pro_INTL_T[21,4],out_Pro_INTL_T[23,4],out_Pro_INTL_T[1,4],out_Pro_INTL_T[11,4],
-                     out_Pro_INTL_T[22,4],out_Pro_INTL_T[24,4],out_Pro_INTL_T[32,4],
-                     out_Pro_INTL_T[31,4],out_Pro_INTL_T[34,4],
-                     out_Pro_INTL_T[33,4],out_Pro_INTL_T[30,4])
-parameters_Pro_INTL$Pro_D <- c(out_Pro_INTL[21,4],out_Pro_INTL[23,4],out_Pro_INTL[1,4],mean(as.numeric(out_Pro_INTL[11:15,4])),
-                     out_Pro_INTL[22,4],out_Pro_INTL[24,4],out_Pro_INTL[32,4],
-                     out_Pro_INTL[31,4],out_Pro_INTL[34,4],
-                     out_Pro_INTL[33,4],out_Pro_INTL[30,4])
-
-parameters_Pro_INTL$INTL_B <- c(out_Pro_INTL_B[25,4],out_Pro_INTL_B[27,4],out_Pro_INTL_B[6,4],out_Pro_INTL_B[16,4],
-                     out_Pro_INTL_B[26,4],out_Pro_INTL_B[28,4],out_Pro_INTL_B[29,4],
-                     out_Pro_INTL_B[31,4],out_Pro_INTL_B[34,4],
-                     out_Pro_INTL_B[33,4],out_Pro_INTL_B[30,4])
-parameters_Pro_INTL$INTL_IS <- c(out_Pro_INTL_IS[25,4],out_Pro_INTL_IS[27,4],out_Pro_INTL_IS[6,4],out_Pro_INTL_IS[16,4],
-                     out_Pro_INTL_IS[26,4],out_Pro_INTL_IS[28,4],out_Pro_INTL_IS[29,4],
-                     out_Pro_INTL_IS[31,4],out_Pro_INTL_IS[34,4],
-                     out_Pro_INTL_IS[33,4],out_Pro_INTL_IS[30,4])
-parameters_Pro_INTL$INTL_IR <- c(out_Pro_INTL_IR[25,4],out_Pro_INTL_IR[27,4],out_Pro_INTL_IR[6,4],out_Pro_INTL_IR[16,4],
-                     out_Pro_INTL_IR[26,4],out_Pro_INTL_IR[28,4],out_Pro_INTL_IR[29,4],
-                     out_Pro_INTL_IR[31,4],out_Pro_INTL_IR[34,4],
-                     out_Pro_INTL_IR[33,4],out_Pro_INTL_IR[30,4])
-parameters_Pro_INTL$INTL_T <- c(out_Pro_INTL_T[25,4],out_Pro_INTL_T[27,4],out_Pro_INTL_T[6,4],out_Pro_INTL_T[16,4],
-                     out_Pro_INTL_T[26,4],out_Pro_INTL_T[28,4],out_Pro_INTL_T[29,4],
-                     out_Pro_INTL_T[31,4],out_Pro_INTL_T[34,4],
-                     out_Pro_INTL_T[33,4],out_Pro_INTL_T[30,4])
-parameters_Pro_INTL$INTL_D <- c(out_Pro_INTL[25,4],out_Pro_INTL[27,4],out_Pro_INTL[6,4],mean(as.numeric(out_Pro_INTL[16:20,4])),
-                     out_Pro_INTL[26,4],out_Pro_INTL[28,4],out_Pro_INTL[29,4],
-                     out_Pro_INTL[31,4],out_Pro_INTL[34,4],
-                     out_Pro_INTL[33,4],out_Pro_INTL[30,4])
-parameters_Pro_INTL <- as.data.frame(parameters_Pro_INTL)
-parameters_Pro_INTL[,-1] <- apply(parameters_Pro_INTL[,-1], 2, as.character)
-parameters_Pro_INTL[4,][is.na(parameters_Pro_INTL[4,])] <- "--"
-parameters_Pro_INTL <- parameters_Pro_INTL %>%
-  select("Model_Parameters",ends_with("_B"),ends_with("_IS"),ends_with("_IR"),ends_with("_T"),ends_with("_D"))
-
-#Make the table
-options(knitr.kable.NA="")
-kable(parameters_Pro_INTL, digits=2,
-                        align=c('l',rep('c', 10)),
-                        col.names=c(" ", rep(c("Pro","INTL"), times=5)))
-kable(fitstats_Pro_INTL, digits=2,
-                        align=c('l',rep('c', 10)),
-                        col.names=c(" ", rep(c("Pro","INTL"), times=5)))
-
-
-#Pro_EXTL
-# Make table of fit statistics
-fitstats_Pro_EXTL <- as.data.frame(matrix(ncol=11,nrow=10))
-colnames(fitstats_Pro_EXTL) <- c("Model_Parameters","Pro_B","EXTL_B","Pro_IS","EXTL_IS","Pro_IR","EXTL_IR","Pro_T","EXTL_T","Pro_D","EXTL_D")
-fitstats_Pro_EXTL[,1] <- c(list_of_fit_stats,"∆χ2 to baseline")
-fitstats_Pro_EXTL[,2:3] <- c(fitmeasures(fit_Pro_EXTL_B, fit.measures=list_of_fit_stats),"--")
-fitstats_Pro_EXTL[,4:5] <- c(fitmeasures(fit_Pro_EXTL_IS, fit.measures=list_of_fit_stats),
-                             ifelse(lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL_IS)[2,7]<.01,
-                                    paste0(round(lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL_IS)[2,5],2),"**"),
-                                    ifelse(lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL_IS)[2,7]<.05,
-                                    paste0(round(lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL_IS)[2,5],2),"*"),
-                                    (round(lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL_IS)[2,5],2)))))
-fitstats_Pro_EXTL[,6:7] <- c(fitmeasures(fit_Pro_EXTL_IR, fit.measures=list_of_fit_stats),
-                             ifelse(lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL_IR)[2,7]<.01,
-                                    paste0(round(lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL_IR)[2,5],2),"**"),
-                                    ifelse(lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL_IR)[2,7]<.05,
-                                    paste0(round(lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL_IR)[2,5],2),"*"),
-                                    (round(lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL_IR)[2,5],2)))))
-fitstats_Pro_EXTL[,8:9] <- c(fitmeasures(fit_Pro_EXTL_T, fit.measures=list_of_fit_stats),
-                             ifelse(lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL_T)[2,7]<.01,
-                                    paste0(round(lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL_T)[2,5],2),"**"),
-                                    ifelse(lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL_T)[2,7]<.05,
-                                    paste0(round(lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL_T)[2,5],2),"*"),
-                                    (round(lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL_T)[2,5],2)))))
-fitstats_Pro_EXTL[,10:11] <- c(fitmeasures(fit_Pro_EXTL, fit.measures=list_of_fit_stats),
-                             ifelse(lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL)[2,7]<.01,
-                                    paste0(round(lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL)[2,5],2),"**"),
-                                    ifelse(lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL)[2,7]<.05,
-                                    paste0(round(lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL)[2,5],2),"*"),
-                                    (round(lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL)[2,5],2)))))
-fitstats_Pro_EXTL[,2:11] <- apply(fitstats_Pro_EXTL[,2:11], 2, as.numeric) #FIX THIS
-fitstats_Pro_EXTL[c(1:4,8:9),2:11] <- round(fitstats_Pro_EXTL[c(1:4,8:9),2:11], 0)
-fitstats_Pro_EXTL[5:7,2:11] <- round(fitstats_Pro_EXTL[5:7,2:11], 3)
-fitstats_Pro_EXTL <- as.data.frame(fitstats_Pro_EXTL)
-fitstats_Pro_EXTL[,1] <- c("Parameters","Df","Log Likelihood","χ2","CFI","RMSEA","SRMR","AIC","BIC","∆χ2 to Baseline")
-
-# Make table of parameters
-# Select only the necessary parameters, removing the 'label', 'se', and 'z' columns
-out_Pro_EXTL_B <- parameterEstimates(fit_Pro_EXTL_B)[c(129:148,155:158,165:168,169:174),] %>%
-  select(-label,-se,-z) %>%
-    mutate(est = if_else(pvalue<.01, paste0(round(est,3),"**"), if_else(pvalue<.05, paste0(round(est,3),"*"), paste0(round(est,3)))))
-rownames(out_Pro_EXTL_B) <- seq(length=nrow(out_Pro_EXTL_B))
-
-out_Pro_EXTL_IS <- parameterEstimates(fit_Pro_EXTL_IS)[c(129:148,155:158,165:168,169:174),] %>%
-  select(-label,-se,-z) %>%
-    mutate(est = if_else(pvalue<.01, paste0(round(est,3),"**"), if_else(pvalue<.05, paste0(round(est,3),"*"), paste0(round(est,3)))))
-rownames(out_Pro_EXTL_IS) <- seq(length=nrow(out_Pro_EXTL_IS))
-
-out_Pro_EXTL_IR <- parameterEstimates(fit_Pro_EXTL_IR)[c(129:148,155:158,165:168,169:174),] %>%
-  select(-label,-se,-z) %>%
-    mutate(est = if_else(pvalue<.01, paste0(round(est,3),"**"), if_else(pvalue<.05, paste0(round(est,3),"*"), paste0(round(est,3)))))
-rownames(out_Pro_EXTL_IR) <- seq(length=nrow(out_Pro_EXTL_IR))
-
-out_Pro_EXTL_T <- parameterEstimates(fit_Pro_EXTL_T)[c(129:148,155:158,165:168,169:174),] %>%
-  select(-label,-se,-z) %>%
-    mutate(est = if_else(pvalue<.01, paste0(round(est,3),"**"), if_else(pvalue<.05, paste0(round(est,3),"*"), paste0(round(est,3)))))
-rownames(out_Pro_EXTL_T) <- seq(length=nrow(out_Pro_EXTL_T))
-
-out_Pro_EXTL <- parameterEstimates(fit_Pro_EXTL)[c(129:148,155:158,165:168,169:174),] %>%
-  select(-se,-z) %>%
-    mutate(est = round(est,3))
-rownames(out_Pro_EXTL) <- seq(length=nrow(out_Pro_EXTL))
-
-# Create blank output table
-parameters_Pro_EXTL <- NULL
-parameters_Pro_EXTL$Model_Parameters <- c("Intercept mean","Slope mean","Self-feedback","Coupling",
-                        "Intercept Variance","Slope Variance","Correlation ρ01",
-                        "Correlation ρp0m0","Correlation ρp1m1",
-                        "Correlation ρp0m1","Correlation ρp1m0")
-# Fill the table with the appropriate values
-parameters_Pro_EXTL$Pro_B <- c(out_Pro_EXTL_B[21,4],out_Pro_EXTL_B[23,4],out_Pro_EXTL_B[1,4],out_Pro_EXTL_B[11,4],
-                     out_Pro_EXTL_B[22,4],out_Pro_EXTL_B[24,4],out_Pro_EXTL_B[32,4],
-                     out_Pro_EXTL_B[31,4],out_Pro_EXTL_B[34,4],
-                     out_Pro_EXTL_B[33,4],out_Pro_EXTL_B[30,4])
-parameters_Pro_EXTL$Pro_IS <- c(out_Pro_EXTL_IS[21,4],out_Pro_EXTL_IS[23,4],out_Pro_EXTL_IS[1,4],out_Pro_EXTL_IS[11,4],
-                     out_Pro_EXTL_IS[22,4],out_Pro_EXTL_IS[24,4],out_Pro_EXTL_IS[32,4],
-                     out_Pro_EXTL_IS[31,4],out_Pro_EXTL_IS[34,4],
-                     out_Pro_EXTL_IS[33,4],out_Pro_EXTL_IS[30,4])
-parameters_Pro_EXTL$Pro_IR <- c(out_Pro_EXTL_IR[21,4],out_Pro_EXTL_IR[23,4],out_Pro_EXTL_IR[1,4],out_Pro_EXTL_IR[11,4],
-                     out_Pro_EXTL_IR[22,4],out_Pro_EXTL_IR[24,4],out_Pro_EXTL_IR[32,4],
-                     out_Pro_EXTL_IR[31,4],out_Pro_EXTL_IR[34,4],
-                     out_Pro_EXTL_IR[33,4],out_Pro_EXTL_IR[30,4])
-parameters_Pro_EXTL$Pro_T <- c(out_Pro_EXTL_T[21,4],out_Pro_EXTL_T[23,4],out_Pro_EXTL_T[1,4],out_Pro_EXTL_T[11,4],
-                     out_Pro_EXTL_T[22,4],out_Pro_EXTL_T[24,4],out_Pro_EXTL_T[32,4],
-                     out_Pro_EXTL_T[31,4],out_Pro_EXTL_T[34,4],
-                     out_Pro_EXTL_T[33,4],out_Pro_EXTL_T[30,4])
-parameters_Pro_EXTL$Pro_D <- c(out_Pro_EXTL[21,4],out_Pro_EXTL[23,4],out_Pro_EXTL[1,4],mean(as.numeric(out_Pro_EXTL[11:15,4])),
-                     out_Pro_EXTL[22,4],out_Pro_EXTL[24,4],out_Pro_EXTL[32,4],
-                     out_Pro_EXTL[31,4],out_Pro_EXTL[34,4],
-                     out_Pro_EXTL[33,4],out_Pro_EXTL[30,4])
-
-parameters_Pro_EXTL$EXTL_B <- c(out_Pro_EXTL_B[25,4],out_Pro_EXTL_B[27,4],out_Pro_EXTL_B[6,4],out_Pro_EXTL_B[16,4],
-                     out_Pro_EXTL_B[26,4],out_Pro_EXTL_B[28,4],out_Pro_EXTL_B[29,4],
-                     out_Pro_EXTL_B[31,4],out_Pro_EXTL_B[34,4],
-                     out_Pro_EXTL_B[33,4],out_Pro_EXTL_B[30,4])
-parameters_Pro_EXTL$EXTL_IS <- c(out_Pro_EXTL_IS[25,4],out_Pro_EXTL_IS[27,4],out_Pro_EXTL_IS[6,4],out_Pro_EXTL_IS[16,4],
-                     out_Pro_EXTL_IS[26,4],out_Pro_EXTL_IS[28,4],out_Pro_EXTL_IS[29,4],
-                     out_Pro_EXTL_IS[31,4],out_Pro_EXTL_IS[34,4],
-                     out_Pro_EXTL_IS[33,4],out_Pro_EXTL_IS[30,4])
-parameters_Pro_EXTL$EXTL_IR <- c(out_Pro_EXTL_IR[25,4],out_Pro_EXTL_IR[27,4],out_Pro_EXTL_IR[6,4],out_Pro_EXTL_IR[16,4],
-                     out_Pro_EXTL_IR[26,4],out_Pro_EXTL_IR[28,4],out_Pro_EXTL_IR[29,4],
-                     out_Pro_EXTL_IR[31,4],out_Pro_EXTL_IR[34,4],
-                     out_Pro_EXTL_IR[33,4],out_Pro_EXTL_IR[30,4])
-parameters_Pro_EXTL$EXTL_T <- c(out_Pro_EXTL_T[25,4],out_Pro_EXTL_T[27,4],out_Pro_EXTL_T[6,4],out_Pro_EXTL_T[16,4],
-                     out_Pro_EXTL_T[26,4],out_Pro_EXTL_T[28,4],out_Pro_EXTL_T[29,4],
-                     out_Pro_EXTL_T[31,4],out_Pro_EXTL_T[34,4],
-                     out_Pro_EXTL_T[33,4],out_Pro_EXTL_T[30,4])
-parameters_Pro_EXTL$EXTL_D <- c(out_Pro_EXTL[25,4],out_Pro_EXTL[27,4],out_Pro_EXTL[6,4],mean(as.numeric(out_Pro_EXTL[16:20,4])),
-                     out_Pro_EXTL[26,4],out_Pro_EXTL[28,4],out_Pro_EXTL[29,4],
-                     out_Pro_EXTL[31,4],out_Pro_EXTL[34,4],
-                     out_Pro_EXTL[33,4],out_Pro_EXTL[30,4])
-parameters_Pro_EXTL <- as.data.frame(parameters_Pro_EXTL)
-parameters_Pro_EXTL[,-1] <- apply(parameters_Pro_EXTL[,-1], 2, as.character)
-parameters_Pro_EXTL[4,][is.na(parameters_Pro_EXTL[4,])] <- "--"
-parameters_Pro_EXTL <- parameters_Pro_EXTL %>%
-  select("Model_Parameters",ends_with("_B"),ends_with("_IS"),ends_with("_IR"),ends_with("_T"),ends_with("_D"))
-
-#Make the table
-options(knitr.kable.NA="")
-kable(parameters_Pro_EXTL, digits=2,
-                        align=c('l',rep('c', 10)),
-                        col.names=c(" ", rep(c("Pro","EXTL"), times=5)))
-kable(fitstats_Pro_EXTL, digits=2,
-                        align=c('l',rep('c', 10)),
-                        col.names=c(" ", rep(c("Pro","EXTL"), times=5)))
 ```
 
-
-## Chi-square test table
-```{r Chi-square test table, echo=TRUE, results = 'asis'}
+# Chi-square test table
+```{r Chi-square test table, echo=FALSE, results = 'asis'}
 
 #Combine the fit statistics table with the model parameters table
 #table_Peer_MDD <- bind_rows(parameters_Peer_MDD,fitstats_Peer_MDD)
@@ -9335,7 +8862,7 @@ Chi_test_table[8,] <- c("Interpersonal Risk", lavTestLRT(fit_Agg_MDD_B,fit_Agg_M
 Chi_test_table[9,] <- c("Transactional", lavTestLRT(fit_Agg_MDD_B,fit_Agg_MDD_T)[2,5:7],
                         lavTestLRT(fit_Agg_INTL_B,fit_Agg_INTL_T)[2,5:7],
                         lavTestLRT(fit_Agg_EXTL_B,fit_Agg_EXTL_T)[2,5:7])
-Chi_test_table[10,] <- c("Developmental",  lavTestLRT(fit_Agg_MDD_B,fit_Agg_MDD)[2,5:7],
+Chi_test_table[10,] <- c("Developmental", lavTestLRT(fit_Agg_MDD_B,fit_Agg_MDD)[2,5:7],
                          lavTestLRT(fit_Agg_INTL_B,fit_Agg_INTL)[2,5:7],
                          lavTestLRT(fit_Agg_EXTL_B,fit_Agg_EXTL)[2,5:7])
 
@@ -9361,10 +8888,10 @@ Chi_test_table[18,] <- c("Interpersonal Risk", lavTestLRT(fit_Pro_MDD_B,fit_Pro_
 Chi_test_table[19,] <- c("Transactional", lavTestLRT(fit_Pro_MDD_B,fit_Pro_MDD_T)[2,5:7],
                         lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL_T)[2,5:7],
                         lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL_T)[2,5:7])
-Chi_test_table[20,] <- c("Developmental", rep(NA,3),
+Chi_test_table[20,] <- c("Developmental", lavTestLRT(fit_Pro_MDD_B,fit_Pro_MDD)[2,5:7],
                         lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL)[2,5:7],
                         lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL)[2,5:7])
-#lavTestLRT(fit_Pro_MDD_B,fit_Pro_MDD)[2,5:7],
+
 Chi_test_table[,2:10] <- round(Chi_test_table[,2:10], 2)
 
 Chi_test_table[1,] <- c("Peer Victimization/Rejection",rep("",9))
@@ -9377,66 +8904,10 @@ kable(Chi_test_table, digits=2,
                         align=c('l',rep('c', 9)),
                         col.names=c("Model", rep(c("∆χ2 to Baseline","Df","p value"), times=3)),
       caption="Table 2.Chi-square test of theoretical models compared to baseline models")
-
-
-#         kable_styling(latex_options = "striped", full_width = F) %>%
-#         add_header_above(c("Model Parameters"=1, "Baseline"=2, "Interpersonal Scar"=2, "Interpersonal Risk"=2, 
-#                            "Transactional"=2, "Developmental"=2)) %>%
-#         group_rows("Fixed Effects", 1, 4) %>%
-#         group_rows("Random Effects", 5, 11) %>%
-#         add_footnote(c("Peer: Peer victimization/rejection scores on the HBQ", "MDD: Proportion of depression symptoms on PAPA/CAPA"), 
-#                      notation = "alphabet")
 ```
 
-
-## Check basline models for significant intercept and slope correlations
-```{r Check baseline models for significant intercept and slope correlations}
-parameterEstimates(fit_Peer_INTL_B)[c(170:174),c(1:3,5,8)]
-parameterEstimates(fit_Peer_EXTL_B)[c(170:174),c(1:3,5,8)]
-
-parameterEstimates(fit_Agg_MDD_B)[c(170:174),c(1:3,5,8)]
-parameterEstimates(fit_Agg_INTL_B)[c(170:174),c(1:3,5,8)]
-
-parameterEstimates(fit_Sw_MDD_B)[c(170:174),c(1:3,5,8)]
-parameterEstimates(fit_Sw_EXTL_B)[c(170:174),c(1:3,5,8)]
-
-parameterEstimates(fit_Pro_MDD_B)[c(170:174),c(1:3,5,8)]
-parameterEstimates(fit_Pro_INTL_B)[c(170:174),c(1:3,5,8)]
-parameterEstimates(fit_Pro_EXTL_B)[c(170:174),c(1:3,5,8)]
-
-
-lavTestLRT(fit_Peer_MDD_IS, fit_Peer_MDD_IR)
-lavTestLRT(fit_Peer_MDD_T, fit_Peer_MDD_IR)
-lavTestLRT(fit_Peer_MDD, fit_Peer_MDD_IR)
-
-lavTestLRT(fit_Peer_MDD_IS, fit_Peer_MDD_T)
-lavTestLRT(fit_Peer_MDD_IR, fit_Peer_MDD_T)
-lavTestLRT(fit_Peer_MDD, fit_Peer_MDD_T)
-
-lavTestLRT(fit_Agg_EXTL_IS, fit_Agg_EXTL)
-lavTestLRT(fit_Agg_EXTL_IR, fit_Agg_EXTL)
-lavTestLRT(fit_Agg_EXTL_T, fit_Agg_EXTL)
-
-lavTestLRT(fit_Sw_INTL_IS, fit_Sw_INTL_IR)
-lavTestLRT(fit_Sw_INTL_T, fit_Sw_INTL_IR)
-lavTestLRT(fit_Sw_INTL, fit_Sw_INTL_IR)
-
-lavTestLRT(fit_Pro_INTL_IS, fit_Pro_INTL_IR)
-lavTestLRT(fit_Pro_INTL_T, fit_Pro_INTL_IR)
-lavTestLRT(fit_Pro_INTL, fit_Pro_INTL_IR)
-
-lavTestLRT(fit_Pro_EXTL_IR, fit_Pro_EXTL_IS)
-lavTestLRT(fit_Pro_EXTL_T, fit_Pro_EXTL_IS)
-lavTestLRT(fit_Pro_EXTL, fit_Pro_EXTL_IS)
-
-lavTestLRT(fit_Pro_EXTL_IS, fit_Pro_EXTL)
-lavTestLRT(fit_Pro_EXTL_IR, fit_Pro_EXTL)
-lavTestLRT(fit_Pro_EXTL_T, fit_Pro_EXTL)
-```
-
-
-## Latent growth curves
-```{r latent growth curves}
+# Latent growth curves
+```{r latent growth curves, cache=T}
 #Peer victimization/rejection
 Peer_MDD_growth <- '
 #Defining the latent variables
@@ -9507,7 +8978,6 @@ sMDD ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 '
 
 fit_Peer_MDD_growth <- lavaan(Peer_MDD_growth, data=data_wide, missing="FIML", estimator="MLR")
-#summary(fit_Peer_MDD_growth, fit.measures=T, standardized=T)
 
 
 Peer_INTL_growth <- '
@@ -9579,7 +9049,6 @@ sINTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 '
 
 fit_Peer_INTL_growth <- lavaan(Peer_INTL_growth, data=data_wide, missing="FIML", estimator="MLR")
-#summary(fit_Peer_INTL_growth, fit.measures=T, standardized=T)
 
 
 Peer_EXTL_growth <- '
@@ -9651,7 +9120,6 @@ sEXTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 '
 
 fit_Peer_EXTL_growth <- lavaan(Peer_EXTL_growth, data=data_wide, missing="FIML", estimator="MLR")
-#summary(fit_Peer_EXTL_growth, fit.measures=T, standardized=T)
 
 
 #Aggression
@@ -9724,7 +9192,6 @@ sMDD ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 '
 
 fit_Agg_MDD_growth <- lavaan(Agg_MDD_growth, data=data_wide, missing="FIML", estimator="MLR")
-#summary(fit_Agg_MDD_growth, fit.measures=T, standardized=T)
 
 
 Agg_INTL_growth <- '
@@ -9796,7 +9263,6 @@ sINTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 '
 
 fit_Agg_INTL_growth <- lavaan(Agg_INTL_growth, data=data_wide, missing="FIML", estimator="MLR")
-#summary(fit_Agg_INTL_growth, fit.measures=T, standardized=T)
 
 
 Agg_EXTL_growth <- '
@@ -9868,7 +9334,6 @@ sEXTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 '
 
 fit_Agg_EXTL_growth <- lavaan(Agg_EXTL_growth, data=data_wide, missing="FIML", estimator="MLR")
-#summary(fit_Agg_EXTL_growth, fit.measures=T, standardized=T)
 
 
 ##Social Withdrawal
@@ -9941,7 +9406,6 @@ sMDD ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 '
 
 fit_Sw_MDD_growth <- lavaan(Sw_MDD_growth, data=data_wide, missing="FIML", estimator="MLR")
-#summary(fit_Sw_MDD_growth, fit.measures=T, standardized=T)
 
 
 Sw_INTL_growth <- '
@@ -10013,7 +9477,6 @@ sINTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 '
 
 fit_Sw_INTL_growth <- lavaan(Sw_INTL_growth, data=data_wide, missing="FIML", estimator="MLR")
-#summary(fit_Sw_INTL_growth, fit.measures=T, standardized=T)
 
 
 Sw_EXTL_growth <- '
@@ -10085,7 +9548,6 @@ sEXTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 '
 
 fit_Sw_EXTL_growth <- lavaan(Sw_EXTL_growth, data=data_wide, missing="FIML", estimator="MLR")
-#summary(fit_Sw_EXTL_growth, fit.measures=T, standardized=T)
 
 
 ##Prosocial
@@ -10158,7 +9620,6 @@ sMDD ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 '
 
 fit_Pro_MDD_growth <- lavaan(Pro_MDD_growth, data=data_wide, missing="FIML", estimator="MLR")
-#summary(fit_Pro_MDD_growth, fit.measures=T, standardized=T)
 
 
 Pro_INTL_growth <- '
@@ -10230,7 +9691,6 @@ sINTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 '
 
 fit_Pro_INTL_growth <- lavaan(Pro_INTL_growth, data=data_wide, missing="FIML", estimator="MLR")
-#summary(fit_Pro_INTL_growth, fit.measures=T, standardized=T)
 
 
 Pro_EXTL_growth <- '
@@ -10302,36 +9762,33 @@ sEXTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
 '
 
 fit_Pro_EXTL_growth <- lavaan(Pro_EXTL_growth, data=data_wide, missing="FIML", estimator="MLR")
-#summary(fit_Pro_EXTL_growth, fit.measures=T, standardized=T)
 ```
 
 ```{r Concatenating growth model results into a table}
-Growth_results <- as.data.frame(matrix(nrow=16, ncol=12))
-colnames(Growth_results) <- c("1","2","3","MDD_Estimate","MDD_ci.lower","MDD_ci.upper",
-                                          "INTL_Estimate","INTL_ci.lower","INTL_ci.upper",
-                                          "EXTL_Estimate","EXTL_ci.lower","EXTL_ci.upper")
+Growth_results <- as.data.frame(matrix(nrow=16, ncol=6))
+colnames(Growth_results) <- c("1","2","3","MDD_Estimate","ANX_Estimate","EXTL_Estimate")
 
 #Peer growth model results
-Growth_results[1:4,1:6] <- parameterEstimates(fit_Peer_MDD_growth)[c(73,70,71,74),c(1:3,4,8:9)]
-Growth_results[1:4,7:9] <- parameterEstimates(fit_Peer_INTL_growth)[c(73,70,71,74),c(4,8:9)]
-Growth_results[1:4,10:12] <- parameterEstimates(fit_Peer_EXTL_growth)[c(73,70,71,74),c(4,8:9)]
+Growth_results[1:4,1:4] <- parameterEstimates(fit_Peer_MDD_growth, standardized=T)[c(73,70,71,74),c(1:3,11)]
+Growth_results[1:4,5] <- parameterEstimates(fit_Peer_INTL_growth, standardized=T)[c(73,70,71,74),c(11)]
+Growth_results[1:4,6] <- parameterEstimates(fit_Peer_EXTL_growth, standardized=T)[c(73,70,71,74),c(11)]
 
 #Agg growth model results
-Growth_results[5:8,1:6] <- parameterEstimates(fit_Agg_MDD_growth)[c(73,70,71,74),c(1:3,4,8:9)]
-Growth_results[5:8,7:9] <- parameterEstimates(fit_Agg_INTL_growth)[c(73,70,71,74),c(4,8:9)]
-Growth_results[5:8,10:12] <- parameterEstimates(fit_Agg_EXTL_growth)[c(73,70,71,74),c(4,8:9)]
+Growth_results[5:8,1:4] <- parameterEstimates(fit_Agg_MDD_growth, standardized=T)[c(73,70,71,74),c(1:3,11)]
+Growth_results[5:8,5] <- parameterEstimates(fit_Agg_INTL_growth, standardized=T)[c(73,70,71,74),c(11)]
+Growth_results[5:8,6] <- parameterEstimates(fit_Agg_EXTL_growth, standardized=T)[c(73,70,71,74),c(11)]
 
 #Sw growth model results
-Growth_results[9:12,1:6] <- parameterEstimates(fit_Sw_MDD_growth)[c(73,70,71,74),c(1:3,4,8:9)]
-Growth_results[9:12,7:9] <- parameterEstimates(fit_Sw_INTL_growth)[c(73,70,71,74),c(4,8:9)]
-Growth_results[9:12,10:12] <- parameterEstimates(fit_Sw_EXTL_growth)[c(73,70,71,74),c(4,8:9)]
+Growth_results[9:12,1:4] <- parameterEstimates(fit_Sw_MDD_growth, standardized=T)[c(73,70,71,74),c(1:3,11)]
+Growth_results[9:12,5] <- parameterEstimates(fit_Sw_INTL_growth, standardized=T)[c(73,70,71,74),c(11)]
+Growth_results[9:12,6] <- parameterEstimates(fit_Sw_EXTL_growth, standardized=T)[c(73,70,71,74),c(11)]
 
 #Pro growth model results
-Growth_results[13:16,1:6] <- parameterEstimates(fit_Pro_MDD_growth)[c(73,70,71,74),c(1:3,4,8:9)]
-Growth_results[13:16,7:9] <- parameterEstimates(fit_Pro_INTL_growth)[c(73,70,71,74),c(4,8:9)]
-Growth_results[13:16,10:12] <- parameterEstimates(fit_Pro_EXTL_growth)[c(73,70,71,74),c(4,8:9)]
+Growth_results[13:16,1:4] <- parameterEstimates(fit_Pro_MDD_growth, standardized=T)[c(73,70,71,74),c(1:3,11)]
+Growth_results[13:16,5] <- parameterEstimates(fit_Pro_INTL_growth, standardized=T)[c(73,70,71,74),c(11)]
+Growth_results[13:16,6] <- parameterEstimates(fit_Pro_EXTL_growth, standardized=T)[c(73,70,71,74),c(11)]
 
-Growth_results[,4:12] <- round(Growth_results[,4:12], 3)
+Growth_results[,4:6] <- round(Growth_results[,4:6], 3)
 
 kable(Growth_results, align=c('l',rep('c', 10)))
 ```
