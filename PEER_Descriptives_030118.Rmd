@@ -1,7 +1,7 @@
 ---
-title: "Final Analyses for PEER manuscript"
+title: "Descriptive statistics for Bivariate latent change score analysis of peer relations from early childhood to adolescence: Leading or lagging indicators of psychopathology"
 author: "Brent Rappaport"
-date: "03/13/2018"
+date: "05/03/2018"
 output: word_document
 ---
 
@@ -13,7 +13,6 @@ knitr::opts_chunk$set()
 library(ggplot2)
 library(psych)
 library(knitr)
-library(tidyverse)
 library(Rmisc)
 library(car)
 library(lsr)
@@ -28,13 +27,26 @@ library(ggrepel) ##to help make graphs
 library(xtable)
 library(kableExtra)
 library(stargazer)
+library(tidyverse)
+library(dplyr)
 select <- dplyr::select
+mutate <- dplyr::mutate
 
-item_wide <- read.csv("/Users/BrentRappaport/Box Sync/WashU/Research/PEER/ANALYSIS/PEER/Rappaport_item_data.csv")
+item_wide <- read.csv("Rappaport_item_data.csv")
 item_wide <- item_wide[,-1]
 
-data_wide <- read.csv("/Users/BrentRappaport/Box Sync/WashU/Research/PEER/ANALYSIS/PEER/Rappaport_data.csv")
+data_wide <- read.csv("Rappaport_data.csv")
 data_wide <- data_wide[,-1]
+
+data_wide <- data_wide %>%
+  mutate(MDDPRP100_1 = MDDPRP_1*100,
+         MDDPRP100_3 = MDDPRP_3*100,
+         MDDPRP100_5 = MDDPRP_5*100,
+         MDDPRP100_10 = MDDPRP_10*100,
+         MDDPRP100_12 = MDDPRP_12*100,
+         MDDPRP100_14 = MDDPRP_14*100,
+         MDDPRP100_16 = MDDPRP_16*100,
+         MDDPRP100_18 = MDDPRP_18*100)
 ```
 
 ##Convert data to long form
@@ -52,7 +64,7 @@ data_long <- data_wide %>%
            "PPro_1","PPro_3","PPro_5","PPro_10","PPro_12","PPro_14",
            "TPro_1","TPro_3","TPro_5","TPro_10","TPro_12","TPro_14",
            "MDDCORE_1","MDDCORE_3","MDDCORE_5","MDDCORE_10","MDDCORE_12","MDDCORE_14",
-           "MDDPRP_1","MDDPRP_3","MDDPRP_5","MDDPRP_10","MDDPRP_12","MDDPRP_14",
+           "MDDPRP100_1","MDDPRP100_3","MDDPRP100_5","MDDPRP100_10","MDDPRP100_12","MDDPRP100_14",
            "INTL_1","INTL_3","INTL_5","INTL_10","INTL_12","INTL_14",
            "EXTL_1","EXTL_3","EXTL_5","EXTL_10","EXTL_12","EXTL_14"), 
          key = "time", value = "value") %>% 
@@ -68,6 +80,9 @@ data_long <- data_long[order(data_long$ID),]
 
 ##Descriptive statistics
 ```{r Descriptive statistics, results='asis', echo=F}
+#Frequency of participation in the study (frequency of number of waves)
+table(rowSums(!is.na(data_wide[,c("age_1","age_3","age_5","age_10","age_12","age_14")])))
+
 #Descriptive stats of the same variables over time
 Scale_descriptives <- data_long %>%
   group_by(wave) %>%
@@ -80,8 +95,8 @@ Scale_descriptives <- data_long %>%
 
 Dx_descriptives <- data_long %>%
   group_by(wave) %>%
-  summarise_at(vars(c(MDDPRP,INTL,EXTL)), funs(N=sum(!is.na(.)), Mean=mean(., na.rm=T), SD=sd(., na.rm=T))) %>%
-  select(starts_with("MDDPRP"),starts_with("INTL"),
+  summarise_at(vars(c(MDDPRP100,INTL,EXTL)), funs(N=sum(!is.na(.)), Mean=mean(., na.rm=T), SD=sd(., na.rm=T))) %>%
+  select(starts_with("MDDPRP100"),starts_with("INTL"),
          starts_with("EXTL"))
 
 Cov_descriptives <- data_wide %>%
@@ -269,7 +284,7 @@ ggplot(data_long,aes(age,MDDCORE,group=ID)) +
   theme(text=element_text(lineheight=1, face="bold", size=15), 
         legend.position="none")
 
-ggplot(data_long,aes(age,MDDPRP,group=ID)) +
+ggplot(data_long,aes(age,MDDPRP100,group=ID)) +
   geom_line(alpha=.5) +
   stat_smooth(aes(group=1),method="lm",size=1,se=T,linetype="longdash") + 
   labs(x="Age",y="Proportion of MDD Symptoms") +

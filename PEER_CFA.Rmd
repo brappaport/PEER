@@ -23,7 +23,7 @@ library(lavaan)
 ```
 
 ```{r Load in data}
-peer_wide <- read.csv("/Users/BrentRappaport/Box Sync/WashU/Classes/Longtudinal Methods/1-descriptives-and-graphs-brappaport/Rappaport_data.csv")
+peer_wide <- read.csv("/Users/BrentRappaport/Box Sync/WashU/Research/PEER/ANALYSIS/PEER/Rappaport_item_data.csv")
 peer_wide <- peer_wide[,-1]
 ```
 
@@ -868,14 +868,610 @@ fit_TPeer_weak <- cfa(TPeer_weak, data=peer_wide, meanstructure=TRUE, std.lv=TRU
 
 summary(fit_TPeer_weak, standardized=TRUE, fit.measures=TRUE)
 
-#fit_TPeer_strong <- cfa(TPeer_strong, data=peer_wide, meanstructure=TRUE, std.lv=TRUE, missing="ML",
-#                       control=list(eval.max=40000, iter.max=200000))
+fit_TPeer_strong <- cfa(TPeer_strong, data=peer_wide, meanstructure=TRUE, std.lv=TRUE, missing="ML",
+                       control=list(eval.max=40000, iter.max=200000))
 
 #summary(fit_TPeer_strong, standardized=TRUE, fit.measures=TRUE)
 
 (fitmeasures(fit_TPeer_config, fit.measures=c("cfi"))-fitmeasures(fit_TPeer_weak, fit.measures=c("cfi"))) > .01
 (fitmeasures(fit_TPeer_weak, fit.measures=c("cfi"))-fitmeasures(fit_TPeer_strong, fit.measures=c("cfi"))) > .01
 ```
+
+
+```{r Measurement Invariance for Parent-report for Aggression scale}
+PAgg_config <- '
+#Agg
+PAgg1 =~ T1hbq70+T1hbq83+T1hbq85+T1hbq96+T1hbq108+T1hbq127+T1hbq135+T1hbq139
+PAgg3 =~ T3hbq70+T3hbq83+T3hbq85+T3hbq96+T3hbq108+T3hbq127+T3hbq135+T3hbq139
+PAgg5 =~ T5hbq70+T5hbq83+T5hbq85+T5hbq96+T5hbq108+T5hbq127+T5hbq135+T5hbq139
+PAgg10 =~ T6hbqPAgg1+T6hbqPAgg2+T6hbqPAgg3+T6hbqPAgg4+T6hbqPAgg5+T6hbqPAgg6+T6hbqPAgg7+T6hbqPAgg8
+PAgg12 =~ T8hbqPAgg1+T8hbqPAgg2+T8hbqPAgg3+T8hbqPAgg4+T8hbqPAgg5+T8hbqPAgg6+T8hbqPAgg7+T8hbqPAgg8
+PAgg14 =~ T10hbqs4+T10hbqs20+T10hbqs23+T10hbqs38+T10hbqs51+T10hbqs80+T10hbqs89+T10hbqs94
+
+#Correlate residuals
+##Parent-report
+###Item 1
+T1hbq70 ~~ T3hbq70+T5hbq70+T6hbqPAgg1+T8hbqPAgg1+T10hbqs4
+T3hbq70 ~~ T5hbq70+T6hbqPAgg1+T8hbqPAgg1+T10hbqs4
+T5hbq70 ~~ T6hbqPAgg1+T8hbqPAgg1+T10hbqs4
+T6hbqPAgg1 ~~ T8hbqPAgg1+T10hbqs4
+T8hbqPAgg1 ~~ T10hbqs4
+
+###Item 2
+T1hbq83 ~~ T3hbq83+T5hbq83+T6hbqPAgg2+T8hbqPAgg2+T10hbqs20
+T3hbq83 ~~ T5hbq83+T6hbqPAgg2+T8hbqPAgg2+T10hbqs20
+T5hbq83 ~~ T6hbqPAgg2+T8hbqPAgg2+T10hbqs20
+T6hbqPAgg2 ~~ T8hbqPAgg2+T10hbqs20
+T8hbqPAgg2 ~~ T10hbqs20
+
+###Item 3
+T1hbq85 ~~ T3hbq85+T5hbq85+T6hbqPAgg3+T8hbqPAgg3+T10hbqs23
+T3hbq85 ~~ T5hbq85+T6hbqPAgg3+T8hbqPAgg3+T10hbqs23
+T5hbq85 ~~ T6hbqPAgg3+T8hbqPAgg3+T10hbqs23
+T6hbqPAgg3 ~~ T8hbqPAgg3+T10hbqs23
+T8hbqPAgg3 ~~ T10hbqs23
+
+###Item 4
+T1hbq96 ~~ T3hbq96+T5hbq96+T6hbqPAgg4+T8hbqPAgg4+T10hbqs38
+T3hbq96 ~~ T5hbq96+T6hbqPAgg4+T8hbqPAgg4+T10hbqs38
+T5hbq96 ~~ T6hbqPAgg4+T8hbqPAgg4+T10hbqs38
+T6hbqPAgg4 ~~ T8hbqPAgg4+T10hbqs38
+T8hbqPAgg4 ~~ T10hbqs38
+
+###Item 5
+T1hbq108 ~~ T3hbq108+T5hbq108+T6hbqPAgg5+T8hbqPAgg5+T10hbqs51
+T3hbq108 ~~ T5hbq108+T6hbqPAgg5+T8hbqPAgg5+T10hbqs51
+T5hbq108 ~~ T6hbqPAgg5+T8hbqPAgg5+T10hbqs51
+T6hbqPAgg5 ~~ T8hbqPAgg5+T10hbqs51
+T8hbqPAgg5 ~~ T10hbqs51
+
+###Item 6
+T1hbq127 ~~ T3hbq127+T5hbq127+T6hbqPAgg6+T8hbqPAgg6+T10hbqs80
+T3hbq127 ~~ T5hbq127+T6hbqPAgg6+T8hbqPAgg6+T10hbqs80
+T5hbq127 ~~ T6hbqPAgg6+T8hbqPAgg6+T10hbqs80
+T6hbqPAgg6 ~~ T8hbqPAgg6+T10hbqs80
+T8hbqPAgg6 ~~ T10hbqs80
+
+###Item 7
+T1hbq135 ~~ T3hbq135+T5hbq135+T6hbqPAgg7+T8hbqPAgg7+T10hbqs89
+T3hbq135 ~~ T5hbq135+T6hbqPAgg7+T8hbqPAgg7+T10hbqs89
+T5hbq135 ~~ T6hbqPAgg7+T8hbqPAgg7+T10hbqs89
+T6hbqPAgg7 ~~ T8hbqPAgg7+T10hbqs89
+T8hbqPAgg7 ~~ T10hbqs89
+
+###Item 8
+T1hbq139 ~~ T3hbq139+T5hbq139+T6hbqPAgg8+T8hbqPAgg8+T10hbqs94
+T3hbq139 ~~ T5hbq139+T6hbqPAgg8+T8hbqPAgg8+T10hbqs94
+T5hbq139 ~~ T6hbqPAgg8+T8hbqPAgg8+T10hbqs94
+T6hbqPAgg8 ~~ T8hbqPAgg8+T10hbqs94
+T8hbqPAgg8 ~~ T10hbqs94
+'
+
+
+PAgg_weak <- '
+#Agg
+PAgg1 =~ L1*T1hbq70+L2*T1hbq83+L3*T1hbq85+L4*T1hbq96+L5*T1hbq108+L6*T1hbq127+L7*T1hbq135+L8*T1hbq139
+PAgg3 =~ L1*T3hbq70+L2*T3hbq83+L3*T3hbq85+L4*T3hbq96+L5*T3hbq108+L6*T3hbq127+L7*T3hbq135+L8*T3hbq139
+PAgg5 =~ L1*T5hbq70+L2*T5hbq83+L3*T5hbq85+L4*T5hbq96+L5*T5hbq108+L6*T5hbq127+L7*T5hbq135+L8*T5hbq139
+PAgg10 =~ L1*T6hbqPAgg1+L2*T6hbqPAgg2+L3*T6hbqPAgg3+L4*T6hbqPAgg4+L5*T6hbqPAgg5+L6*T6hbqPAgg6+L7*T6hbqPAgg7+L8*T6hbqPAgg8
+PAgg12 =~ L1*T8hbqPAgg1+L2*T8hbqPAgg2+L3*T8hbqPAgg3+L4*T8hbqPAgg4+L5*T8hbqPAgg5+L6*T8hbqPAgg6+L7*T8hbqPAgg7+L8*T8hbqPAgg8
+PAgg14 =~ L1*T10hbqs4+L2*T10hbqs20+L3*T10hbqs23+L4*T10hbqs38+L5*T10hbqs51+L6*T10hbqs80+L7*T10hbqs89+L8*T10hbqs94
+
+#Correlate residuals
+##Parent-report
+###Item 1
+T1hbq70 ~~ T3hbq70+T5hbq70+T6hbqPAgg1+T8hbqPAgg1+T10hbqs4
+T3hbq70 ~~ T5hbq70+T6hbqPAgg1+T8hbqPAgg1+T10hbqs4
+T5hbq70 ~~ T6hbqPAgg1+T8hbqPAgg1+T10hbqs4
+T6hbqPAgg1 ~~ T8hbqPAgg1+T10hbqs4
+T8hbqPAgg1 ~~ T10hbqs4
+
+###Item 2
+T1hbq83 ~~ T3hbq83+T5hbq83+T6hbqPAgg2+T8hbqPAgg2+T10hbqs20
+T3hbq83 ~~ T5hbq83+T6hbqPAgg2+T8hbqPAgg2+T10hbqs20
+T5hbq83 ~~ T6hbqPAgg2+T8hbqPAgg2+T10hbqs20
+T6hbqPAgg2 ~~ T8hbqPAgg2+T10hbqs20
+T8hbqPAgg2 ~~ T10hbqs20
+
+###Item 3
+T1hbq85 ~~ T3hbq85+T5hbq85+T6hbqPAgg3+T8hbqPAgg3+T10hbqs23
+T3hbq85 ~~ T5hbq85+T6hbqPAgg3+T8hbqPAgg3+T10hbqs23
+T5hbq85 ~~ T6hbqPAgg3+T8hbqPAgg3+T10hbqs23
+T6hbqPAgg3 ~~ T8hbqPAgg3+T10hbqs23
+T8hbqPAgg3 ~~ T10hbqs23
+
+###Item 4
+T1hbq96 ~~ T3hbq96+T5hbq96+T6hbqPAgg4+T8hbqPAgg4+T10hbqs38
+T3hbq96 ~~ T5hbq96+T6hbqPAgg4+T8hbqPAgg4+T10hbqs38
+T5hbq96 ~~ T6hbqPAgg4+T8hbqPAgg4+T10hbqs38
+T6hbqPAgg4 ~~ T8hbqPAgg4+T10hbqs38
+T8hbqPAgg4 ~~ T10hbqs38
+
+###Item 5
+T1hbq108 ~~ T3hbq108+T5hbq108+T6hbqPAgg5+T8hbqPAgg5+T10hbqs51
+T3hbq108 ~~ T5hbq108+T6hbqPAgg5+T8hbqPAgg5+T10hbqs51
+T5hbq108 ~~ T6hbqPAgg5+T8hbqPAgg5+T10hbqs51
+T6hbqPAgg5 ~~ T8hbqPAgg5+T10hbqs51
+T8hbqPAgg5 ~~ T10hbqs51
+
+###Item 6
+T1hbq127 ~~ T3hbq127+T5hbq127+T6hbqPAgg6+T8hbqPAgg6+T10hbqs80
+T3hbq127 ~~ T5hbq127+T6hbqPAgg6+T8hbqPAgg6+T10hbqs80
+T5hbq127 ~~ T6hbqPAgg6+T8hbqPAgg6+T10hbqs80
+T6hbqPAgg6 ~~ T8hbqPAgg6+T10hbqs80
+T8hbqPAgg6 ~~ T10hbqs80
+
+###Item 7
+T1hbq135 ~~ T3hbq135+T5hbq135+T6hbqPAgg7+T8hbqPAgg7+T10hbqs89
+T3hbq135 ~~ T5hbq135+T6hbqPAgg7+T8hbqPAgg7+T10hbqs89
+T5hbq135 ~~ T6hbqPAgg7+T8hbqPAgg7+T10hbqs89
+T6hbqPAgg7 ~~ T8hbqPAgg7+T10hbqs89
+T8hbqPAgg7 ~~ T10hbqs89
+
+###Item 8
+T1hbq139 ~~ T3hbq139+T5hbq139+T6hbqPAgg8+T8hbqPAgg8+T10hbqs94
+T3hbq139 ~~ T5hbq139+T6hbqPAgg8+T8hbqPAgg8+T10hbqs94
+T5hbq139 ~~ T6hbqPAgg8+T8hbqPAgg8+T10hbqs94
+T6hbqPAgg8 ~~ T8hbqPAgg8+T10hbqs94
+T8hbqPAgg8 ~~ T10hbqs94
+
+## free latent variances at later times (only set the scale once)
+PAgg3 ~~ NA*PAgg3
+PAgg5 ~~ NA*PAgg5
+PAgg10 ~~ NA*PAgg10
+PAgg12 ~~ NA*PAgg12
+PAgg14 ~~ NA*PAgg14
+'
+
+
+PAgg_strong <- '
+#Agg
+PAgg1 =~ L1*T1hbq70+L2*T1hbq83+L3*T1hbq85+L4*T1hbq96+L5*T1hbq108+L6*T1hbq127+L7*T1hbq135+L8*T1hbq139
+PAgg3 =~ L1*T3hbq70+L2*T3hbq83+L3*T3hbq85+L4*T3hbq96+L5*T3hbq108+L6*T3hbq127+L7*T3hbq135+L8*T3hbq139
+PAgg5 =~ L1*T5hbq70+L2*T5hbq83+L3*T5hbq85+L4*T5hbq96+L5*T5hbq108+L6*T5hbq127+L7*T5hbq135+L8*T5hbq139
+PAgg10 =~ L1*T6hbqPAgg1+L2*T6hbqPAgg2+L3*T6hbqPAgg3+L4*T6hbqPAgg4+L5*T6hbqPAgg5+L6*T6hbqPAgg6+L7*T6hbqPAgg7+L8*T6hbqPAgg8
+PAgg12 =~ L1*T8hbqPAgg1+L2*T8hbqPAgg2+L3*T8hbqPAgg3+L4*T8hbqPAgg4+L5*T8hbqPAgg5+L6*T8hbqPAgg6+L7*T8hbqPAgg7+L8*T8hbqPAgg8
+PAgg14 =~ L1*T10hbqs4+L2*T10hbqs20+L3*T10hbqs23+L4*T10hbqs38+L5*T10hbqs51+L6*T10hbqs80+L7*T10hbqs89+L8*T10hbqs94
+
+#Correlate residuals
+##Parent-report
+###Item 1
+T1hbq70 ~~ T3hbq70+T5hbq70+T6hbqPAgg1+T8hbqPAgg1+T10hbqs4
+T3hbq70 ~~ T5hbq70+T6hbqPAgg1+T8hbqPAgg1+T10hbqs4
+T5hbq70 ~~ T6hbqPAgg1+T8hbqPAgg1+T10hbqs4
+T6hbqPAgg1 ~~ T8hbqPAgg1+T10hbqs4
+T8hbqPAgg1 ~~ T10hbqs4
+
+###Item 2
+T1hbq83 ~~ T3hbq83+T5hbq83+T6hbqPAgg2+T8hbqPAgg2+T10hbqs20
+T3hbq83 ~~ T5hbq83+T6hbqPAgg2+T8hbqPAgg2+T10hbqs20
+T5hbq83 ~~ T6hbqPAgg2+T8hbqPAgg2+T10hbqs20
+T6hbqPAgg2 ~~ T8hbqPAgg2+T10hbqs20
+T8hbqPAgg2 ~~ T10hbqs20
+
+###Item 3
+T1hbq85 ~~ T3hbq85+T5hbq85+T6hbqPAgg3+T8hbqPAgg3+T10hbqs23
+T3hbq85 ~~ T5hbq85+T6hbqPAgg3+T8hbqPAgg3+T10hbqs23
+T5hbq85 ~~ T6hbqPAgg3+T8hbqPAgg3+T10hbqs23
+T6hbqPAgg3 ~~ T8hbqPAgg3+T10hbqs23
+T8hbqPAgg3 ~~ T10hbqs23
+
+###Item 4
+T1hbq96 ~~ T3hbq96+T5hbq96+T6hbqPAgg4+T8hbqPAgg4+T10hbqs38
+T3hbq96 ~~ T5hbq96+T6hbqPAgg4+T8hbqPAgg4+T10hbqs38
+T5hbq96 ~~ T6hbqPAgg4+T8hbqPAgg4+T10hbqs38
+T6hbqPAgg4 ~~ T8hbqPAgg4+T10hbqs38
+T8hbqPAgg4 ~~ T10hbqs38
+
+###Item 5
+T1hbq108 ~~ T3hbq108+T5hbq108+T6hbqPAgg5+T8hbqPAgg5+T10hbqs51
+T3hbq108 ~~ T5hbq108+T6hbqPAgg5+T8hbqPAgg5+T10hbqs51
+T5hbq108 ~~ T6hbqPAgg5+T8hbqPAgg5+T10hbqs51
+T6hbqPAgg5 ~~ T8hbqPAgg5+T10hbqs51
+T8hbqPAgg5 ~~ T10hbqs51
+
+###Item 6
+T1hbq127 ~~ T3hbq127+T5hbq127+T6hbqPAgg6+T8hbqPAgg6+T10hbqs80
+T3hbq127 ~~ T5hbq127+T6hbqPAgg6+T8hbqPAgg6+T10hbqs80
+T5hbq127 ~~ T6hbqPAgg6+T8hbqPAgg6+T10hbqs80
+T6hbqPAgg6 ~~ T8hbqPAgg6+T10hbqs80
+T8hbqPAgg6 ~~ T10hbqs80
+
+###Item 7
+T1hbq135 ~~ T3hbq135+T5hbq135+T6hbqPAgg7+T8hbqPAgg7+T10hbqs89
+T3hbq135 ~~ T5hbq135+T6hbqPAgg7+T8hbqPAgg7+T10hbqs89
+T5hbq135 ~~ T6hbqPAgg7+T8hbqPAgg7+T10hbqs89
+T6hbqPAgg7 ~~ T8hbqPAgg7+T10hbqs89
+T8hbqPAgg7 ~~ T10hbqs89
+
+###Item 8
+T1hbq139 ~~ T3hbq139+T5hbq139+T6hbqPAgg8+T8hbqPAgg8+T10hbqs94
+T3hbq139 ~~ T5hbq139+T6hbqPAgg8+T8hbqPAgg8+T10hbqs94
+T5hbq139 ~~ T6hbqPAgg8+T8hbqPAgg8+T10hbqs94
+T6hbqPAgg8 ~~ T8hbqPAgg8+T10hbqs94
+T8hbqPAgg8 ~~ T10hbqs94
+
+## free latent variances at later times (only set the scale once)
+PAgg3 ~~ NA*PAgg3
+PAgg5 ~~ NA*PAgg5
+PAgg10 ~~ NA*PAgg10
+PAgg12 ~~ NA*PAgg12
+PAgg14 ~~ NA*PAgg14
+
+#constrain intercepts across time
+T1hbq70 ~ t1*1
+T1hbq83 ~ t2*1
+T1hbq85 ~ t3*1
+T1hbq96 ~ t4*1
+T1hbq108 ~ t5*1
+T1hbq127 ~ t6*1
+T1hbq135 ~ t7*1
+T1hbq139 ~ t8*1
+
+T3hbq70 ~ t1*1
+T3hbq83 ~ t2*1
+T3hbq85 ~ t3*1
+T3hbq96 ~ t4*1
+T3hbq108 ~ t5*1
+T3hbq127 ~ t6*1
+T3hbq135 ~ t7*1
+T3hbq139 ~ t8*1
+
+T5hbq70 ~ t1*1
+T5hbq83 ~ t2*1
+T5hbq85 ~ t3*1
+T5hbq96 ~ t4*1
+T5hbq108 ~ t5*1
+T5hbq127 ~ t6*1
+T5hbq135 ~ t7*1
+T5hbq139 ~ t8*1
+
+T6hbqPAgg1 ~ t1*1
+T6hbqPAgg2 ~ t2*1
+T6hbqPAgg3 ~ t3*1
+T6hbqPAgg4 ~ t4*1
+T6hbqPAgg5 ~ t5*1
+T6hbqPAgg6 ~ t6*1
+T6hbqPAgg7 ~ t7*1
+T6hbqPAgg8 ~ t8*1
+
+T8hbqPAgg1 ~ t1*1
+T8hbqPAgg2 ~ t2*1
+T8hbqPAgg3 ~ t3*1
+T8hbqPAgg4 ~ t4*1
+T8hbqPAgg5 ~ t5*1
+T8hbqPAgg6 ~ t6*1
+T8hbqPAgg7 ~ t7*1
+T8hbqPAgg8 ~ t8*1
+
+T10hbqs4 ~ t1*1
+T10hbqs20 ~ t2*1
+T10hbqs23 ~ t3*1
+T10hbqs38 ~ t4*1
+T10hbqs51 ~ t5*1
+T10hbqs80 ~ t6*1
+T10hbqs89 ~ t7*1
+T10hbqs94 ~ t8*1
+'
+
+fit_PAgg_config <- cfa(PAgg_config, data=peer_wide, meanstructure=TRUE, std.lv=TRUE, missing="FIML",
+                       estimator="MLR", control=list(eval.max=40000, iter.max=200000))
+
+summary(fit_PAgg_config, standardized=TRUE, fit.measures=TRUE)
+
+fit_PAgg_weak <- cfa(PAgg_weak, data=peer_wide, meanstructure=TRUE, std.lv=TRUE, missing="FIML",
+                       estimator="MLR", control=list(eval.max=40000, iter.max=200000))
+
+summary(fit_PAgg_weak, standardized=TRUE, fit.measures=TRUE)
+
+fit_PAgg_strong <- cfa(PAgg_strong, data=peer_wide, meanstructure=TRUE, std.lv=TRUE, missing="FIML",
+                       estimator="MLR", control=list(eval.max=40000, iter.max=200000))
+
+summary(fit_PAgg_strong, standardized=TRUE, fit.measures=TRUE)
+
+(fitmeasures(fit_PAgg_config, fit.measures=c("cfi"))-fitmeasures(fit_PAgg_weak, fit.measures=c("cfi"))) > .01
+(fitmeasures(fit_PAgg_weak, fit.measures=c("cfi"))-fitmeasures(fit_PAgg_strong, fit.measures=c("cfi"))) > .01
+```
+
+```{r Measurement Invariance for Teacher-report for Aggression scale}
+TAgg_config <- '
+
+#Agg
+TAgg1 =~ T1hbqt70+T1hbqt79+T1hbqt81+T1hbqt88+T1hbqt98+T1hbqt114+T1hbqt120+T1hbqt124
+TAgg3 =~ T3hbqt70+T3hbqt79+T3hbqt81+T3hbqt88+T3hbqt98+T3hbqt114+T3hbqt120+T3hbqt124
+TAgg5 =~ T5hbqt70+T5hbqt79+T5hbqt81+T5hbqt88+T5hbqt98+T5hbqt114+T5hbqt120+T5hbqt124
+TAgg10 =~ T6hbqTAgg1+T6hbqTAgg2+T6hbqTAgg3+T6hbqTAgg4+T6hbqTAgg5+T6hbqTAgg6+T6hbqTAgg7+T6hbqTAgg8
+TAgg12 =~ T8hbqTAgg1+T8hbqTAgg2+T8hbqTAgg3+T8hbqTAgg4+T8hbqTAgg5+T8hbqTAgg6+T8hbqTAgg7+T8hbqTAgg8
+TAgg14 =~ T10hbqtb4+T10hbqtb16+T10hbqtb19+T10hbqtb30+T10hbqtb41+T10hbqtb67+T10hbqtb74+T10hbqtb79
+
+#Correlate residuals
+##Teacher-report
+###Item 1
+T1hbqt70 ~~ T3hbqt70+T5hbqt70+T6hbqTAgg1+T8hbqTAgg1+T10hbqtb4
+T3hbqt70 ~~ T5hbqt70+T6hbqTAgg1+T8hbqTAgg1+T10hbqtb4
+T5hbqt70 ~~ T6hbqTAgg1+T8hbqTAgg1+T10hbqtb4
+T6hbqTAgg1 ~~ T8hbqTAgg1+T10hbqtb4
+T8hbqTAgg1 ~~ T10hbqtb4
+
+###Item 2
+T1hbqt79 ~~ T3hbqt79+T5hbqt79+T6hbqTAgg2+T8hbqTAgg2+T10hbqtb16
+T3hbqt79 ~~ T5hbqt79+T6hbqTAgg2+T8hbqTAgg2+T10hbqtb16
+T5hbqt79 ~~ T6hbqTAgg2+T8hbqTAgg2+T10hbqtb16
+T6hbqTAgg2 ~~ T8hbqTAgg2+T10hbqtb16
+T8hbqTAgg2 ~~ T10hbqtb16
+
+###Item 3
+T1hbqt81 ~~ T3hbqt81+T5hbqt81+T6hbqTAgg3+T8hbqTAgg3+T10hbqtb19
+T3hbqt81 ~~ T5hbqt81+T6hbqTAgg3+T8hbqTAgg3+T10hbqtb19
+T5hbqt81 ~~ T6hbqTAgg3+T8hbqTAgg3+T10hbqtb19
+T6hbqTAgg3 ~~ T8hbqTAgg3+T10hbqtb19
+T8hbqTAgg3 ~~ T10hbqtb19
+
+###Item 4
+T1hbqt88 ~~ T3hbqt88+T5hbqt88+T6hbqTAgg4+T8hbqTAgg4+T10hbqtb30
+T3hbqt88 ~~ T5hbqt88+T6hbqTAgg4+T8hbqTAgg4+T10hbqtb30
+T5hbqt88 ~~ T6hbqTAgg4+T8hbqTAgg4+T10hbqtb30
+T6hbqTAgg4 ~~ T8hbqTAgg4+T10hbqtb30
+T8hbqTAgg4 ~~ T10hbqtb30
+
+###Item 5
+T1hbqt98 ~~ T3hbqt98+T5hbqt98+T6hbqTAgg5+T8hbqTAgg5+T10hbqtb41
+T3hbqt98 ~~ T5hbqt98+T6hbqTAgg5+T8hbqTAgg5+T10hbqtb41
+T5hbqt98 ~~ T6hbqTAgg5+T8hbqTAgg5+T10hbqtb41
+T6hbqTAgg5 ~~ T8hbqTAgg5+T10hbqtb41
+T8hbqTAgg5 ~~ T10hbqtb41
+
+###Item 6
+T1hbqt114 ~~ T3hbqt114+T5hbqt114+T6hbqTAgg6+T8hbqTAgg6+T10hbqtb67
+T3hbqt114 ~~ T5hbqt114+T6hbqTAgg6+T8hbqTAgg6+T10hbqtb67
+T5hbqt114 ~~ T6hbqTAgg6+T8hbqTAgg6+T10hbqtb67
+T6hbqTAgg6 ~~ T8hbqTAgg6+T10hbqtb67
+T8hbqTAgg6 ~~ T10hbqtb67
+
+###Item 7
+T1hbqt120 ~~ T3hbqt120+T5hbqt120+T6hbqTAgg7+T8hbqTAgg7+T10hbqtb74
+T3hbqt120 ~~ T5hbqt120+T6hbqTAgg7+T8hbqTAgg7+T10hbqtb74
+T5hbqt120 ~~ T6hbqTAgg7+T8hbqTAgg7+T10hbqtb74
+T6hbqTAgg7 ~~ T8hbqTAgg7+T10hbqtb74
+T8hbqTAgg7 ~~ T10hbqtb74
+
+###Item 8
+T1hbqt124 ~~ T3hbqt124+T5hbqt124+T6hbqTAgg8+T8hbqTAgg8+T10hbqtb79
+T3hbqt124 ~~ T5hbqt124+T6hbqTAgg8+T8hbqTAgg8+T10hbqtb79
+T5hbqt124 ~~ T6hbqTAgg8+T8hbqTAgg8+T10hbqtb79
+T6hbqTAgg8 ~~ T8hbqTAgg8+T10hbqtb79
+T8hbqTAgg8 ~~ T10hbqtb79
+'
+
+
+TAgg_weak <- '
+
+#Agg
+TAgg1 =~ M1*T1hbqt70+M2*T1hbqt79+M3*T1hbqt81+M4*T1hbqt88+M5*T1hbqt98+M6*T1hbqt114+M7*T1hbqt120+M8*T1hbqt124
+TAgg3 =~ M1*T3hbqt70+M2*T3hbqt79+M3*T3hbqt81+M4*T3hbqt88+M5*T3hbqt98+M6*T3hbqt114+M7*T3hbqt120+M8*T3hbqt124
+TAgg5 =~ M1*T5hbqt70+M2*T5hbqt79+M3*T5hbqt81+M4*T5hbqt88+M5*T5hbqt98+M6*T5hbqt114+M7*T5hbqt120+M8*T5hbqt124
+TAgg10 =~ M1*T6hbqTAgg1+M2*T6hbqTAgg2+M3*T6hbqTAgg3+M4*T6hbqTAgg4+M5*T6hbqTAgg5+M6*T6hbqTAgg6+M7*T6hbqTAgg7+M8*T6hbqTAgg8
+TAgg12 =~ M1*T8hbqTAgg1+M2*T8hbqTAgg2+M3*T8hbqTAgg3+M4*T8hbqTAgg4+M5*T8hbqTAgg5+M6*T8hbqTAgg6+M7*T8hbqTAgg7+M8*T8hbqTAgg8
+TAgg14 =~ M1*T10hbqtb4+M2*T10hbqtb16+M3*T10hbqtb19+M4*T10hbqtb30+M5*T10hbqtb41+M6*T10hbqtb67+M7*T10hbqtb74+M8*T10hbqtb79
+
+#Correlate residuals
+##Teacher-report
+###Item 1
+T1hbqt70 ~~ T3hbqt70+T5hbqt70+T6hbqTAgg1+T8hbqTAgg1+T10hbqtb4
+T3hbqt70 ~~ T5hbqt70+T6hbqTAgg1+T8hbqTAgg1+T10hbqtb4
+T5hbqt70 ~~ T6hbqTAgg1+T8hbqTAgg1+T10hbqtb4
+T6hbqTAgg1 ~~ T8hbqTAgg1+T10hbqtb4
+T8hbqTAgg1 ~~ T10hbqtb4
+
+###Item 2
+T1hbqt79 ~~ T3hbqt79+T5hbqt79+T6hbqTAgg2+T8hbqTAgg2+T10hbqtb16
+T3hbqt79 ~~ T5hbqt79+T6hbqTAgg2+T8hbqTAgg2+T10hbqtb16
+T5hbqt79 ~~ T6hbqTAgg2+T8hbqTAgg2+T10hbqtb16
+T6hbqTAgg2 ~~ T8hbqTAgg2+T10hbqtb16
+T8hbqTAgg2 ~~ T10hbqtb16
+
+###Item 3
+T1hbqt81 ~~ T3hbqt81+T5hbqt81+T6hbqTAgg3+T8hbqTAgg3+T10hbqtb19
+T3hbqt81 ~~ T5hbqt81+T6hbqTAgg3+T8hbqTAgg3+T10hbqtb19
+T5hbqt81 ~~ T6hbqTAgg3+T8hbqTAgg3+T10hbqtb19
+T6hbqTAgg3 ~~ T8hbqTAgg3+T10hbqtb19
+T8hbqTAgg3 ~~ T10hbqtb19
+
+###Item 4
+T1hbqt88 ~~ T3hbqt88+T5hbqt88+T6hbqTAgg4+T8hbqTAgg4+T10hbqtb30
+T3hbqt88 ~~ T5hbqt88+T6hbqTAgg4+T8hbqTAgg4+T10hbqtb30
+T5hbqt88 ~~ T6hbqTAgg4+T8hbqTAgg4+T10hbqtb30
+T6hbqTAgg4 ~~ T8hbqTAgg4+T10hbqtb30
+T8hbqTAgg4 ~~ T10hbqtb30
+
+###Item 5
+T1hbqt98 ~~ T3hbqt98+T5hbqt98+T6hbqTAgg5+T8hbqTAgg5+T10hbqtb41
+T3hbqt98 ~~ T5hbqt98+T6hbqTAgg5+T8hbqTAgg5+T10hbqtb41
+T5hbqt98 ~~ T6hbqTAgg5+T8hbqTAgg5+T10hbqtb41
+T6hbqTAgg5 ~~ T8hbqTAgg5+T10hbqtb41
+T8hbqTAgg5 ~~ T10hbqtb41
+
+###Item 6
+T1hbqt114 ~~ T3hbqt114+T5hbqt114+T6hbqTAgg6+T8hbqTAgg6+T10hbqtb67
+T3hbqt114 ~~ T5hbqt114+T6hbqTAgg6+T8hbqTAgg6+T10hbqtb67
+T5hbqt114 ~~ T6hbqTAgg6+T8hbqTAgg6+T10hbqtb67
+T6hbqTAgg6 ~~ T8hbqTAgg6+T10hbqtb67
+T8hbqTAgg6 ~~ T10hbqtb67
+
+###Item 7
+T1hbqt120 ~~ T3hbqt120+T5hbqt120+T6hbqTAgg7+T8hbqTAgg7+T10hbqtb74
+T3hbqt120 ~~ T5hbqt120+T6hbqTAgg7+T8hbqTAgg7+T10hbqtb74
+T5hbqt120 ~~ T6hbqTAgg7+T8hbqTAgg7+T10hbqtb74
+T6hbqTAgg7 ~~ T8hbqTAgg7+T10hbqtb74
+T8hbqTAgg7 ~~ T10hbqtb74
+
+###Item 8
+T1hbqt124 ~~ T3hbqt124+T5hbqt124+T6hbqTAgg8+T8hbqTAgg8+T10hbqtb79
+T3hbqt124 ~~ T5hbqt124+T6hbqTAgg8+T8hbqTAgg8+T10hbqtb79
+T5hbqt124 ~~ T6hbqTAgg8+T8hbqTAgg8+T10hbqtb79
+T6hbqTAgg8 ~~ T8hbqTAgg8+T10hbqtb79
+T8hbqTAgg8 ~~ T10hbqtb79
+
+## free latent variances at later times (only set the scale once)
+TAgg3 ~~ NA*TAgg3
+TAgg5 ~~ NA*TAgg5
+TAgg10 ~~ NA*TAgg10
+TAgg12 ~~ NA*TAgg12
+TAgg14 ~~ NA*TAgg14
+'
+
+
+TAgg_strong <- '
+
+#Agg
+TAgg1 =~ M1*T1hbqt70+M2*T1hbqt79+M3*T1hbqt81+M4*T1hbqt88+M5*T1hbqt98+M6*T1hbqt114+M7*T1hbqt120+M8*T1hbqt124
+TAgg3 =~ M1*T3hbqt70+M2*T3hbqt79+M3*T3hbqt81+M4*T3hbqt88+M5*T3hbqt98+M6*T3hbqt114+M7*T3hbqt120+M8*T3hbqt124
+TAgg5 =~ M1*T5hbqt70+M2*T5hbqt79+M3*T5hbqt81+M4*T5hbqt88+M5*T5hbqt98+M6*T5hbqt114+M7*T5hbqt120+M8*T5hbqt124
+TAgg10 =~ M1*T6hbqTAgg1+M2*T6hbqTAgg2+M3*T6hbqTAgg3+M4*T6hbqTAgg4+M5*T6hbqTAgg5+M6*T6hbqTAgg6+M7*T6hbqTAgg7+M8*T6hbqTAgg8
+TAgg12 =~ M1*T8hbqTAgg1+M2*T8hbqTAgg2+M3*T8hbqTAgg3+M4*T8hbqTAgg4+M5*T8hbqTAgg5+M6*T8hbqTAgg6+M7*T8hbqTAgg7+M8*T8hbqTAgg8
+TAgg14 =~ M1*T10hbqtb4+M2*T10hbqtb16+M3*T10hbqtb19+M4*T10hbqtb30+M5*T10hbqtb41+M6*T10hbqtb67+M7*T10hbqtb74+M8*T10hbqtb79
+
+#Correlate residuals
+##Teacher-report
+###Item 1
+T1hbqt70 ~~ T3hbqt70+T5hbqt70+T6hbqTAgg1+T8hbqTAgg1+T10hbqtb4
+T3hbqt70 ~~ T5hbqt70+T6hbqTAgg1+T8hbqTAgg1+T10hbqtb4
+T5hbqt70 ~~ T6hbqTAgg1+T8hbqTAgg1+T10hbqtb4
+T6hbqTAgg1 ~~ T8hbqTAgg1+T10hbqtb4
+T8hbqTAgg1 ~~ T10hbqtb4
+
+###Item 2
+T1hbqt79 ~~ T3hbqt79+T5hbqt79+T6hbqTAgg2+T8hbqTAgg2+T10hbqtb16
+T3hbqt79 ~~ T5hbqt79+T6hbqTAgg2+T8hbqTAgg2+T10hbqtb16
+T5hbqt79 ~~ T6hbqTAgg2+T8hbqTAgg2+T10hbqtb16
+T6hbqTAgg2 ~~ T8hbqTAgg2+T10hbqtb16
+T8hbqTAgg2 ~~ T10hbqtb16
+
+###Item 3
+T1hbqt81 ~~ T3hbqt81+T5hbqt81+T6hbqTAgg3+T8hbqTAgg3+T10hbqtb19
+T3hbqt81 ~~ T5hbqt81+T6hbqTAgg3+T8hbqTAgg3+T10hbqtb19
+T5hbqt81 ~~ T6hbqTAgg3+T8hbqTAgg3+T10hbqtb19
+T6hbqTAgg3 ~~ T8hbqTAgg3+T10hbqtb19
+T8hbqTAgg3 ~~ T10hbqtb19
+
+###Item 4
+T1hbqt88 ~~ T3hbqt88+T5hbqt88+T6hbqTAgg4+T8hbqTAgg4+T10hbqtb30
+T3hbqt88 ~~ T5hbqt88+T6hbqTAgg4+T8hbqTAgg4+T10hbqtb30
+T5hbqt88 ~~ T6hbqTAgg4+T8hbqTAgg4+T10hbqtb30
+T6hbqTAgg4 ~~ T8hbqTAgg4+T10hbqtb30
+T8hbqTAgg4 ~~ T10hbqtb30
+
+###Item 5
+T1hbqt98 ~~ T3hbqt98+T5hbqt98+T6hbqTAgg5+T8hbqTAgg5+T10hbqtb41
+T3hbqt98 ~~ T5hbqt98+T6hbqTAgg5+T8hbqTAgg5+T10hbqtb41
+T5hbqt98 ~~ T6hbqTAgg5+T8hbqTAgg5+T10hbqtb41
+T6hbqTAgg5 ~~ T8hbqTAgg5+T10hbqtb41
+T8hbqTAgg5 ~~ T10hbqtb41
+
+###Item 6
+T1hbqt114 ~~ T3hbqt114+T5hbqt114+T6hbqTAgg6+T8hbqTAgg6+T10hbqtb67
+T3hbqt114 ~~ T5hbqt114+T6hbqTAgg6+T8hbqTAgg6+T10hbqtb67
+T5hbqt114 ~~ T6hbqTAgg6+T8hbqTAgg6+T10hbqtb67
+T6hbqTAgg6 ~~ T8hbqTAgg6+T10hbqtb67
+T8hbqTAgg6 ~~ T10hbqtb67
+
+###Item 7
+T1hbqt120 ~~ T3hbqt120+T5hbqt120+T6hbqTAgg7+T8hbqTAgg7+T10hbqtb74
+T3hbqt120 ~~ T5hbqt120+T6hbqTAgg7+T8hbqTAgg7+T10hbqtb74
+T5hbqt120 ~~ T6hbqTAgg7+T8hbqTAgg7+T10hbqtb74
+T6hbqTAgg7 ~~ T8hbqTAgg7+T10hbqtb74
+T8hbqTAgg7 ~~ T10hbqtb74
+
+###Item 8
+T1hbqt124 ~~ T3hbqt124+T5hbqt124+T6hbqTAgg8+T8hbqTAgg8+T10hbqtb79
+T3hbqt124 ~~ T5hbqt124+T6hbqTAgg8+T8hbqTAgg8+T10hbqtb79
+T5hbqt124 ~~ T6hbqTAgg8+T8hbqTAgg8+T10hbqtb79
+T6hbqTAgg8 ~~ T8hbqTAgg8+T10hbqtb79
+T8hbqTAgg8 ~~ T10hbqtb79
+
+## free latent variances at later times (only set the scale once)
+TAgg3 ~~ NA*TAgg3
+TAgg5 ~~ NA*TAgg5
+TAgg10 ~~ NA*TAgg10
+TAgg12 ~~ NA*TAgg12
+TAgg14 ~~ NA*TAgg14
+
+#constrain intercepts across time
+T1hbqt70 ~ t1*1
+T1hbqt79 ~ t2*1
+T1hbqt81 ~ t3*1
+T1hbqt88 ~ t4*1
+T1hbqt98 ~ t5*1
+T1hbqt114 ~ t6*1
+T1hbqt120 ~ t7*1
+T1hbqt124 ~ t8*1
+
+T3hbqt70 ~ t1*1
+T3hbqt79 ~ t2*1
+T3hbqt81 ~ t3*1
+T3hbqt88 ~ t4*1
+T3hbqt98 ~ t5*1
+T3hbqt114 ~ t6*1
+T3hbqt120 ~ t7*1
+T3hbqt124 ~ t8*1
+
+T5hbqt70 ~ t1*1
+T5hbqt79 ~ t2*1
+T5hbqt81 ~ t3*1
+T5hbqt88 ~ t4*1
+T5hbqt98 ~ t5*1
+T5hbqt114 ~ t6*1
+T5hbqt120 ~ t7*1
+T5hbqt124 ~ t8*1
+
+T6hbqTAgg1 ~ t1*1
+T6hbqTAgg2 ~ t2*1
+T6hbqTAgg3 ~ t3*1
+T6hbqTAgg4 ~ t4*1
+T6hbqTAgg5 ~ t5*1
+T6hbqTAgg6 ~ t6*1
+T6hbqTAgg7 ~ t7*1
+T6hbqTAgg8 ~ t8*1
+
+T8hbqTAgg1 ~ t1*1
+T8hbqTAgg2 ~ t2*1
+T8hbqTAgg3 ~ t3*1
+T8hbqTAgg4 ~ t4*1
+T8hbqTAgg5 ~ t5*1
+T8hbqTAgg6 ~ t6*1
+T8hbqTAgg7 ~ t7*1
+T8hbqTAgg8 ~ t8*1
+
+T10hbqtb4 ~ t1*1
+T10hbqtb16 ~ t2*1
+T10hbqtb19 ~ t3*1
+T10hbqtb30 ~ t4*1
+T10hbqtb41 ~ t5*1
+T10hbqtb67 ~ t6*1
+T10hbqtb74 ~ t7*1
+T10hbqtb79 ~ t8*1
+'
+
+
+fit_TAgg_config <- cfa(TAgg_config, data=peer_wide, meanstructure=TRUE, std.lv=TRUE, missing="FIML",
+                       control=list(eval.max=40000, iter.max=200000))
+
+summary(fit_TAgg_config, standardized=TRUE, fit.measures=TRUE)
+
+fit_TAgg_weak <- cfa(TAgg_weak, data=peer_wide, meanstructure=TRUE, std.lv=TRUE, missing="FIML",
+                       control=list(eval.max=40000, iter.max=200000))
+
+summary(fit_TAgg_weak, standardized=TRUE, fit.measures=TRUE)
+
+fit_TAgg_strong <- cfa(TAgg_strong, data=peer_wide, meanstructure=TRUE, std.lv=TRUE, missing="FIML",
+                       control=list(eval.max=40000, iter.max=200000))
+
+summary(fit_TAgg_strong, standardized=TRUE, fit.measures=TRUE)
+
+(fitmeasures(fit_TAgg_config, fit.measures=c("cfi"))-fitmeasures(fit_TAgg_weak, fit.measures=c("cfi"))) > .01
+(fitmeasures(fit_TAgg_weak, fit.measures=c("cfi"))-fitmeasures(fit_TAgg_strong, fit.measures=c("cfi"))) > .01
+```
+
 
 ```{r Measurement Invariance for Parent-report for Social Withdrawal scale}
 PSw_config <- '
@@ -942,12 +1538,12 @@ T8hbqPSw7 ~~ T10hbqs100r
 
 PSw_weak <- '
 #Sw
-PSw1 =~ T1hbq76r+T1hbq92r+T1hbq100r+T1hbq106r+T1hbq117r+T1hbq131r+T1hbq144r
-PSw3 =~ T3hbq76r+T3hbq92r+T3hbq100r+T3hbq106r+T3hbq117r+T3hbq131r+T3hbq144r
-PSw5 =~ T5hbq76r+T5hbq92r+T5hbq100r+T5hbq106r+T5hbq117r+T5hbq131r+T5hbq144r
-PSw10 =~ T6hbqPSw1+T6hbqPSw2+T6hbqPSw3+T6hbqPSw4+T6hbqPSw5+T6hbqPSw6+T6hbqPSw7
-PSw12 =~ T8hbqPSw1+T8hbqPSw2+T8hbqPSw3+T8hbqPSw4+T8hbqPSw5+T8hbqPSw6+T8hbqPSw7
-PSw14 =~ T10hbqs49r+T10hbqs10r+T10hbqs31r+T10hbqs42r+T10hbqs65r+T10hbqs84r+T10hbqs100r
+PSw1 =~ L1*T1hbq76r+L2*T1hbq92r+L3*T1hbq100r+L4*T1hbq106r+L5*T1hbq117r+L6*T1hbq131r+L7*T1hbq144r
+PSw3 =~ L1*T3hbq76r+L2*T3hbq92r+L3*T3hbq100r+L4*T3hbq106r+L5*T3hbq117r+L6*T3hbq131r+L7*T3hbq144r
+PSw5 =~ L1*T5hbq76r+L2*T5hbq92r+L3*T5hbq100r+L4*T5hbq106r+L5*T5hbq117r+L6*T5hbq131r+L7*T5hbq144r
+PSw10 =~ L1*T6hbqPSw1+L2*T6hbqPSw2+L3*T6hbqPSw3+L4*T6hbqPSw4+L5*T6hbqPSw5+L6*T6hbqPSw6+L7*T6hbqPSw7
+PSw12 =~ L1*T8hbqPSw1+L2*T8hbqPSw2+L3*T8hbqPSw3+L4*T8hbqPSw4+L5*T8hbqPSw5+L6*T8hbqPSw6+L7*T8hbqPSw7
+PSw14 =~ L1*T10hbqs49r+L2*T10hbqs10r+L3*T10hbqs31r+L4*T10hbqs42r+L5*T10hbqs65r+L6*T10hbqs84r+L7*T10hbqs100r
 
 #Correlate residuals
 ##Parent-report
@@ -1011,12 +1607,12 @@ PSw14 ~~ NA*PSw14
 
 PSw_strong <- '
 #Sw
-PSw1 =~ T1hbq76r+T1hbq92r+T1hbq100r+T1hbq106r+T1hbq117r+T1hbq131r+T1hbq144r
-PSw3 =~ T3hbq76r+T3hbq92r+T3hbq100r+T3hbq106r+T3hbq117r+T3hbq131r+T3hbq144r
-PSw5 =~ T5hbq76r+T5hbq92r+T5hbq100r+T5hbq106r+T5hbq117r+T5hbq131r+T5hbq144r
-PSw10 =~ T6hbqPSw1+T6hbqPSw2+T6hbqPSw3+T6hbqPSw4+T6hbqPSw5+T6hbqPSw6+T6hbqPSw7
-PSw12 =~ T8hbqPSw1+T8hbqPSw2+T8hbqPSw3+T8hbqPSw4+T8hbqPSw5+T8hbqPSw6+T8hbqPSw7
-PSw14 =~ T10hbqs49r+T10hbqs10r+T10hbqs31r+T10hbqs42r+T10hbqs65r+T10hbqs84r+T10hbqs100r
+PSw1 =~ L1*T1hbq76r+L2*T1hbq92r+L3*T1hbq100r+L4*T1hbq106r+L5*T1hbq117r+L6*T1hbq131r+L7*T1hbq144r
+PSw3 =~ L1*T3hbq76r+L2*T3hbq92r+L3*T3hbq100r+L4*T3hbq106r+L5*T3hbq117r+L6*T3hbq131r+L7*T3hbq144r
+PSw5 =~ L1*T5hbq76r+L2*T5hbq92r+L3*T5hbq100r+L4*T5hbq106r+L5*T5hbq117r+L6*T5hbq131r+L7*T5hbq144r
+PSw10 =~ L1*T6hbqPSw1+L2*T6hbqPSw2+L3*T6hbqPSw3+L4*T6hbqPSw4+L5*T6hbqPSw5+L6*T6hbqPSw6+L7*T6hbqPSw7
+PSw12 =~ L1*T8hbqPSw1+L2*T8hbqPSw2+L3*T8hbqPSw3+L4*T8hbqPSw4+L5*T8hbqPSw5+L6*T8hbqPSw6+L7*T8hbqPSw7
+PSw14 =~ L1*T10hbqs49r+L2*T10hbqs10r+L3*T10hbqs31r+L4*T10hbqs42r+L5*T10hbqs65r+L6*T10hbqs84r+L7*T10hbqs100r
 
 #Correlate residuals
 ##Parent-report
@@ -1212,12 +1808,12 @@ T8hbqTSw7 ~~ T10hbqtb86r
 TSw_weak <- '
 
 #Sw
-TSw1 =~ T1hbqt74r+T1hbqt85r+T1hbqt91r+T1hbqt96r+T1hbqt106r+T1hbqt117r+T1hbqt130r
-TSw3 =~ T3hbqt74r+T3hbqt85r+T3hbqt91r+T3hbqt96r+T3hbqt106r+T3hbqt117r+T3hbqt130r
-TSw5 =~ T5hbqt74r+T5hbqt85r+T5hbqt91r+T5hbqt96r+T5hbqt106r+T5hbqt117r+T5hbqt130r
-TSw10 =~ T6hbqTSw1+T6hbqTSw2+T6hbqTSw3+T6hbqTSw4+T6hbqTSw5+T6hbqTSw6+T6hbqTSw7
-TSw12 =~ T8hbqTSw1+T8hbqTSw2+T8hbqTSw3+T8hbqTSw4+T8hbqTSw5+T8hbqTSw6+T8hbqTSw7
-TSw14 =~ T10hbqtb8r+T10hbqtb26r+T10hbqtb33r+T10hbqtb39r+T10hbqtb54r+T10hbqtb70r+T10hbqtb86r
+TSw1 =~ M1*T1hbqt74r+M2*T1hbqt85r+M3*T1hbqt91r+M4*T1hbqt96r+M5*T1hbqt106r+M6*T1hbqt117r+M7*T1hbqt130r
+TSw3 =~ M1*T3hbqt74r+M2*T3hbqt85r+M3*T3hbqt91r+M4*T3hbqt96r+M5*T3hbqt106r+M6*T3hbqt117r+M7*T3hbqt130r
+TSw5 =~ M1*T5hbqt74r+M2*T5hbqt85r+M3*T5hbqt91r+M4*T5hbqt96r+M5*T5hbqt106r+M6*T5hbqt117r+M7*T5hbqt130r
+TSw10 =~ M1*T6hbqTSw1+M2*T6hbqTSw2+M3*T6hbqTSw3+M4*T6hbqTSw4+M5*T6hbqTSw5+M6*T6hbqTSw6+M7*T6hbqTSw7
+TSw12 =~ M1*T8hbqTSw1+M2*T8hbqTSw2+M3*T8hbqTSw3+M4*T8hbqTSw4+M5*T8hbqTSw5+M6*T8hbqTSw6+M7*T8hbqTSw7
+TSw14 =~ M1*T10hbqtb8r+M2*T10hbqtb26r+M3*T10hbqtb33r+M4*T10hbqtb39r+M5*T10hbqtb54r+M6*T10hbqtb70r+M7*T10hbqtb86r
 
 #Correlate residuals
 ##Teacher-report
@@ -1282,12 +1878,12 @@ TSw14 ~~ NA*TSw14
 TSw_strong <- '
 
 #Sw
-TSw1 =~ T1hbqt74r+T1hbqt85r+T1hbqt91r+T1hbqt96r+T1hbqt106r+T1hbqt117r+T1hbqt130r
-TSw3 =~ T3hbqt74r+T3hbqt85r+T3hbqt91r+T3hbqt96r+T3hbqt106r+T3hbqt117r+T3hbqt130r
-TSw5 =~ T5hbqt74r+T5hbqt85r+T5hbqt91r+T5hbqt96r+T5hbqt106r+T5hbqt117r+T5hbqt130r
-TSw10 =~ T6hbqTSw1+T6hbqTSw2+T6hbqTSw3+T6hbqTSw4+T6hbqTSw5+T6hbqTSw6+T6hbqTSw7
-TSw12 =~ T8hbqTSw1+T8hbqTSw2+T8hbqTSw3+T8hbqTSw4+T8hbqTSw5+T8hbqTSw6+T8hbqTSw7
-TSw14 =~ T10hbqtb8r+T10hbqtb26r+T10hbqtb33r+T10hbqtb39r+T10hbqtb54r+T10hbqtb70r+T10hbqtb86r
+TSw1 =~ M1*T1hbqt74r+M2*T1hbqt85r+M3*T1hbqt91r+M4*T1hbqt96r+M5*T1hbqt106r+M6*T1hbqt117r+M7*T1hbqt130r
+TSw3 =~ M1*T3hbqt74r+M2*T3hbqt85r+M3*T3hbqt91r+M4*T3hbqt96r+M5*T3hbqt106r+M6*T3hbqt117r+M7*T3hbqt130r
+TSw5 =~ M1*T5hbqt74r+M2*T5hbqt85r+M3*T5hbqt91r+M4*T5hbqt96r+M5*T5hbqt106r+M6*T5hbqt117r+M7*T5hbqt130r
+TSw10 =~ M1*T6hbqTSw1+M2*T6hbqTSw2+M3*T6hbqTSw3+M4*T6hbqTSw4+M5*T6hbqTSw5+M6*T6hbqTSw6+M7*T6hbqTSw7
+TSw12 =~ M1*T8hbqTSw1+M2*T8hbqTSw2+M3*T8hbqTSw3+M4*T8hbqTSw4+M5*T8hbqTSw5+M6*T8hbqTSw6+M7*T8hbqTSw7
+TSw14 =~ M1*T10hbqtb8r+M2*T10hbqtb26r+M3*T10hbqtb33r+M4*T10hbqtb39r+M5*T10hbqtb54r+M6*T10hbqtb70r+M7*T10hbqtb86r
 
 #Correlate residuals
 ##Teacher-report
@@ -1419,599 +2015,9 @@ fitmeasures(fit_TSw_weak)["cfi"]
 fitmeasures(fit_TSw_strong)["cfi"]
 ```
 
-```{r Measurement Invariance for Parent-report for Aggression scale}
-PAgg_config <- '
-#Agg
-PAgg1 =~ T1hbq70+T1hbq83+T1hbq85+T1hbq96+T1hbq108+T1hbq127+T1hbq135+T1hbq139
-PAgg3 =~ T3hbq70+T3hbq83+T3hbq85+T3hbq96+T3hbq108+T3hbq127+T3hbq135+T3hbq139
-PAgg5 =~ T5hbq70+T5hbq83+T5hbq85+T5hbq96+T5hbq108+T5hbq127+T5hbq135+T5hbq139
-PAgg10 =~ T6hbqPAgg1+T6hbqPAgg2+T6hbqPAgg3+T6hbqPAgg4+T6hbqPAgg5+T6hbqPAgg6+T6hbqPAgg7+T6hbqPAgg8
-PAgg12 =~ T8hbqPAgg1+T8hbqPAgg2+T8hbqPAgg3+T8hbqPAgg4+T8hbqPAgg5+T8hbqPAgg6+T8hbqPAgg7+T8hbqPAgg8
-PAgg14 =~ T10hbqs4+T10hbqs20+T10hbqs23+T10hbqs38+T10hbqs51+T10hbqs80+T10hbqs89+T10hbqs94
 
-#Correlate residuals
-##Parent-report
-###Item 1
-T1hbq70 ~~ T3hbq70+T5hbq70+T6hbqPAgg1+T8hbqPAgg1+T10hbqs4
-T3hbq70 ~~ T5hbq70+T6hbqPAgg1+T8hbqPAgg1+T10hbqs4
-T5hbq70 ~~ T6hbqPAgg1+T8hbqPAgg1+T10hbqs4
-T6hbqPAgg1 ~~ T8hbqPAgg1+T10hbqs4
-T8hbqPAgg1 ~~ T10hbqs4
 
-###Item 2
-T1hbq83 ~~ T3hbq83+T5hbq83+T6hbqPAgg2+T8hbqPAgg2+T10hbqs20
-T3hbq83 ~~ T5hbq83+T6hbqPAgg2+T8hbqPAgg2+T10hbqs20
-T5hbq83 ~~ T6hbqPAgg2+T8hbqPAgg2+T10hbqs20
-T6hbqPAgg2 ~~ T8hbqPAgg2+T10hbqs20
-T8hbqPAgg2 ~~ T10hbqs20
 
-###Item 3
-T1hbq85 ~~ T3hbq85+T5hbq85+T6hbqPAgg3+T8hbqPAgg3+T10hbqs23
-T3hbq85 ~~ T5hbq85+T6hbqPAgg3+T8hbqPAgg3+T10hbqs23
-T5hbq85 ~~ T6hbqPAgg3+T8hbqPAgg3+T10hbqs23
-T6hbqPAgg3 ~~ T8hbqPAgg3+T10hbqs23
-T8hbqPAgg3 ~~ T10hbqs23
-
-###Item 4
-T1hbq96 ~~ T3hbq96+T5hbq96+T6hbqPAgg4+T8hbqPAgg4+T10hbqs38
-T3hbq96 ~~ T5hbq96+T6hbqPAgg4+T8hbqPAgg4+T10hbqs38
-T5hbq96 ~~ T6hbqPAgg4+T8hbqPAgg4+T10hbqs38
-T6hbqPAgg4 ~~ T8hbqPAgg4+T10hbqs38
-T8hbqPAgg4 ~~ T10hbqs38
-
-###Item 5
-T1hbq108 ~~ T3hbq108+T5hbq108+T6hbqPAgg5+T8hbqPAgg5+T10hbqs51
-T3hbq108 ~~ T5hbq108+T6hbqPAgg5+T8hbqPAgg5+T10hbqs51
-T5hbq108 ~~ T6hbqPAgg5+T8hbqPAgg5+T10hbqs51
-T6hbqPAgg5 ~~ T8hbqPAgg5+T10hbqs51
-T8hbqPAgg5 ~~ T10hbqs51
-
-###Item 6
-T1hbq127 ~~ T3hbq127+T5hbq127+T6hbqPAgg6+T8hbqPAgg6+T10hbqs80
-T3hbq127 ~~ T5hbq127+T6hbqPAgg6+T8hbqPAgg6+T10hbqs80
-T5hbq127 ~~ T6hbqPAgg6+T8hbqPAgg6+T10hbqs80
-T6hbqPAgg6 ~~ T8hbqPAgg6+T10hbqs80
-T8hbqPAgg6 ~~ T10hbqs80
-
-###Item 7
-T1hbq135 ~~ T3hbq135+T5hbq135+T6hbqPAgg7+T8hbqPAgg7+T10hbqs89
-T3hbq135 ~~ T5hbq135+T6hbqPAgg7+T8hbqPAgg7+T10hbqs89
-T5hbq135 ~~ T6hbqPAgg7+T8hbqPAgg7+T10hbqs89
-T6hbqPAgg7 ~~ T8hbqPAgg7+T10hbqs89
-T8hbqPAgg7 ~~ T10hbqs89
-
-###Item 8
-T1hbq139 ~~ T3hbq139+T5hbq139+T6hbqPAgg8+T8hbqPAgg8+T10hbqs94
-T3hbq139 ~~ T5hbq139+T6hbqPAgg8+T8hbqPAgg8+T10hbqs94
-T5hbq139 ~~ T6hbqPAgg8+T8hbqPAgg8+T10hbqs94
-T6hbqPAgg8 ~~ T8hbqPAgg8+T10hbqs94
-T8hbqPAgg8 ~~ T10hbqs94
-'
-
-
-PAgg_weak <- '
-#Agg
-PAgg1 =~ T1hbq70+T1hbq83+T1hbq85+T1hbq96+T1hbq108+T1hbq127+T1hbq135+T1hbq139
-PAgg3 =~ T3hbq70+T3hbq83+T3hbq85+T3hbq96+T3hbq108+T3hbq127+T3hbq135+T3hbq139
-PAgg5 =~ T5hbq70+T5hbq83+T5hbq85+T5hbq96+T5hbq108+T5hbq127+T5hbq135+T5hbq139
-PAgg10 =~ T6hbqPAgg1+T6hbqPAgg2+T6hbqPAgg3+T6hbqPAgg4+T6hbqPAgg5+T6hbqPAgg6+T6hbqPAgg7+T6hbqPAgg8
-PAgg12 =~ T8hbqPAgg1+T8hbqPAgg2+T8hbqPAgg3+T8hbqPAgg4+T8hbqPAgg5+T8hbqPAgg6+T8hbqPAgg7+T8hbqPAgg8
-PAgg14 =~ T10hbqs4+T10hbqs20+T10hbqs23+T10hbqs38+T10hbqs51+T10hbqs80+T10hbqs89+T10hbqs94
-
-#Correlate residuals
-##Parent-report
-###Item 1
-T1hbq70 ~~ T3hbq70+T5hbq70+T6hbqPAgg1+T8hbqPAgg1+T10hbqs4
-T3hbq70 ~~ T5hbq70+T6hbqPAgg1+T8hbqPAgg1+T10hbqs4
-T5hbq70 ~~ T6hbqPAgg1+T8hbqPAgg1+T10hbqs4
-T6hbqPAgg1 ~~ T8hbqPAgg1+T10hbqs4
-T8hbqPAgg1 ~~ T10hbqs4
-
-###Item 2
-T1hbq83 ~~ T3hbq83+T5hbq83+T6hbqPAgg2+T8hbqPAgg2+T10hbqs20
-T3hbq83 ~~ T5hbq83+T6hbqPAgg2+T8hbqPAgg2+T10hbqs20
-T5hbq83 ~~ T6hbqPAgg2+T8hbqPAgg2+T10hbqs20
-T6hbqPAgg2 ~~ T8hbqPAgg2+T10hbqs20
-T8hbqPAgg2 ~~ T10hbqs20
-
-###Item 3
-T1hbq85 ~~ T3hbq85+T5hbq85+T6hbqPAgg3+T8hbqPAgg3+T10hbqs23
-T3hbq85 ~~ T5hbq85+T6hbqPAgg3+T8hbqPAgg3+T10hbqs23
-T5hbq85 ~~ T6hbqPAgg3+T8hbqPAgg3+T10hbqs23
-T6hbqPAgg3 ~~ T8hbqPAgg3+T10hbqs23
-T8hbqPAgg3 ~~ T10hbqs23
-
-###Item 4
-T1hbq96 ~~ T3hbq96+T5hbq96+T6hbqPAgg4+T8hbqPAgg4+T10hbqs38
-T3hbq96 ~~ T5hbq96+T6hbqPAgg4+T8hbqPAgg4+T10hbqs38
-T5hbq96 ~~ T6hbqPAgg4+T8hbqPAgg4+T10hbqs38
-T6hbqPAgg4 ~~ T8hbqPAgg4+T10hbqs38
-T8hbqPAgg4 ~~ T10hbqs38
-
-###Item 5
-T1hbq108 ~~ T3hbq108+T5hbq108+T6hbqPAgg5+T8hbqPAgg5+T10hbqs51
-T3hbq108 ~~ T5hbq108+T6hbqPAgg5+T8hbqPAgg5+T10hbqs51
-T5hbq108 ~~ T6hbqPAgg5+T8hbqPAgg5+T10hbqs51
-T6hbqPAgg5 ~~ T8hbqPAgg5+T10hbqs51
-T8hbqPAgg5 ~~ T10hbqs51
-
-###Item 6
-T1hbq127 ~~ T3hbq127+T5hbq127+T6hbqPAgg6+T8hbqPAgg6+T10hbqs80
-T3hbq127 ~~ T5hbq127+T6hbqPAgg6+T8hbqPAgg6+T10hbqs80
-T5hbq127 ~~ T6hbqPAgg6+T8hbqPAgg6+T10hbqs80
-T6hbqPAgg6 ~~ T8hbqPAgg6+T10hbqs80
-T8hbqPAgg6 ~~ T10hbqs80
-
-###Item 7
-T1hbq135 ~~ T3hbq135+T5hbq135+T6hbqPAgg7+T8hbqPAgg7+T10hbqs89
-T3hbq135 ~~ T5hbq135+T6hbqPAgg7+T8hbqPAgg7+T10hbqs89
-T5hbq135 ~~ T6hbqPAgg7+T8hbqPAgg7+T10hbqs89
-T6hbqPAgg7 ~~ T8hbqPAgg7+T10hbqs89
-T8hbqPAgg7 ~~ T10hbqs89
-
-###Item 8
-T1hbq139 ~~ T3hbq139+T5hbq139+T6hbqPAgg8+T8hbqPAgg8+T10hbqs94
-T3hbq139 ~~ T5hbq139+T6hbqPAgg8+T8hbqPAgg8+T10hbqs94
-T5hbq139 ~~ T6hbqPAgg8+T8hbqPAgg8+T10hbqs94
-T6hbqPAgg8 ~~ T8hbqPAgg8+T10hbqs94
-T8hbqPAgg8 ~~ T10hbqs94
-
-## free latent variances at later times (only set the scale once)
-PAgg3 ~~ NA*PAgg3
-PAgg5 ~~ NA*PAgg5
-PAgg10 ~~ NA*PAgg10
-PAgg12 ~~ NA*PAgg12
-PAgg14 ~~ NA*PAgg14
-'
-
-
-PAgg_strong <- '
-#Agg
-PAgg1 =~ T1hbq70+T1hbq83+T1hbq85+T1hbq96+T1hbq108+T1hbq127+T1hbq135+T1hbq139
-PAgg3 =~ T3hbq70+T3hbq83+T3hbq85+T3hbq96+T3hbq108+T3hbq127+T3hbq135+T3hbq139
-PAgg5 =~ T5hbq70+T5hbq83+T5hbq85+T5hbq96+T5hbq108+T5hbq127+T5hbq135+T5hbq139
-PAgg10 =~ T6hbqPAgg1+T6hbqPAgg2+T6hbqPAgg3+T6hbqPAgg4+T6hbqPAgg5+T6hbqPAgg6+T6hbqPAgg7+T6hbqPAgg8
-PAgg12 =~ T8hbqPAgg1+T8hbqPAgg2+T8hbqPAgg3+T8hbqPAgg4+T8hbqPAgg5+T8hbqPAgg6+T8hbqPAgg7+T8hbqPAgg8
-PAgg14 =~ T10hbqs4+T10hbqs20+T10hbqs23+T10hbqs38+T10hbqs51+T10hbqs80+T10hbqs89+T10hbqs94
-
-#Correlate residuals
-##Parent-report
-###Item 1
-T1hbq70 ~~ T3hbq70+T5hbq70+T6hbqPAgg1+T8hbqPAgg1+T10hbqs4
-T3hbq70 ~~ T5hbq70+T6hbqPAgg1+T8hbqPAgg1+T10hbqs4
-T5hbq70 ~~ T6hbqPAgg1+T8hbqPAgg1+T10hbqs4
-T6hbqPAgg1 ~~ T8hbqPAgg1+T10hbqs4
-T8hbqPAgg1 ~~ T10hbqs4
-
-###Item 2
-T1hbq83 ~~ T3hbq83+T5hbq83+T6hbqPAgg2+T8hbqPAgg2+T10hbqs20
-T3hbq83 ~~ T5hbq83+T6hbqPAgg2+T8hbqPAgg2+T10hbqs20
-T5hbq83 ~~ T6hbqPAgg2+T8hbqPAgg2+T10hbqs20
-T6hbqPAgg2 ~~ T8hbqPAgg2+T10hbqs20
-T8hbqPAgg2 ~~ T10hbqs20
-
-###Item 3
-T1hbq85 ~~ T3hbq85+T5hbq85+T6hbqPAgg3+T8hbqPAgg3+T10hbqs23
-T3hbq85 ~~ T5hbq85+T6hbqPAgg3+T8hbqPAgg3+T10hbqs23
-T5hbq85 ~~ T6hbqPAgg3+T8hbqPAgg3+T10hbqs23
-T6hbqPAgg3 ~~ T8hbqPAgg3+T10hbqs23
-T8hbqPAgg3 ~~ T10hbqs23
-
-###Item 4
-T1hbq96 ~~ T3hbq96+T5hbq96+T6hbqPAgg4+T8hbqPAgg4+T10hbqs38
-T3hbq96 ~~ T5hbq96+T6hbqPAgg4+T8hbqPAgg4+T10hbqs38
-T5hbq96 ~~ T6hbqPAgg4+T8hbqPAgg4+T10hbqs38
-T6hbqPAgg4 ~~ T8hbqPAgg4+T10hbqs38
-T8hbqPAgg4 ~~ T10hbqs38
-
-###Item 5
-T1hbq108 ~~ T3hbq108+T5hbq108+T6hbqPAgg5+T8hbqPAgg5+T10hbqs51
-T3hbq108 ~~ T5hbq108+T6hbqPAgg5+T8hbqPAgg5+T10hbqs51
-T5hbq108 ~~ T6hbqPAgg5+T8hbqPAgg5+T10hbqs51
-T6hbqPAgg5 ~~ T8hbqPAgg5+T10hbqs51
-T8hbqPAgg5 ~~ T10hbqs51
-
-###Item 6
-T1hbq127 ~~ T3hbq127+T5hbq127+T6hbqPAgg6+T8hbqPAgg6+T10hbqs80
-T3hbq127 ~~ T5hbq127+T6hbqPAgg6+T8hbqPAgg6+T10hbqs80
-T5hbq127 ~~ T6hbqPAgg6+T8hbqPAgg6+T10hbqs80
-T6hbqPAgg6 ~~ T8hbqPAgg6+T10hbqs80
-T8hbqPAgg6 ~~ T10hbqs80
-
-###Item 7
-T1hbq135 ~~ T3hbq135+T5hbq135+T6hbqPAgg7+T8hbqPAgg7+T10hbqs89
-T3hbq135 ~~ T5hbq135+T6hbqPAgg7+T8hbqPAgg7+T10hbqs89
-T5hbq135 ~~ T6hbqPAgg7+T8hbqPAgg7+T10hbqs89
-T6hbqPAgg7 ~~ T8hbqPAgg7+T10hbqs89
-T8hbqPAgg7 ~~ T10hbqs89
-
-###Item 8
-T1hbq139 ~~ T3hbq139+T5hbq139+T6hbqPAgg8+T8hbqPAgg8+T10hbqs94
-T3hbq139 ~~ T5hbq139+T6hbqPAgg8+T8hbqPAgg8+T10hbqs94
-T5hbq139 ~~ T6hbqPAgg8+T8hbqPAgg8+T10hbqs94
-T6hbqPAgg8 ~~ T8hbqPAgg8+T10hbqs94
-T8hbqPAgg8 ~~ T10hbqs94
-
-## free latent variances at later times (only set the scale once)
-PAgg3 ~~ NA*PAgg3
-PAgg5 ~~ NA*PAgg5
-PAgg10 ~~ NA*PAgg10
-PAgg12 ~~ NA*PAgg12
-PAgg14 ~~ NA*PAgg14
-
-#constrain intercepts across time
-T1hbq70 ~ t1*1
-T1hbq83 ~ t2*1
-T1hbq85 ~ t3*1
-T1hbq96 ~ t4*1
-T1hbq108 ~ t5*1
-T1hbq127 ~ t6*1
-T1hbq135 ~ t7*1
-T1hbq139 ~ t8*1
-
-T3hbq70 ~ t1*1
-T3hbq83 ~ t2*1
-T3hbq85 ~ t3*1
-T3hbq96 ~ t4*1
-T3hbq108 ~ t5*1
-T3hbq127 ~ t6*1
-T3hbq135 ~ t7*1
-T3hbq139 ~ t8*1
-
-T5hbq70 ~ t1*1
-T5hbq83 ~ t2*1
-T5hbq85 ~ t3*1
-T5hbq96 ~ t4*1
-T5hbq108 ~ t5*1
-T5hbq127 ~ t6*1
-T5hbq135 ~ t7*1
-T5hbq139 ~ t8*1
-
-T6hbqPAgg1 ~ t1*1
-T6hbqPAgg2 ~ t2*1
-T6hbqPAgg3 ~ t3*1
-T6hbqPAgg4 ~ t4*1
-T6hbqPAgg5 ~ t5*1
-T6hbqPAgg6 ~ t6*1
-T6hbqPAgg7 ~ t7*1
-T6hbqPAgg8 ~ t8*1
-
-T8hbqPAgg1 ~ t1*1
-T8hbqPAgg2 ~ t2*1
-T8hbqPAgg3 ~ t3*1
-T8hbqPAgg4 ~ t4*1
-T8hbqPAgg5 ~ t5*1
-T8hbqPAgg6 ~ t6*1
-T8hbqPAgg7 ~ t7*1
-T8hbqPAgg8 ~ t8*1
-
-T10hbqs4 ~ t1*1
-T10hbqs20 ~ t2*1
-T10hbqs23 ~ t3*1
-T10hbqs38 ~ t4*1
-T10hbqs51 ~ t5*1
-T10hbqs80 ~ t6*1
-T10hbqs89 ~ t7*1
-T10hbqs94 ~ t8*1
-'
-
-fit_PAgg_config <- cfa(PAgg_config, data=peer_wide, meanstructure=TRUE, std.lv=TRUE, missing="FIML",
-                       estimator="MLR", control=list(eval.max=40000, iter.max=200000))
-
-summary(fit_PAgg_config, standardized=TRUE, fit.measures=TRUE)
-
-fit_PAgg_weak <- cfa(PAgg_weak, data=peer_wide, meanstructure=TRUE, std.lv=TRUE, missing="FIML",
-                       estimator="MLR", control=list(eval.max=40000, iter.max=200000))
-
-summary(fit_PAgg_weak, standardized=TRUE, fit.measures=TRUE)
-
-fit_PAgg_strong <- cfa(PAgg_strong, data=peer_wide, meanstructure=TRUE, std.lv=TRUE, missing="FIML",
-                       estimator="MLR", control=list(eval.max=40000, iter.max=200000))
-
-summary(fit_PAgg_strong, standardized=TRUE, fit.measures=TRUE)
-z
-(fitmeasures(fit_PAgg_config, fit.measures=c("cfi"))-fitmeasures(fit_PAgg_weak, fit.measures=c("cfi"))) > .01
-(fitmeasures(fit_PAgg_weak, fit.measures=c("cfi"))-fitmeasures(fit_PAgg_strong, fit.measures=c("cfi"))) > .01
-```
-
-```{r Measurement Invariance for Teacher-report for Aggression scale}
-TAgg_config <- '
-
-#Agg
-TAgg1 =~ T1hbqt70+T1hbqt79+T1hbqt81+T1hbqt88+T1hbqt98+T1hbqt114+T1hbqt120+T1hbqt124
-TAgg3 =~ T3hbqt70+T3hbqt79+T3hbqt81+T3hbqt88+T3hbqt98+T3hbqt114+T3hbqt120+T3hbqt124
-TAgg5 =~ T5hbqt70+T5hbqt79+T5hbqt81+T5hbqt88+T5hbqt98+T5hbqt114+T5hbqt120+T5hbqt124
-TAgg10 =~ T6hbqTAgg1+T6hbqTAgg2+T6hbqTAgg3+T6hbqTAgg4+T6hbqTAgg5+T6hbqTAgg6+T6hbqTAgg7+T6hbqTAgg8
-TAgg12 =~ T8hbqTAgg1+T8hbqTAgg2+T8hbqTAgg3+T8hbqTAgg4+T8hbqTAgg5+T8hbqTAgg6+T8hbqTAgg7+T8hbqTAgg8
-TAgg14 =~ T10hbqtb4+T10hbqtb16+T10hbqtb19+T10hbqtb30+T10hbqtb41+T10hbqtb67+T10hbqtb74+T10hbqtb79
-
-#Correlate residuals
-##Teacher-report
-###Item 1
-T1hbqt70 ~~ T3hbqt70+T5hbqt70+T6hbqTAgg1+T8hbqTAgg1+T10hbqtb4
-T3hbqt70 ~~ T5hbqt70+T6hbqTAgg1+T8hbqTAgg1+T10hbqtb4
-T5hbqt70 ~~ T6hbqTAgg1+T8hbqTAgg1+T10hbqtb4
-T6hbqTAgg1 ~~ T8hbqTAgg1+T10hbqtb4
-T8hbqTAgg1 ~~ T10hbqtb4
-
-###Item 2
-T1hbqt79 ~~ T3hbqt79+T5hbqt79+T6hbqTAgg2+T8hbqTAgg2+T10hbqtb16
-T3hbqt79 ~~ T5hbqt79+T6hbqTAgg2+T8hbqTAgg2+T10hbqtb16
-T5hbqt79 ~~ T6hbqTAgg2+T8hbqTAgg2+T10hbqtb16
-T6hbqTAgg2 ~~ T8hbqTAgg2+T10hbqtb16
-T8hbqTAgg2 ~~ T10hbqtb16
-
-###Item 3
-T1hbqt81 ~~ T3hbqt81+T5hbqt81+T6hbqTAgg3+T8hbqTAgg3+T10hbqtb19
-T3hbqt81 ~~ T5hbqt81+T6hbqTAgg3+T8hbqTAgg3+T10hbqtb19
-T5hbqt81 ~~ T6hbqTAgg3+T8hbqTAgg3+T10hbqtb19
-T6hbqTAgg3 ~~ T8hbqTAgg3+T10hbqtb19
-T8hbqTAgg3 ~~ T10hbqtb19
-
-###Item 4
-T1hbqt88 ~~ T3hbqt88+T5hbqt88+T6hbqTAgg4+T8hbqTAgg4+T10hbqtb30
-T3hbqt88 ~~ T5hbqt88+T6hbqTAgg4+T8hbqTAgg4+T10hbqtb30
-T5hbqt88 ~~ T6hbqTAgg4+T8hbqTAgg4+T10hbqtb30
-T6hbqTAgg4 ~~ T8hbqTAgg4+T10hbqtb30
-T8hbqTAgg4 ~~ T10hbqtb30
-
-###Item 5
-T1hbqt98 ~~ T3hbqt98+T5hbqt98+T6hbqTAgg5+T8hbqTAgg5+T10hbqtb41
-T3hbqt98 ~~ T5hbqt98+T6hbqTAgg5+T8hbqTAgg5+T10hbqtb41
-T5hbqt98 ~~ T6hbqTAgg5+T8hbqTAgg5+T10hbqtb41
-T6hbqTAgg5 ~~ T8hbqTAgg5+T10hbqtb41
-T8hbqTAgg5 ~~ T10hbqtb41
-
-###Item 6
-T1hbqt114 ~~ T3hbqt114+T5hbqt114+T6hbqTAgg6+T8hbqTAgg6+T10hbqtb67
-T3hbqt114 ~~ T5hbqt114+T6hbqTAgg6+T8hbqTAgg6+T10hbqtb67
-T5hbqt114 ~~ T6hbqTAgg6+T8hbqTAgg6+T10hbqtb67
-T6hbqTAgg6 ~~ T8hbqTAgg6+T10hbqtb67
-T8hbqTAgg6 ~~ T10hbqtb67
-
-###Item 7
-T1hbqt120 ~~ T3hbqt120+T5hbqt120+T6hbqTAgg7+T8hbqTAgg7+T10hbqtb74
-T3hbqt120 ~~ T5hbqt120+T6hbqTAgg7+T8hbqTAgg7+T10hbqtb74
-T5hbqt120 ~~ T6hbqTAgg7+T8hbqTAgg7+T10hbqtb74
-T6hbqTAgg7 ~~ T8hbqTAgg7+T10hbqtb74
-T8hbqTAgg7 ~~ T10hbqtb74
-
-###Item 8
-T1hbqt124 ~~ T3hbqt124+T5hbqt124+T6hbqTAgg8+T8hbqTAgg8+T10hbqtb79
-T3hbqt124 ~~ T5hbqt124+T6hbqTAgg8+T8hbqTAgg8+T10hbqtb79
-T5hbqt124 ~~ T6hbqTAgg8+T8hbqTAgg8+T10hbqtb79
-T6hbqTAgg8 ~~ T8hbqTAgg8+T10hbqtb79
-T8hbqTAgg8 ~~ T10hbqtb79
-'
-
-
-TAgg_weak <- '
-
-#Agg
-TAgg1 =~ T1hbqt70+T1hbqt79+T1hbqt81+T1hbqt88+T1hbqt98+T1hbqt114+T1hbqt120+T1hbqt124
-TAgg3 =~ T3hbqt70+T3hbqt79+T3hbqt81+T3hbqt88+T3hbqt98+T3hbqt114+T3hbqt120+T3hbqt124
-TAgg5 =~ T5hbqt70+T5hbqt79+T5hbqt81+T5hbqt88+T5hbqt98+T5hbqt114+T5hbqt120+T5hbqt124
-TAgg10 =~ T6hbqTAgg1+T6hbqTAgg2+T6hbqTAgg3+T6hbqTAgg4+T6hbqTAgg5+T6hbqTAgg6+T6hbqTAgg7+T6hbqTAgg8
-TAgg12 =~ T8hbqTAgg1+T8hbqTAgg2+T8hbqTAgg3+T8hbqTAgg4+T8hbqTAgg5+T8hbqTAgg6+T8hbqTAgg7+T8hbqTAgg8
-TAgg14 =~ T10hbqtb4+T10hbqtb16+T10hbqtb19+T10hbqtb30+T10hbqtb41+T10hbqtb67+T10hbqtb74+T10hbqtb79
-
-#Correlate residuals
-##Teacher-report
-###Item 1
-T1hbqt70 ~~ T3hbqt70+T5hbqt70+T6hbqTAgg1+T8hbqTAgg1+T10hbqtb4
-T3hbqt70 ~~ T5hbqt70+T6hbqTAgg1+T8hbqTAgg1+T10hbqtb4
-T5hbqt70 ~~ T6hbqTAgg1+T8hbqTAgg1+T10hbqtb4
-T6hbqTAgg1 ~~ T8hbqTAgg1+T10hbqtb4
-T8hbqTAgg1 ~~ T10hbqtb4
-
-###Item 2
-T1hbqt79 ~~ T3hbqt79+T5hbqt79+T6hbqTAgg2+T8hbqTAgg2+T10hbqtb16
-T3hbqt79 ~~ T5hbqt79+T6hbqTAgg2+T8hbqTAgg2+T10hbqtb16
-T5hbqt79 ~~ T6hbqTAgg2+T8hbqTAgg2+T10hbqtb16
-T6hbqTAgg2 ~~ T8hbqTAgg2+T10hbqtb16
-T8hbqTAgg2 ~~ T10hbqtb16
-
-###Item 3
-T1hbqt81 ~~ T3hbqt81+T5hbqt81+T6hbqTAgg3+T8hbqTAgg3+T10hbqtb19
-T3hbqt81 ~~ T5hbqt81+T6hbqTAgg3+T8hbqTAgg3+T10hbqtb19
-T5hbqt81 ~~ T6hbqTAgg3+T8hbqTAgg3+T10hbqtb19
-T6hbqTAgg3 ~~ T8hbqTAgg3+T10hbqtb19
-T8hbqTAgg3 ~~ T10hbqtb19
-
-###Item 4
-T1hbqt88 ~~ T3hbqt88+T5hbqt88+T6hbqTAgg4+T8hbqTAgg4+T10hbqtb30
-T3hbqt88 ~~ T5hbqt88+T6hbqTAgg4+T8hbqTAgg4+T10hbqtb30
-T5hbqt88 ~~ T6hbqTAgg4+T8hbqTAgg4+T10hbqtb30
-T6hbqTAgg4 ~~ T8hbqTAgg4+T10hbqtb30
-T8hbqTAgg4 ~~ T10hbqtb30
-
-###Item 5
-T1hbqt98 ~~ T3hbqt98+T5hbqt98+T6hbqTAgg5+T8hbqTAgg5+T10hbqtb41
-T3hbqt98 ~~ T5hbqt98+T6hbqTAgg5+T8hbqTAgg5+T10hbqtb41
-T5hbqt98 ~~ T6hbqTAgg5+T8hbqTAgg5+T10hbqtb41
-T6hbqTAgg5 ~~ T8hbqTAgg5+T10hbqtb41
-T8hbqTAgg5 ~~ T10hbqtb41
-
-###Item 6
-T1hbqt114 ~~ T3hbqt114+T5hbqt114+T6hbqTAgg6+T8hbqTAgg6+T10hbqtb67
-T3hbqt114 ~~ T5hbqt114+T6hbqTAgg6+T8hbqTAgg6+T10hbqtb67
-T5hbqt114 ~~ T6hbqTAgg6+T8hbqTAgg6+T10hbqtb67
-T6hbqTAgg6 ~~ T8hbqTAgg6+T10hbqtb67
-T8hbqTAgg6 ~~ T10hbqtb67
-
-###Item 7
-T1hbqt120 ~~ T3hbqt120+T5hbqt120+T6hbqTAgg7+T8hbqTAgg7+T10hbqtb74
-T3hbqt120 ~~ T5hbqt120+T6hbqTAgg7+T8hbqTAgg7+T10hbqtb74
-T5hbqt120 ~~ T6hbqTAgg7+T8hbqTAgg7+T10hbqtb74
-T6hbqTAgg7 ~~ T8hbqTAgg7+T10hbqtb74
-T8hbqTAgg7 ~~ T10hbqtb74
-
-###Item 8
-T1hbqt124 ~~ T3hbqt124+T5hbqt124+T6hbqTAgg8+T8hbqTAgg8+T10hbqtb79
-T3hbqt124 ~~ T5hbqt124+T6hbqTAgg8+T8hbqTAgg8+T10hbqtb79
-T5hbqt124 ~~ T6hbqTAgg8+T8hbqTAgg8+T10hbqtb79
-T6hbqTAgg8 ~~ T8hbqTAgg8+T10hbqtb79
-T8hbqTAgg8 ~~ T10hbqtb79
-
-## free latent variances at later times (only set the scale once)
-TAgg3 ~~ NA*TAgg3
-TAgg5 ~~ NA*TAgg5
-TAgg10 ~~ NA*TAgg10
-TAgg12 ~~ NA*TAgg12
-TAgg14 ~~ NA*TAgg14
-'
-
-
-TAgg_strong <- '
-
-#Agg
-TAgg1 =~ T1hbqt70+T1hbqt79+T1hbqt81+T1hbqt88+T1hbqt98+T1hbqt114+T1hbqt120+T1hbqt124
-TAgg3 =~ T3hbqt70+T3hbqt79+T3hbqt81+T3hbqt88+T3hbqt98+T3hbqt114+T3hbqt120+T3hbqt124
-TAgg5 =~ T5hbqt70+T5hbqt79+T5hbqt81+T5hbqt88+T5hbqt98+T5hbqt114+T5hbqt120+T5hbqt124
-TAgg10 =~ T6hbqTAgg1+T6hbqTAgg2+T6hbqTAgg3+T6hbqTAgg4+T6hbqTAgg5+T6hbqTAgg6+T6hbqTAgg7+T6hbqTAgg8
-TAgg12 =~ T8hbqTAgg1+T8hbqTAgg2+T8hbqTAgg3+T8hbqTAgg4+T8hbqTAgg5+T8hbqTAgg6+T8hbqTAgg7+T8hbqTAgg8
-TAgg14 =~ T10hbqtb4+T10hbqtb16+T10hbqtb19+T10hbqtb30+T10hbqtb41+T10hbqtb67+T10hbqtb74+T10hbqtb79
-
-#Correlate residuals
-##Teacher-report
-###Item 1
-T1hbqt70 ~~ T3hbqt70+T5hbqt70+T6hbqTAgg1+T8hbqTAgg1+T10hbqtb4
-T3hbqt70 ~~ T5hbqt70+T6hbqTAgg1+T8hbqTAgg1+T10hbqtb4
-T5hbqt70 ~~ T6hbqTAgg1+T8hbqTAgg1+T10hbqtb4
-T6hbqTAgg1 ~~ T8hbqTAgg1+T10hbqtb4
-T8hbqTAgg1 ~~ T10hbqtb4
-
-###Item 2
-T1hbqt79 ~~ T3hbqt79+T5hbqt79+T6hbqTAgg2+T8hbqTAgg2+T10hbqtb16
-T3hbqt79 ~~ T5hbqt79+T6hbqTAgg2+T8hbqTAgg2+T10hbqtb16
-T5hbqt79 ~~ T6hbqTAgg2+T8hbqTAgg2+T10hbqtb16
-T6hbqTAgg2 ~~ T8hbqTAgg2+T10hbqtb16
-T8hbqTAgg2 ~~ T10hbqtb16
-
-###Item 3
-T1hbqt81 ~~ T3hbqt81+T5hbqt81+T6hbqTAgg3+T8hbqTAgg3+T10hbqtb19
-T3hbqt81 ~~ T5hbqt81+T6hbqTAgg3+T8hbqTAgg3+T10hbqtb19
-T5hbqt81 ~~ T6hbqTAgg3+T8hbqTAgg3+T10hbqtb19
-T6hbqTAgg3 ~~ T8hbqTAgg3+T10hbqtb19
-T8hbqTAgg3 ~~ T10hbqtb19
-
-###Item 4
-T1hbqt88 ~~ T3hbqt88+T5hbqt88+T6hbqTAgg4+T8hbqTAgg4+T10hbqtb30
-T3hbqt88 ~~ T5hbqt88+T6hbqTAgg4+T8hbqTAgg4+T10hbqtb30
-T5hbqt88 ~~ T6hbqTAgg4+T8hbqTAgg4+T10hbqtb30
-T6hbqTAgg4 ~~ T8hbqTAgg4+T10hbqtb30
-T8hbqTAgg4 ~~ T10hbqtb30
-
-###Item 5
-T1hbqt98 ~~ T3hbqt98+T5hbqt98+T6hbqTAgg5+T8hbqTAgg5+T10hbqtb41
-T3hbqt98 ~~ T5hbqt98+T6hbqTAgg5+T8hbqTAgg5+T10hbqtb41
-T5hbqt98 ~~ T6hbqTAgg5+T8hbqTAgg5+T10hbqtb41
-T6hbqTAgg5 ~~ T8hbqTAgg5+T10hbqtb41
-T8hbqTAgg5 ~~ T10hbqtb41
-
-###Item 6
-T1hbqt114 ~~ T3hbqt114+T5hbqt114+T6hbqTAgg6+T8hbqTAgg6+T10hbqtb67
-T3hbqt114 ~~ T5hbqt114+T6hbqTAgg6+T8hbqTAgg6+T10hbqtb67
-T5hbqt114 ~~ T6hbqTAgg6+T8hbqTAgg6+T10hbqtb67
-T6hbqTAgg6 ~~ T8hbqTAgg6+T10hbqtb67
-T8hbqTAgg6 ~~ T10hbqtb67
-
-###Item 7
-T1hbqt120 ~~ T3hbqt120+T5hbqt120+T6hbqTAgg7+T8hbqTAgg7+T10hbqtb74
-T3hbqt120 ~~ T5hbqt120+T6hbqTAgg7+T8hbqTAgg7+T10hbqtb74
-T5hbqt120 ~~ T6hbqTAgg7+T8hbqTAgg7+T10hbqtb74
-T6hbqTAgg7 ~~ T8hbqTAgg7+T10hbqtb74
-T8hbqTAgg7 ~~ T10hbqtb74
-
-###Item 8
-T1hbqt124 ~~ T3hbqt124+T5hbqt124+T6hbqTAgg8+T8hbqTAgg8+T10hbqtb79
-T3hbqt124 ~~ T5hbqt124+T6hbqTAgg8+T8hbqTAgg8+T10hbqtb79
-T5hbqt124 ~~ T6hbqTAgg8+T8hbqTAgg8+T10hbqtb79
-T6hbqTAgg8 ~~ T8hbqTAgg8+T10hbqtb79
-T8hbqTAgg8 ~~ T10hbqtb79
-
-## free latent variances at later times (only set the scale once)
-TAgg3 ~~ NA*TAgg3
-TAgg5 ~~ NA*TAgg5
-TAgg10 ~~ NA*TAgg10
-TAgg12 ~~ NA*TAgg12
-TAgg14 ~~ NA*TAgg14
-
-#constrain intercepts across time
-T1hbqt70 ~ t1*1
-T1hbqt79 ~ t2*1
-T1hbqt81 ~ t3*1
-T1hbqt88 ~ t4*1
-T1hbqt98 ~ t5*1
-T1hbqt114 ~ t6*1
-T1hbqt120 ~ t7*1
-T1hbqt124 ~ t8*1
-
-T3hbqt70 ~ t1*1
-T3hbqt79 ~ t2*1
-T3hbqt81 ~ t3*1
-T3hbqt88 ~ t4*1
-T3hbqt98 ~ t5*1
-T3hbqt114 ~ t6*1
-T3hbqt120 ~ t7*1
-T3hbqt124 ~ t8*1
-
-T5hbqt70 ~ t1*1
-T5hbqt79 ~ t2*1
-T5hbqt81 ~ t3*1
-T5hbqt88 ~ t4*1
-T5hbqt98 ~ t5*1
-T5hbqt114 ~ t6*1
-T5hbqt120 ~ t7*1
-T5hbqt124 ~ t8*1
-
-T6hbqTAgg1 ~ t1*1
-T6hbqTAgg2 ~ t2*1
-T6hbqTAgg3 ~ t3*1
-T6hbqTAgg4 ~ t4*1
-T6hbqTAgg5 ~ t5*1
-T6hbqTAgg6 ~ t6*1
-T6hbqTAgg7 ~ t7*1
-T6hbqTAgg8 ~ t8*1
-
-T8hbqTAgg1 ~ t1*1
-T8hbqTAgg2 ~ t2*1
-T8hbqTAgg3 ~ t3*1
-T8hbqTAgg4 ~ t4*1
-T8hbqTAgg5 ~ t5*1
-T8hbqTAgg6 ~ t6*1
-T8hbqTAgg7 ~ t7*1
-T8hbqTAgg8 ~ t8*1
-
-T10hbqtb4 ~ t1*1
-T10hbqtb16 ~ t2*1
-T10hbqtb19 ~ t3*1
-T10hbqtb30 ~ t4*1
-T10hbqtb41 ~ t5*1
-T10hbqtb67 ~ t6*1
-T10hbqtb74 ~ t7*1
-T10hbqtb79 ~ t8*1
-'
-
-
-fit_TAgg_config <- cfa(TAgg_config, data=peer_wide, meanstructure=TRUE, std.lv=TRUE, missing="FIML",
-                       control=list(eval.max=40000, iter.max=200000))
-
-summary(fit_TAgg_config, standardized=TRUE, fit.measures=TRUE)
-
-fit_TAgg_weak <- cfa(TAgg_weak, data=peer_wide, meanstructure=TRUE, std.lv=TRUE, missing="FIML",
-                       control=list(eval.max=40000, iter.max=200000))
-
-summary(fit_TAgg_weak, standardized=TRUE, fit.measures=TRUE)
-
-fit_TAgg_strong <- cfa(TAgg_strong, data=peer_wide, meanstructure=TRUE, std.lv=TRUE, missing="FIML",
-                       control=list(eval.max=40000, iter.max=200000))
-
-summary(fit_TAgg_strong, standardized=TRUE, fit.measures=TRUE)
-
-(fitmeasures(fit_TAgg_config, fit.measures=c("cfi"))-fitmeasures(fit_TAgg_weak, fit.measures=c("cfi"))) > .01
-(fitmeasures(fit_TAgg_weak, fit.measures=c("cfi"))-fitmeasures(fit_TAgg_strong, fit.measures=c("cfi"))) > .01
-```
 
 ###Measurement Invariance of HBQ-P and HBQ-T without T10
 ```{r Measurement Invariance for Parent-report on Peer scale}

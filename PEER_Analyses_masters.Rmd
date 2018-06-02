@@ -47,7 +47,7 @@ data_wide <- data_wide %>%
          MDDPRP100_16 = MDDPRP_16*100,
          MDDPRP100_18 = MDDPRP_18*100)
 
-data_wide <- data_wide[,c(1:2,42,44,45,47,141,347:461)]
+#data_wide <- data_wide[,c(1:2,42,44,45,47,141,347:461)]
 ```
 
 ##Explanation of models
