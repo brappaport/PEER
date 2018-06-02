@@ -1,6 +1,6 @@
 ---
-title: "Analyses for Bivariate latent change score analysis of peer relations from early childhood to adolescence: Leading or lagging indicators of psychopathology"
-author: "Brent Rappaport, brappaport@wustl.edu"
+title: "Analysis code for 'Bivariate latent change score analysis of peer relations from early childhood to adolescence: Leading or lagging indicators of psychopathology'"
+author: "Brent I. Rappaport (brappaport@wustl.edu), Joshua J. Jackson, Diana J. Whalen, David Pagliaccio, Joan L. Luby, Deanna M. Barch"
 date: "05/30/2018"
 output: word_document
 ---
@@ -10,28 +10,28 @@ knitr::opts_chunk$set(echo= FALSE, warning= FALSE)
 library(ggplot2)
 library(psych)
 library(knitr)
-library(bookdown)
+#library(bookdown)
 library(Rmisc)
 library(tidyverse)
-library(car)
-library(lsr)
-library(lsmeans)
+#library(car)
+#library(lsr)
+#library(lme4)
+#library(lsmeans)
 library(R.utils)
 library(descr)
-library(lme4)
-library(RAMpath)
-library(MissMech)
+#library(RAMpath)
+#library(MissMech)
 library(broom)
 library(Hmisc)
-library(xtable)
-library(semPlot)
+#library(xtable)
+#library(semPlot)
 library(lavaan)
-library(ggthemes)
-library(ggrepel)
-library(papaja)
+#library(ggthemes)
+#library(ggrepel)
+#library(papaja)
 library(kableExtra)
-library(lavaanPlot)
-library(pander)
+#library(lavaanPlot)
+#library(pander)
 select <- dplyr::select
 
 #Load data
@@ -44,7 +44,7 @@ data_wide <- data_wide[,-1]
 ```
 
 # Function "lavTestLRT"
-```{r function lavTestLRT}
+```{r function lavTestLRT, include=FALSE}
 lav_test_diff_SatorraBentler2001 <- function(m1, m0) {
   
   # extract information from m1 and m2
@@ -361,6 +361,903 @@ lavTestLRT <- function(object, ..., method = "default", A.method = "delta",
 ```
 
 # Explanation of models
+
+## Variable key
+In the following models, 'Peer' refers to peer victimization, 'Agg' refers to peer-directed aggression, 'Sw' refers to social withdrawal, and 'Pro' refers to prosocial behavior. Additionally, MDD refers to depression, INTL refers to anxiety, and EXTL refers to externalizing symptoms.
+Among the covariates, sex_01 refers to the subjects' sex, ethin refers to their race, T1Income_to_Need referes to the income-to-need ratio or socioeconomic status, IQ refers to intelligence quotient, T1_ACES_sum refers to adverse life events at the initial wave, and first_MDDBP refers to the presence of a first degree relative with a mood disorder.
+
+# Bivariate latent growth curves
+First run bivariate latent growth curves assessing the cross sectional and longitudinal relationships between four types of peer relations (peer victimization, peer-directed aggression, social withdrawal, and prosocial behavior) and three psychopathology symptom dimensions (depression, anxiety, externalizing).
+
+
+# Latent growth curves
+```{r latent growth curves, echo=FALSE, cache=TRUE}
+#Peer victimization/rejection
+Peer_MDD_growth <- '
+#Defining the latent variables
+Peer1=~1*PPeer_1+1*TPeer_1
+Peer2=~1*PPeer_3+1*TPeer_3
+Peer3=~1*PPeer_5+1*TPeer_5
+Peer4=~1*PPeer_10+1*TPeer_10
+Peer5=~1*PPeer_12+1*TPeer_12
+Peer6=~1*PPeer_14+1*TPeer_14
+
+MDD1=~1*MDDPRP100_1
+MDD2=~1*MDDPRP100_3
+MDD3=~1*MDDPRP100_5
+MDD4=~1*MDDPRP100_10
+MDD5=~1*MDDPRP100_12
+MDD6=~1*MDDPRP100_14
+
+#Estimate residual variances
+PPeer_1~~PPeer_1          # This estimates the PPeer residual variances
+PPeer_3~~PPeer_3
+PPeer_5~~PPeer_5
+PPeer_10~~PPeer_10
+PPeer_12~~PPeer_12
+PPeer_14~~PPeer_14
+
+TPeer_1~~TPeer_1          # This estimates the TPeer residual variances
+TPeer_3~~TPeer_3
+TPeer_5~~TPeer_5
+TPeer_10~~TPeer_10
+TPeer_12~~TPeer_12
+TPeer_14~~TPeer_14
+
+MDDPRP100_1~~MDDPRP100_1          # This estimates the MDD residual variances
+MDDPRP100_3~~MDDPRP100_3
+MDDPRP100_5~~MDDPRP100_5
+MDDPRP100_10~~MDDPRP100_10
+MDDPRP100_12~~MDDPRP100_12
+MDDPRP100_14~~MDDPRP100_14
+
+
+iPeer=~1*Peer1+ 1*Peer2+ 1*Peer3+ 1*Peer4+ 1*Peer5+ 1*Peer6     # This defines the Peer intercept measurement model
+sPeer=~0*Peer1+ 1*Peer2+ 2*Peer3+ 3*Peer4+ 4*Peer5+ 5*Peer6 # This defines the Peer slope measurement model
+iPeer~1                             # This estimates the Peer intercept intercept (mean)
+iPeer~~iPeer                         # This estimates the Peer intercept variance
+sPeer~1                             # This estimates the Peer slope intercept
+sPeer~~sPeer                         # This estimates the Peer slope variance
+
+iMDD=~1*MDD1+ 1*MDD2+ 1*MDD3+ 1*MDD4+ 1*MDD5+ 1*MDD6  # This defines the MDD intercept measurement model
+sMDD=~0*MDD1+ 1*MDD2+ 2*MDD3+ 3*MDD4+ 4*MDD5+ 5*MDD6 # This defines the MDD slope measurement model
+iMDD~1                             # This estimates the MDD intercept intercept (mean)
+iMDD~~iMDD                         # This estimates the MDD intercept variance
+sMDD~1                             # This estimates the MDD slope intercept
+sMDD~~sMDD                         # This estimates the MDD slope variance
+
+iMDD~~sMDD                      # This estimates the iMDD sMDD covariance
+iMDD~~sPeer                      # This estimates the iMDD sPeer covariance
+iMDD~~iPeer                      # This estimates the iMDD iPeer covariance
+iPeer~~sPeer                      # This estimates the iPeer sPeer covariance
+iPeer~~sMDD                      # This estimates the iPeer sMDD covariance
+sPeer~~sMDD                      # This estimates the sPeer sMDD covariance
+
+
+#Covariates
+iPeer ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+sPeer ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+iMDD ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+sMDD ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+'
+
+fit_Peer_MDD_growth <- lavaan(Peer_MDD_growth, data=data_wide, missing="FIML", estimator="MLR")
+
+
+Peer_INTL_growth <- '
+#Defining the latent variables
+Peer1=~1*PPeer_1+1*TPeer_1
+Peer2=~1*PPeer_3+1*TPeer_3
+Peer3=~1*PPeer_5+1*TPeer_5
+Peer4=~1*PPeer_10+1*TPeer_10
+Peer5=~1*PPeer_12+1*TPeer_12
+Peer6=~1*PPeer_14+1*TPeer_14
+
+INTL1=~1*INTL_1
+INTL2=~1*INTL_3
+INTL3=~1*INTL_5
+INTL4=~1*INTL_10
+INTL5=~1*INTL_12
+INTL6=~1*INTL_14
+
+#Estimate residual variances
+PPeer_1~~PPeer_1          # This estimates the PPeer residual variances
+PPeer_3~~PPeer_3
+PPeer_5~~PPeer_5
+PPeer_10~~PPeer_10
+PPeer_12~~PPeer_12
+PPeer_14~~PPeer_14
+
+TPeer_1~~TPeer_1          # This estimates the TPeer residual variances
+TPeer_3~~TPeer_3
+TPeer_5~~TPeer_5
+TPeer_10~~TPeer_10
+TPeer_12~~TPeer_12
+TPeer_14~~TPeer_14
+
+INTL_1~~INTL_1          # This estimates the INTL residual variances
+INTL_3~~INTL_3
+INTL_5~~INTL_5
+INTL_10~~INTL_10
+INTL_12~~INTL_12
+INTL_14~~INTL_14
+
+
+iPeer=~1*Peer1+ 1*Peer2+ 1*Peer3+ 1*Peer4+ 1*Peer5+ 1*Peer6     # This defines the Peer intercept measurement model
+sPeer=~0*Peer1+ 1*Peer2+ 2*Peer3+ 3*Peer4+ 4*Peer5+ 5*Peer6 # This defines the Peer slope measurement model
+iPeer~1                             # This estimates the Peer intercept intercept (mean)
+iPeer~~iPeer                         # This estimates the Peer intercept variance
+sPeer~1                             # This estimates the Peer slope intercept
+sPeer~~sPeer                         # This estimates the Peer slope variance
+
+iINTL=~1*INTL1+ 1*INTL2+ 1*INTL3+ 1*INTL4+ 1*INTL5+ 1*INTL6  # This defines the INTL intercept measurement model
+sINTL=~0*INTL1+ 1*INTL2+ 2*INTL3+ 3*INTL4+ 4*INTL5+ 5*INTL6 # This defines the INTL slope measurement model
+iINTL~1                             # This estimates the INTL intercept intercept (mean)
+iINTL~~iINTL                         # This estimates the INTL intercept variance
+sINTL~1                             # This estimates the INTL slope intercept
+sINTL~~sINTL                         # This estimates the INTL slope variance
+
+iINTL~~sINTL                      # This estimates the iINTL sINTL covariance
+iINTL~~sPeer                      # This estimates the iINTL sPeer covariance
+iINTL~~iPeer                      # This estimates the iINTL iPeer covariance
+iPeer~~sPeer                      # This estimates the iPeer sPeer covariance
+iPeer~~sINTL                      # This estimates the iPeer sINTL covariance
+sPeer~~sINTL                      # This estimates the sPeer sINTL covariance
+
+
+#Covariates
+iPeer ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+sPeer ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+iINTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+sINTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+'
+
+fit_Peer_INTL_growth <- lavaan(Peer_INTL_growth, data=data_wide, missing="FIML", estimator="MLR")
+
+
+Peer_EXTL_growth <- '
+#Defining the latent variables
+Peer1=~1*PPeer_1+1*TPeer_1
+Peer2=~1*PPeer_3+1*TPeer_3
+Peer3=~1*PPeer_5+1*TPeer_5
+Peer4=~1*PPeer_10+1*TPeer_10
+Peer5=~1*PPeer_12+1*TPeer_12
+Peer6=~1*PPeer_14+1*TPeer_14
+
+EXTL1=~1*EXTL_1
+EXTL2=~1*EXTL_3
+EXTL3=~1*EXTL_5
+EXTL4=~1*EXTL_10
+EXTL5=~1*EXTL_12
+EXTL6=~1*EXTL_14
+
+#Estimate residual variances
+PPeer_1~~PPeer_1          # This estimates the PPeer residual variances
+PPeer_3~~PPeer_3
+PPeer_5~~PPeer_5
+PPeer_10~~PPeer_10
+PPeer_12~~PPeer_12
+PPeer_14~~PPeer_14
+
+TPeer_1~~TPeer_1          # This estimates the TPeer residual variances
+TPeer_3~~TPeer_3
+TPeer_5~~TPeer_5
+TPeer_10~~TPeer_10
+TPeer_12~~TPeer_12
+TPeer_14~~TPeer_14
+
+EXTL_1~~EXTL_1          # This estimates the EXTL residual variances
+EXTL_3~~EXTL_3
+EXTL_5~~EXTL_5
+EXTL_10~~EXTL_10
+EXTL_12~~EXTL_12
+EXTL_14~~EXTL_14
+
+
+iPeer=~1*Peer1+ 1*Peer2+ 1*Peer3+ 1*Peer4+ 1*Peer5+ 1*Peer6     # This defines the Peer intercept measurement model
+sPeer=~0*Peer1+ 1*Peer2+ 2*Peer3+ 3*Peer4+ 4*Peer5+ 5*Peer6 # This defines the Peer slope measurement model
+iPeer~1                             # This estimates the Peer intercept intercept (mean)
+iPeer~~iPeer                         # This estimates the Peer intercept variance
+sPeer~1                             # This estimates the Peer slope intercept
+sPeer~~sPeer                         # This estimates the Peer slope variance
+
+iEXTL=~1*EXTL1+ 1*EXTL2+ 1*EXTL3+ 1*EXTL4+ 1*EXTL5+ 1*EXTL6  # This defines the EXTL intercept measurement model
+sEXTL=~0*EXTL1+ 1*EXTL2+ 2*EXTL3+ 3*EXTL4+ 4*EXTL5+ 5*EXTL6 # This defines the EXTL slope measurement model
+iEXTL~1                             # This estimates the EXTL intercept intercept (mean)
+iEXTL~~iEXTL                         # This estimates the EXTL intercept variance
+sEXTL~1                             # This estimates the EXTL slope intercept
+sEXTL~~sEXTL                         # This estimates the EXTL slope variance
+
+iEXTL~~sEXTL                      # This estimates the iEXTL sEXTL covariance
+iEXTL~~sPeer                      # This estimates the iEXTL sPeer covariance
+iEXTL~~iPeer                      # This estimates the iEXTL iPeer covariance
+iPeer~~sPeer                      # This estimates the iPeer sPeer covariance
+iPeer~~sEXTL                      # This estimates the iPeer sEXTL covariance
+sPeer~~sEXTL                      # This estimates the sPeer sEXTL covariance
+
+
+#Covariates
+iPeer ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+sPeer ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+iEXTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+sEXTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+'
+
+fit_Peer_EXTL_growth <- lavaan(Peer_EXTL_growth, data=data_wide, missing="FIML", estimator="MLR")
+
+
+#Aggression
+Agg_MDD_growth <- '
+#Defining the latent variables
+Agg1=~1*PAgg_1+1*TAgg_1
+Agg2=~1*PAgg_3+1*TAgg_3
+Agg3=~1*PAgg_5+1*TAgg_5
+Agg4=~1*PAgg_10+1*TAgg_10
+Agg5=~1*PAgg_12+1*TAgg_12
+Agg6=~1*PAgg_14+1*TAgg_14
+
+MDD1=~1*MDDPRP100_1
+MDD2=~1*MDDPRP100_3
+MDD3=~1*MDDPRP100_5
+MDD4=~1*MDDPRP100_10
+MDD5=~1*MDDPRP100_12
+MDD6=~1*MDDPRP100_14
+
+#Estimate residual variances
+PAgg_1~~PAgg_1          # This estimates the PAgg residual variances
+PAgg_3~~PAgg_3
+PAgg_5~~PAgg_5
+PAgg_10~~PAgg_10
+PAgg_12~~PAgg_12
+PAgg_14~~PAgg_14
+
+TAgg_1~~TAgg_1          # This estimates the TAgg residual variances
+TAgg_3~~TAgg_3
+TAgg_5~~TAgg_5
+TAgg_10~~TAgg_10
+TAgg_12~~TAgg_12
+TAgg_14~~TAgg_14
+
+MDDPRP100_1~~MDDPRP100_1          # This estimates the MDD residual variances
+MDDPRP100_3~~MDDPRP100_3
+MDDPRP100_5~~MDDPRP100_5
+MDDPRP100_10~~MDDPRP100_10
+MDDPRP100_12~~MDDPRP100_12
+MDDPRP100_14~~MDDPRP100_14
+
+
+iAgg=~1*Agg1+ 1*Agg2+ 1*Agg3+ 1*Agg4+ 1*Agg5+ 1*Agg6     # This defines the Agg intercept measurement model
+sAgg=~0*Agg1+ 1*Agg2+ 2*Agg3+ 3*Agg4+ 4*Agg5+ 5*Agg6 # This defines the Agg slope measurement model
+iAgg~1                             # This estimates the Agg intercept intercept (mean)
+iAgg~~iAgg                         # This estimates the Agg intercept variance
+sAgg~1                             # This estimates the Agg slope intercept
+sAgg~~sAgg                         # This estimates the Agg slope variance
+
+iMDD=~1*MDD1+ 1*MDD2+ 1*MDD3+ 1*MDD4+ 1*MDD5+ 1*MDD6  # This defines the MDD intercept measurement model
+sMDD=~0*MDD1+ 1*MDD2+ 2*MDD3+ 3*MDD4+ 4*MDD5+ 5*MDD6 # This defines the MDD slope measurement model
+iMDD~1                             # This estimates the MDD intercept intercept (mean)
+iMDD~~iMDD                         # This estimates the MDD intercept variance
+sMDD~1                             # This estimates the MDD slope intercept
+sMDD~~sMDD                         # This estimates the MDD slope variance
+
+iMDD~~sMDD                      # This estimates the iMDD sMDD covariance
+iMDD~~sAgg                      # This estimates the iMDD sAgg covariance
+iMDD~~iAgg                      # This estimates the iMDD iAgg covariance
+iAgg~~sAgg                      # This estimates the iAgg sAgg covariance
+iAgg~~sMDD                      # This estimates the iAgg sMDD covariance
+sAgg~~sMDD                      # This estimates the sAgg sMDD covariance
+
+
+#Covariates
+iAgg ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+sAgg ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+iMDD ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+sMDD ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+'
+
+fit_Agg_MDD_growth <- lavaan(Agg_MDD_growth, data=data_wide, missing="FIML", estimator="MLR")
+
+
+Agg_INTL_growth <- '
+#Defining the latent variables
+Agg1=~1*PAgg_1+1*TAgg_1
+Agg2=~1*PAgg_3+1*TAgg_3
+Agg3=~1*PAgg_5+1*TAgg_5
+Agg4=~1*PAgg_10+1*TAgg_10
+Agg5=~1*PAgg_12+1*TAgg_12
+Agg6=~1*PAgg_14+1*TAgg_14
+
+INTL1=~1*INTL_1
+INTL2=~1*INTL_3
+INTL3=~1*INTL_5
+INTL4=~1*INTL_10
+INTL5=~1*INTL_12
+INTL6=~1*INTL_14
+
+#Estimate residual variances
+PAgg_1~~PAgg_1          # This estimates the PAgg residual variances
+PAgg_3~~PAgg_3
+PAgg_5~~PAgg_5
+PAgg_10~~PAgg_10
+PAgg_12~~PAgg_12
+PAgg_14~~PAgg_14
+
+TAgg_1~~TAgg_1          # This estimates the TAgg residual variances
+TAgg_3~~TAgg_3
+TAgg_5~~TAgg_5
+TAgg_10~~TAgg_10
+TAgg_12~~TAgg_12
+TAgg_14~~TAgg_14
+
+INTL_1~~INTL_1          # This estimates the INTL residual variances
+INTL_3~~INTL_3
+INTL_5~~INTL_5
+INTL_10~~INTL_10
+INTL_12~~INTL_12
+INTL_14~~INTL_14
+
+
+iAgg=~1*Agg1+ 1*Agg2+ 1*Agg3+ 1*Agg4+ 1*Agg5+ 1*Agg6     # This defines the Agg intercept measurement model
+sAgg=~0*Agg1+ 1*Agg2+ 2*Agg3+ 3*Agg4+ 4*Agg5+ 5*Agg6 # This defines the Agg slope measurement model
+iAgg~1                             # This estimates the Agg intercept intercept (mean)
+iAgg~~iAgg                         # This estimates the Agg intercept variance
+sAgg~1                             # This estimates the Agg slope intercept
+sAgg~~sAgg                         # This estimates the Agg slope variance
+
+iINTL=~1*INTL1+ 1*INTL2+ 1*INTL3+ 1*INTL4+ 1*INTL5+ 1*INTL6  # This defines the INTL intercept measurement model
+sINTL=~0*INTL1+ 1*INTL2+ 2*INTL3+ 3*INTL4+ 4*INTL5+ 5*INTL6 # This defines the INTL slope measurement model
+iINTL~1                             # This estimates the INTL intercept intercept (mean)
+iINTL~~iINTL                         # This estimates the INTL intercept variance
+sINTL~1                             # This estimates the INTL slope intercept
+sINTL~~sINTL                         # This estimates the INTL slope variance
+
+iINTL~~sINTL                      # This estimates the iINTL sINTL covariance
+iINTL~~sAgg                      # This estimates the iINTL sAgg covariance
+iINTL~~iAgg                      # This estimates the iINTL iAgg covariance
+iAgg~~sAgg                      # This estimates the iAgg sAgg covariance
+iAgg~~sINTL                      # This estimates the iAgg sINTL covariance
+sAgg~~sINTL                      # This estimates the sAgg sINTL covariance
+
+
+#Covariates
+iAgg ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+sAgg ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+iINTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+sINTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+'
+
+fit_Agg_INTL_growth <- lavaan(Agg_INTL_growth, data=data_wide, missing="FIML", estimator="MLR")
+
+
+Agg_EXTL_growth <- '
+#Defining the latent variables
+Agg1=~1*PAgg_1+1*TAgg_1
+Agg2=~1*PAgg_3+1*TAgg_3
+Agg3=~1*PAgg_5+1*TAgg_5
+Agg4=~1*PAgg_10+1*TAgg_10
+Agg5=~1*PAgg_12+1*TAgg_12
+Agg6=~1*PAgg_14+1*TAgg_14
+
+EXTL1=~1*EXTL_1
+EXTL2=~1*EXTL_3
+EXTL3=~1*EXTL_5
+EXTL4=~1*EXTL_10
+EXTL5=~1*EXTL_12
+EXTL6=~1*EXTL_14
+
+#Estimate residual variances
+PAgg_1~~PAgg_1          # This estimates the PAgg residual variances
+PAgg_3~~PAgg_3
+PAgg_5~~PAgg_5
+PAgg_10~~PAgg_10
+PAgg_12~~PAgg_12
+PAgg_14~~PAgg_14
+
+TAgg_1~~TAgg_1          # This estimates the TAgg residual variances
+TAgg_3~~TAgg_3
+TAgg_5~~TAgg_5
+TAgg_10~~TAgg_10
+TAgg_12~~TAgg_12
+TAgg_14~~TAgg_14
+
+EXTL_1~~EXTL_1          # This estimates the EXTL residual variances
+EXTL_3~~EXTL_3
+EXTL_5~~EXTL_5
+EXTL_10~~EXTL_10
+EXTL_12~~EXTL_12
+EXTL_14~~EXTL_14
+
+
+iAgg=~1*Agg1+ 1*Agg2+ 1*Agg3+ 1*Agg4+ 1*Agg5+ 1*Agg6     # This defines the Agg intercept measurement model
+sAgg=~0*Agg1+ 1*Agg2+ 2*Agg3+ 3*Agg4+ 4*Agg5+ 5*Agg6 # This defines the Agg slope measurement model
+iAgg~1                             # This estimates the Agg intercept intercept (mean)
+iAgg~~iAgg                         # This estimates the Agg intercept variance
+sAgg~1                             # This estimates the Agg slope intercept
+sAgg~~sAgg                         # This estimates the Agg slope variance
+
+iEXTL=~1*EXTL1+ 1*EXTL2+ 1*EXTL3+ 1*EXTL4+ 1*EXTL5+ 1*EXTL6  # This defines the EXTL intercept measurement model
+sEXTL=~0*EXTL1+ 1*EXTL2+ 2*EXTL3+ 3*EXTL4+ 4*EXTL5+ 5*EXTL6 # This defines the EXTL slope measurement model
+iEXTL~1                             # This estimates the EXTL intercept intercept (mean)
+iEXTL~~iEXTL                         # This estimates the EXTL intercept variance
+sEXTL~1                             # This estimates the EXTL slope intercept
+sEXTL~~sEXTL                         # This estimates the EXTL slope variance
+
+iEXTL~~sEXTL                      # This estimates the iEXTL sEXTL covariance
+iEXTL~~sAgg                      # This estimates the iEXTL sAgg covariance
+iEXTL~~iAgg                      # This estimates the iEXTL iAgg covariance
+iAgg~~sAgg                      # This estimates the iAgg sAgg covariance
+iAgg~~sEXTL                      # This estimates the iAgg sEXTL covariance
+sAgg~~sEXTL                      # This estimates the sAgg sEXTL covariance
+
+
+#Covariates
+iAgg ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+sAgg ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+iEXTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+sEXTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+'
+
+fit_Agg_EXTL_growth <- lavaan(Agg_EXTL_growth, data=data_wide, missing="FIML", estimator="MLR")
+
+
+##Social Withdrawal
+Sw_MDD_growth <- '
+#Defining the latent variables
+Sw1=~1*PSw_1+1*TSw_1
+Sw2=~1*PSw_3+1*TSw_3
+Sw3=~1*PSw_5+1*TSw_5
+Sw4=~1*PSw_10+1*TSw_10
+Sw5=~1*PSw_12+1*TSw_12
+Sw6=~1*PSw_14+1*TSw_14
+
+MDD1=~1*MDDPRP100_1
+MDD2=~1*MDDPRP100_3
+MDD3=~1*MDDPRP100_5
+MDD4=~1*MDDPRP100_10
+MDD5=~1*MDDPRP100_12
+MDD6=~1*MDDPRP100_14
+
+#Estimate residual variances
+PSw_1~~PSw_1          # This estimates the PSw residual variances
+PSw_3~~PSw_3
+PSw_5~~PSw_5
+PSw_10~~PSw_10
+PSw_12~~PSw_12
+PSw_14~~PSw_14
+
+TSw_1~~TSw_1          # This estimates the TSw residual variances
+TSw_3~~TSw_3
+TSw_5~~TSw_5
+TSw_10~~TSw_10
+TSw_12~~TSw_12
+TSw_14~~TSw_14
+
+MDDPRP100_1~~MDDPRP100_1          # This estimates the MDD residual variances
+MDDPRP100_3~~MDDPRP100_3
+MDDPRP100_5~~MDDPRP100_5
+MDDPRP100_10~~MDDPRP100_10
+MDDPRP100_12~~MDDPRP100_12
+MDDPRP100_14~~MDDPRP100_14
+
+
+iSw=~1*Sw1+ 1*Sw2+ 1*Sw3+ 1*Sw4+ 1*Sw5+ 1*Sw6     # This defines the Sw intercept measurement model
+sSw=~0*Sw1+ 1*Sw2+ 2*Sw3+ 3*Sw4+ 4*Sw5+ 5*Sw6 # This defines the Sw slope measurement model
+iSw~1                             # This estimates the Sw intercept intercept (mean)
+iSw~~iSw                         # This estimates the Sw intercept variance
+sSw~1                             # This estimates the Sw slope intercept
+sSw~~sSw                         # This estimates the Sw slope variance
+
+iMDD=~1*MDD1+ 1*MDD2+ 1*MDD3+ 1*MDD4+ 1*MDD5+ 1*MDD6  # This defines the MDD intercept measurement model
+sMDD=~0*MDD1+ 1*MDD2+ 2*MDD3+ 3*MDD4+ 4*MDD5+ 5*MDD6 # This defines the MDD slope measurement model
+iMDD~1                             # This estimates the MDD intercept intercept (mean)
+iMDD~~iMDD                         # This estimates the MDD intercept variance
+sMDD~1                             # This estimates the MDD slope intercept
+sMDD~~sMDD                         # This estimates the MDD slope variance
+
+iMDD~~sMDD                      # This estimates the iMDD sMDD covariance
+iMDD~~sSw                      # This estimates the iMDD sSw covariance
+iMDD~~iSw                      # This estimates the iMDD iSw covariance
+iSw~~sSw                      # This estimates the iSw sSw covariance
+iSw~~sMDD                      # This estimates the iSw sMDD covariance
+sSw~~sMDD                      # This estimates the sSw sMDD covariance
+
+
+#Covariates
+iSw ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+sSw ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+iMDD ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+sMDD ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+'
+
+fit_Sw_MDD_growth <- lavaan(Sw_MDD_growth, data=data_wide, missing="FIML", estimator="MLR")
+
+
+Sw_INTL_growth <- '
+#Defining the latent variables
+Sw1=~1*PSw_1+1*TSw_1
+Sw2=~1*PSw_3+1*TSw_3
+Sw3=~1*PSw_5+1*TSw_5
+Sw4=~1*PSw_10+1*TSw_10
+Sw5=~1*PSw_12+1*TSw_12
+Sw6=~1*PSw_14+1*TSw_14
+
+INTL1=~1*INTL_1
+INTL2=~1*INTL_3
+INTL3=~1*INTL_5
+INTL4=~1*INTL_10
+INTL5=~1*INTL_12
+INTL6=~1*INTL_14
+
+#Estimate residual variances
+PSw_1~~PSw_1          # This estimates the PSw residual variances
+PSw_3~~PSw_3
+PSw_5~~PSw_5
+PSw_10~~PSw_10
+PSw_12~~PSw_12
+PSw_14~~PSw_14
+
+TSw_1~~TSw_1          # This estimates the TSw residual variances
+TSw_3~~TSw_3
+TSw_5~~TSw_5
+TSw_10~~TSw_10
+TSw_12~~TSw_12
+TSw_14~~TSw_14
+
+INTL_1~~INTL_1          # This estimates the INTL residual variances
+INTL_3~~INTL_3
+INTL_5~~INTL_5
+INTL_10~~INTL_10
+INTL_12~~INTL_12
+INTL_14~~INTL_14
+
+
+iSw=~1*Sw1+ 1*Sw2+ 1*Sw3+ 1*Sw4+ 1*Sw5+ 1*Sw6     # This defines the Sw intercept measurement model
+sSw=~0*Sw1+ 1*Sw2+ 2*Sw3+ 3*Sw4+ 4*Sw5+ 5*Sw6 # This defines the Sw slope measurement model
+iSw~1                             # This estimates the Sw intercept intercept (mean)
+iSw~~iSw                         # This estimates the Sw intercept variance
+sSw~1                             # This estimates the Sw slope intercept
+sSw~~sSw                         # This estimates the Sw slope variance
+
+iINTL=~1*INTL1+ 1*INTL2+ 1*INTL3+ 1*INTL4+ 1*INTL5+ 1*INTL6  # This defines the INTL intercept measurement model
+sINTL=~0*INTL1+ 1*INTL2+ 2*INTL3+ 3*INTL4+ 4*INTL5+ 5*INTL6 # This defines the INTL slope measurement model
+iINTL~1                             # This estimates the INTL intercept intercept (mean)
+iINTL~~iINTL                         # This estimates the INTL intercept variance
+sINTL~1                             # This estimates the INTL slope intercept
+sINTL~~sINTL                         # This estimates the INTL slope variance
+
+iINTL~~sINTL                      # This estimates the iINTL sINTL covariance
+iINTL~~sSw                      # This estimates the iINTL sSw covariance
+iINTL~~iSw                      # This estimates the iINTL iSw covariance
+iSw~~sSw                      # This estimates the iSw sSw covariance
+iSw~~sINTL                      # This estimates the iSw sINTL covariance
+sSw~~sINTL                      # This estimates the sSw sINTL covariance
+
+
+#Covariates
+iSw ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+sSw ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+iINTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+sINTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+'
+
+fit_Sw_INTL_growth <- lavaan(Sw_INTL_growth, data=data_wide, missing="FIML", estimator="MLR")
+
+
+Sw_EXTL_growth <- '
+#Defining the latent variables
+Sw1=~1*PSw_1+1*TSw_1
+Sw2=~1*PSw_3+1*TSw_3
+Sw3=~1*PSw_5+1*TSw_5
+Sw4=~1*PSw_10+1*TSw_10
+Sw5=~1*PSw_12+1*TSw_12
+Sw6=~1*PSw_14+1*TSw_14
+
+EXTL1=~1*EXTL_1
+EXTL2=~1*EXTL_3
+EXTL3=~1*EXTL_5
+EXTL4=~1*EXTL_10
+EXTL5=~1*EXTL_12
+EXTL6=~1*EXTL_14
+
+#Estimate residual variances
+PSw_1~~PSw_1          # This estimates the PSw residual variances
+PSw_3~~PSw_3
+PSw_5~~PSw_5
+PSw_10~~PSw_10
+PSw_12~~PSw_12
+PSw_14~~PSw_14
+
+TSw_1~~TSw_1          # This estimates the TSw residual variances
+TSw_3~~TSw_3
+TSw_5~~TSw_5
+TSw_10~~TSw_10
+TSw_12~~TSw_12
+TSw_14~~TSw_14
+
+EXTL_1~~EXTL_1          # This estimates the EXTL residual variances
+EXTL_3~~EXTL_3
+EXTL_5~~EXTL_5
+EXTL_10~~EXTL_10
+EXTL_12~~EXTL_12
+EXTL_14~~EXTL_14
+
+
+iSw=~1*Sw1+ 1*Sw2+ 1*Sw3+ 1*Sw4+ 1*Sw5+ 1*Sw6     # This defines the Sw intercept measurement model
+sSw=~0*Sw1+ 1*Sw2+ 2*Sw3+ 3*Sw4+ 4*Sw5+ 5*Sw6 # This defines the Sw slope measurement model
+iSw~1                             # This estimates the Sw intercept intercept (mean)
+iSw~~iSw                         # This estimates the Sw intercept variance
+sSw~1                             # This estimates the Sw slope intercept
+sSw~~sSw                         # This estimates the Sw slope variance
+
+iEXTL=~1*EXTL1+ 1*EXTL2+ 1*EXTL3+ 1*EXTL4+ 1*EXTL5+ 1*EXTL6  # This defines the EXTL intercept measurement model
+sEXTL=~0*EXTL1+ 1*EXTL2+ 2*EXTL3+ 3*EXTL4+ 4*EXTL5+ 5*EXTL6 # This defines the EXTL slope measurement model
+iEXTL~1                             # This estimates the EXTL intercept intercept (mean)
+iEXTL~~iEXTL                         # This estimates the EXTL intercept variance
+sEXTL~1                             # This estimates the EXTL slope intercept
+sEXTL~~sEXTL                         # This estimates the EXTL slope variance
+
+iEXTL~~sEXTL                      # This estimates the iEXTL sEXTL covariance
+iEXTL~~sSw                      # This estimates the iEXTL sSw covariance
+iEXTL~~iSw                      # This estimates the iEXTL iSw covariance
+iSw~~sSw                      # This estimates the iSw sSw covariance
+iSw~~sEXTL                      # This estimates the iSw sEXTL covariance
+sSw~~sEXTL                      # This estimates the sSw sEXTL covariance
+
+
+#Covariates
+iSw ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+sSw ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+iEXTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+sEXTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+'
+
+fit_Sw_EXTL_growth <- lavaan(Sw_EXTL_growth, data=data_wide, missing="FIML", estimator="MLR")
+
+
+##Prosocial
+Pro_MDD_growth <- '
+#Defining the latent variables
+Pro1=~1*PPro_1+1*TPro_1
+Pro2=~1*PPro_3+1*TPro_3
+Pro3=~1*PPro_5+1*TPro_5
+Pro4=~1*PPro_10+1*TPro_10
+Pro5=~1*PPro_12+1*TPro_12
+Pro6=~1*PPro_14+1*TPro_14
+
+MDD1=~1*MDDPRP100_1
+MDD2=~1*MDDPRP100_3
+MDD3=~1*MDDPRP100_5
+MDD4=~1*MDDPRP100_10
+MDD5=~1*MDDPRP100_12
+MDD6=~1*MDDPRP100_14
+
+#Estimate residual variances
+PPro_1~~PPro_1          # This estimates the PPro residual variances
+PPro_3~~PPro_3
+PPro_5~~PPro_5
+PPro_10~~PPro_10
+PPro_12~~PPro_12
+PPro_14~~PPro_14
+
+TPro_1~~TPro_1          # This estimates the TPro residual variances
+TPro_3~~TPro_3
+TPro_5~~TPro_5
+TPro_10~~TPro_10
+TPro_12~~TPro_12
+TPro_14~~TPro_14
+
+MDDPRP100_1~~MDDPRP100_1          # This estimates the MDD residual variances
+MDDPRP100_3~~MDDPRP100_3
+MDDPRP100_5~~MDDPRP100_5
+MDDPRP100_10~~MDDPRP100_10
+MDDPRP100_12~~MDDPRP100_12
+MDDPRP100_14~~MDDPRP100_14
+
+
+iPro=~1*Pro1+ 1*Pro2+ 1*Pro3+ 1*Pro4+ 1*Pro5+ 1*Pro6     # This defines the Pro intercept measurement model
+sPro=~0*Pro1+ 1*Pro2+ 2*Pro3+ 3*Pro4+ 4*Pro5+ 5*Pro6 # This defines the Pro slope measurement model
+iPro~1                             # This estimates the Pro intercept intercept (mean)
+iPro~~iPro                         # This estimates the Pro intercept variance
+sPro~1                             # This estimates the Pro slope intercept
+sPro~~sPro                         # This estimates the Pro slope variance
+
+iMDD=~1*MDD1+ 1*MDD2+ 1*MDD3+ 1*MDD4+ 1*MDD5+ 1*MDD6  # This defines the MDD intercept measurement model
+sMDD=~0*MDD1+ 1*MDD2+ 2*MDD3+ 3*MDD4+ 4*MDD5+ 5*MDD6 # This defines the MDD slope measurement model
+iMDD~1                             # This estimates the MDD intercept intercept (mean)
+iMDD~~iMDD                         # This estimates the MDD intercept variance
+sMDD~1                             # This estimates the MDD slope intercept
+sMDD~~sMDD                         # This estimates the MDD slope variance
+
+iMDD~~sMDD                      # This estimates the iMDD sMDD covariance
+iMDD~~sPro                      # This estimates the iMDD sPro covariance
+iMDD~~iPro                      # This estimates the iMDD iPro covariance
+iPro~~sPro                      # This estimates the iPro sPro covariance
+iPro~~sMDD                      # This estimates the iPro sMDD covariance
+sPro~~sMDD                      # This estimates the sPro sMDD covariance
+
+
+#Covariates
+iPro ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+sPro ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+iMDD ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+sMDD ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+'
+
+fit_Pro_MDD_growth <- lavaan(Pro_MDD_growth, data=data_wide, missing="FIML", estimator="MLR")
+
+
+Pro_INTL_growth <- '
+#Defining the latent variables
+Pro1=~1*PPro_1+1*TPro_1
+Pro2=~1*PPro_3+1*TPro_3
+Pro3=~1*PPro_5+1*TPro_5
+Pro4=~1*PPro_10+1*TPro_10
+Pro5=~1*PPro_12+1*TPro_12
+Pro6=~1*PPro_14+1*TPro_14
+
+INTL1=~1*INTL_1
+INTL2=~1*INTL_3
+INTL3=~1*INTL_5
+INTL4=~1*INTL_10
+INTL5=~1*INTL_12
+INTL6=~1*INTL_14
+
+#Estimate residual variances
+PPro_1~~PPro_1          # This estimates the PPro residual variances
+PPro_3~~PPro_3
+PPro_5~~PPro_5
+PPro_10~~PPro_10
+PPro_12~~PPro_12
+PPro_14~~PPro_14
+
+TPro_1~~TPro_1          # This estimates the TPro residual variances
+TPro_3~~TPro_3
+TPro_5~~TPro_5
+TPro_10~~TPro_10
+TPro_12~~TPro_12
+TPro_14~~TPro_14
+
+INTL_1~~INTL_1          # This estimates the INTL residual variances
+INTL_3~~INTL_3
+INTL_5~~INTL_5
+INTL_10~~INTL_10
+INTL_12~~INTL_12
+INTL_14~~INTL_14
+
+
+iPro=~1*Pro1+ 1*Pro2+ 1*Pro3+ 1*Pro4+ 1*Pro5+ 1*Pro6     # This defines the Pro intercept measurement model
+sPro=~0*Pro1+ 1*Pro2+ 2*Pro3+ 3*Pro4+ 4*Pro5+ 5*Pro6 # This defines the Pro slope measurement model
+iPro~1                             # This estimates the Pro intercept intercept (mean)
+iPro~~iPro                         # This estimates the Pro intercept variance
+sPro~1                             # This estimates the Pro slope intercept
+sPro~~sPro                         # This estimates the Pro slope variance
+
+iINTL=~1*INTL1+ 1*INTL2+ 1*INTL3+ 1*INTL4+ 1*INTL5+ 1*INTL6  # This defines the INTL intercept measurement model
+sINTL=~0*INTL1+ 1*INTL2+ 2*INTL3+ 3*INTL4+ 4*INTL5+ 5*INTL6 # This defines the INTL slope measurement model
+iINTL~1                             # This estimates the INTL intercept intercept (mean)
+iINTL~~iINTL                         # This estimates the INTL intercept variance
+sINTL~1                             # This estimates the INTL slope intercept
+sINTL~~sINTL                         # This estimates the INTL slope variance
+
+iINTL~~sINTL                      # This estimates the iINTL sINTL covariance
+iINTL~~sPro                      # This estimates the iINTL sPro covariance
+iINTL~~iPro                      # This estimates the iINTL iPro covariance
+iPro~~sPro                      # This estimates the iPro sPro covariance
+iPro~~sINTL                      # This estimates the iPro sINTL covariance
+sPro~~sINTL                      # This estimates the sPro sINTL covariance
+
+
+#Covariates
+iPro ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+sPro ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+iINTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+sINTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+'
+
+fit_Pro_INTL_growth <- lavaan(Pro_INTL_growth, data=data_wide, missing="FIML", estimator="MLR")
+
+
+Pro_EXTL_growth <- '
+#Defining the latent variables
+Pro1=~1*PPro_1+1*TPro_1
+Pro2=~1*PPro_3+1*TPro_3
+Pro3=~1*PPro_5+1*TPro_5
+Pro4=~1*PPro_10+1*TPro_10
+Pro5=~1*PPro_12+1*TPro_12
+Pro6=~1*PPro_14+1*TPro_14
+
+EXTL1=~1*EXTL_1
+EXTL2=~1*EXTL_3
+EXTL3=~1*EXTL_5
+EXTL4=~1*EXTL_10
+EXTL5=~1*EXTL_12
+EXTL6=~1*EXTL_14
+
+#Estimate residual variances
+PPro_1~~PPro_1          # This estimates the PPro residual variances
+PPro_3~~PPro_3
+PPro_5~~PPro_5
+PPro_10~~PPro_10
+PPro_12~~PPro_12
+PPro_14~~PPro_14
+
+TPro_1~~TPro_1          # This estimates the TPro residual variances
+TPro_3~~TPro_3
+TPro_5~~TPro_5
+TPro_10~~TPro_10
+TPro_12~~TPro_12
+TPro_14~~TPro_14
+
+EXTL_1~~EXTL_1          # This estimates the EXTL residual variances
+EXTL_3~~EXTL_3
+EXTL_5~~EXTL_5
+EXTL_10~~EXTL_10
+EXTL_12~~EXTL_12
+EXTL_14~~EXTL_14
+
+
+iPro=~1*Pro1+ 1*Pro2+ 1*Pro3+ 1*Pro4+ 1*Pro5+ 1*Pro6     # This defines the Pro intercept measurement model
+sPro=~0*Pro1+ 1*Pro2+ 2*Pro3+ 3*Pro4+ 4*Pro5+ 5*Pro6 # This defines the Pro slope measurement model
+iPro~1                             # This estimates the Pro intercept intercept (mean)
+iPro~~iPro                         # This estimates the Pro intercept variance
+sPro~1                             # This estimates the Pro slope intercept
+sPro~~sPro                         # This estimates the Pro slope variance
+
+iEXTL=~1*EXTL1+ 1*EXTL2+ 1*EXTL3+ 1*EXTL4+ 1*EXTL5+ 1*EXTL6  # This defines the EXTL intercept measurement model
+sEXTL=~0*EXTL1+ 1*EXTL2+ 2*EXTL3+ 3*EXTL4+ 4*EXTL5+ 5*EXTL6 # This defines the EXTL slope measurement model
+iEXTL~1                             # This estimates the EXTL intercept intercept (mean)
+iEXTL~~iEXTL                         # This estimates the EXTL intercept variance
+sEXTL~1                             # This estimates the EXTL slope intercept
+sEXTL~~sEXTL                         # This estimates the EXTL slope variance
+
+iEXTL~~sEXTL                      # This estimates the iEXTL sEXTL covariance
+iEXTL~~sPro                      # This estimates the iEXTL sPro covariance
+iEXTL~~iPro                      # This estimates the iEXTL iPro covariance
+iPro~~sPro                      # This estimates the iPro sPro covariance
+iPro~~sEXTL                      # This estimates the iPro sEXTL covariance
+sPro~~sEXTL                      # This estimates the sPro sEXTL covariance
+
+
+#Covariates
+iPro ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+sPro ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+iEXTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+sEXTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
+'
+
+fit_Pro_EXTL_growth <- lavaan(Pro_EXTL_growth, data=data_wide, missing="FIML", estimator="MLR")
+```
+
+```{r Concatenating growth model results into a table}
+Growth_results <- as.data.frame(matrix(nrow=16, ncol=6))
+colnames(Growth_results) <- c("1","2","3","MDD_Estimate","ANX_Estimate","EXTL_Estimate")
+
+#Peer growth model results
+Growth_results[1:4,1:4] <- parameterEstimates(fit_Peer_MDD_growth, standardized=T)[c(73,70,71,74),c(1:3,11)]
+Growth_results[1:4,5] <- parameterEstimates(fit_Peer_INTL_growth, standardized=T)[c(73,70,71,74),c(11)]
+Growth_results[1:4,6] <- parameterEstimates(fit_Peer_EXTL_growth, standardized=T)[c(73,70,71,74),c(11)]
+
+#Agg growth model results
+Growth_results[5:8,1:4] <- parameterEstimates(fit_Agg_MDD_growth, standardized=T)[c(73,70,71,74),c(1:3,11)]
+Growth_results[5:8,5] <- parameterEstimates(fit_Agg_INTL_growth, standardized=T)[c(73,70,71,74),c(11)]
+Growth_results[5:8,6] <- parameterEstimates(fit_Agg_EXTL_growth, standardized=T)[c(73,70,71,74),c(11)]
+
+#Sw growth model results
+Growth_results[9:12,1:4] <- parameterEstimates(fit_Sw_MDD_growth, standardized=T)[c(73,70,71,74),c(1:3,11)]
+Growth_results[9:12,5] <- parameterEstimates(fit_Sw_INTL_growth, standardized=T)[c(73,70,71,74),c(11)]
+Growth_results[9:12,6] <- parameterEstimates(fit_Sw_EXTL_growth, standardized=T)[c(73,70,71,74),c(11)]
+
+#Pro growth model results
+Growth_results[13:16,1:4] <- parameterEstimates(fit_Pro_MDD_growth, standardized=T)[c(73,70,71,74),c(1:3,11)]
+Growth_results[13:16,5] <- parameterEstimates(fit_Pro_INTL_growth, standardized=T)[c(73,70,71,74),c(11)]
+Growth_results[13:16,6] <- parameterEstimates(fit_Pro_EXTL_growth, standardized=T)[c(73,70,71,74),c(11)]
+
+Growth_results[,4:6] <- round(Growth_results[,4:6], 3)
+
+kable(Growth_results, align=c('l',rep('c', 10)))
+```
+
+# Bivariate latent change scores
 5 main models:
 1) First, a baseline model where coupling parameters are fixed to 0.
 2) Second, an “interpersonal risk” model (_IR) where coupling coefficients from dMDD ~ Peer (change in MDD symptoms predicted by Peer relations) are non-zero but are fixed across time. 
@@ -421,7 +1318,7 @@ PPeer_10~~PPeer_10
 PPeer_12~~PPeer_12
 PPeer_14~~PPeer_14
 
-TPeer_1~~TPeer_1          # This estimates the TPeerresidual variances
+TPeer_1~~TPeer_1          # This estimates the TPeer residual variances
 TPeer_3~~TPeer_3
 TPeer_5~~TPeer_5
 TPeer_10~~TPeer_10
@@ -558,7 +1455,7 @@ PPeer_10~~PPeer_10
 PPeer_12~~PPeer_12
 PPeer_14~~PPeer_14
 
-TPeer_1~~TPeer_1          # This estimates the TPeerresidual variances
+TPeer_1~~TPeer_1          # This estimates the TPeer residual variances
 TPeer_3~~TPeer_3
 TPeer_5~~TPeer_5
 TPeer_10~~TPeer_10
@@ -695,7 +1592,7 @@ PPeer_10~~PPeer_10
 PPeer_12~~PPeer_12
 PPeer_14~~PPeer_14
 
-TPeer_1~~TPeer_1          # This estimates the TPeerresidual variances
+TPeer_1~~TPeer_1          # This estimates the TPeer residual variances
 TPeer_3~~TPeer_3
 TPeer_5~~TPeer_5
 TPeer_10~~TPeer_10
@@ -831,7 +1728,7 @@ PPeer_10~~PPeer_10
 PPeer_12~~PPeer_12
 PPeer_14~~PPeer_14
 
-TPeer_1~~TPeer_1          # This estimates the TPeerresidual variances
+TPeer_1~~TPeer_1          # This estimates the TPeer residual variances
 TPeer_3~~TPeer_3
 TPeer_5~~TPeer_5
 TPeer_10~~TPeer_10
@@ -967,7 +1864,7 @@ PPeer_10~~PPeer_10
 PPeer_12~~PPeer_12
 PPeer_14~~PPeer_14
 
-TPeer_1~~TPeer_1          # This estimates the TPeerresidual variances
+TPeer_1~~TPeer_1          # This estimates the TPeer residual variances
 TPeer_3~~TPeer_3
 TPeer_5~~TPeer_5
 TPeer_10~~TPeer_10
@@ -1091,21 +1988,21 @@ dPeer3 =~ 1*Peer4
 dPeer4 =~ 1*Peer5
 dPeer5 =~ 1*Peer6
          
-dINTL1 =~ 1*INTL2           # This defines the change score as measured perfectly by scores on INTL2**
+dINTL1 =~ 1*INTL2           # This defines the change score as measured perfectly by scores on INTL2
 dINTL2 =~ 1*INTL3           
 dINTL3 =~ 1*INTL4
 dINTL4 =~ 1*INTL5
 dINTL5 =~ 1*INTL6
 
 #Estimate residual variances
-PPeer_1~~PPeer_1          # This estimates the PPeerresidual variances
+PPeer_1~~PPeer_1          # This estimates the PPeer residual variances
 PPeer_3~~PPeer_3
 PPeer_5~~PPeer_5
 PPeer_10~~PPeer_10
 PPeer_12~~PPeer_12
 PPeer_14~~PPeer_14
 
-TPeer_1~~TPeer_1          # This estimates the TPeerresidual variances
+TPeer_1~~TPeer_1          # This estimates the TPeer residual variances
 TPeer_3~~TPeer_3
 TPeer_5~~TPeer_5
 TPeer_10~~TPeer_10
@@ -1234,14 +2131,14 @@ dINTL4 =~ 1*INTL5
 dINTL5 =~ 1*INTL6
 
 #Estimate residual variances
-PPeer_1~~PPeer_1          # This estimates the PPeerresidual variances
+PPeer_1~~PPeer_1          # This estimates the PPeer residual variances
 PPeer_3~~PPeer_3
 PPeer_5~~PPeer_5
 PPeer_10~~PPeer_10
 PPeer_12~~PPeer_12
 PPeer_14~~PPeer_14
 
-TPeer_1~~TPeer_1          # This estimates the TPeerresidual variances
+TPeer_1~~TPeer_1          # This estimates the TPeer residual variances
 TPeer_3~~TPeer_3
 TPeer_5~~TPeer_5
 TPeer_10~~TPeer_10
@@ -1370,14 +2267,14 @@ dINTL4 =~ 1*INTL5
 dINTL5 =~ 1*INTL6
 
 #Estimate residual variances
-PPeer_1~~PPeer_1          # This estimates the PPeerresidual variances
+PPeer_1~~PPeer_1          # This estimates the PPeer residual variances
 PPeer_3~~PPeer_3
 PPeer_5~~PPeer_5
 PPeer_10~~PPeer_10
 PPeer_12~~PPeer_12
 PPeer_14~~PPeer_14
 
-TPeer_1~~TPeer_1          # This estimates the TPeerresidual variances
+TPeer_1~~TPeer_1          # This estimates the TPeer residual variances
 TPeer_3~~TPeer_3
 TPeer_5~~TPeer_5
 TPeer_10~~TPeer_10
@@ -1506,14 +2403,14 @@ dINTL4 =~ 1*INTL5
 dINTL5 =~ 1*INTL6
 
 #Estimate residual variances
-PPeer_1~~PPeer_1          # This estimates the PPeerresidual variances
+PPeer_1~~PPeer_1          # This estimates the PPeer residual variances
 PPeer_3~~PPeer_3
 PPeer_5~~PPeer_5
 PPeer_10~~PPeer_10
 PPeer_12~~PPeer_12
 PPeer_14~~PPeer_14
 
-TPeer_1~~TPeer_1          # This estimates the TPeerresidual variances
+TPeer_1~~TPeer_1          # This estimates the TPeer residual variances
 TPeer_3~~TPeer_3
 TPeer_5~~TPeer_5
 TPeer_10~~TPeer_10
@@ -1642,14 +2539,14 @@ dINTL4 =~ 1*INTL5
 dINTL5 =~ 1*INTL6
 
 #Estimate residual variances
-PPeer_1~~PPeer_1          # This estimates the PPeerresidual variances
+PPeer_1~~PPeer_1          # This estimates the PPeer residual variances
 PPeer_3~~PPeer_3
 PPeer_5~~PPeer_5
 PPeer_10~~PPeer_10
 PPeer_12~~PPeer_12
 PPeer_14~~PPeer_14
 
-TPeer_1~~TPeer_1          # This estimates the TPeerresidual variances
+TPeer_1~~TPeer_1          # This estimates the TPeer residual variances
 TPeer_3~~TPeer_3
 TPeer_5~~TPeer_5
 TPeer_10~~TPeer_10
@@ -1774,21 +2671,21 @@ dPeer3 =~ 1*Peer4
 dPeer4 =~ 1*Peer5
 dPeer5 =~ 1*Peer6
          
-dEXTL1 =~ 1*EXTL2           # This defines the change score as measured perfectly by scores on EXTL2**
+dEXTL1 =~ 1*EXTL2           # This defines the change score as measured perfectly by scores on EXTL2
 dEXTL2 =~ 1*EXTL3           
 dEXTL3 =~ 1*EXTL4
 dEXTL4 =~ 1*EXTL5
 dEXTL5 =~ 1*EXTL6
 
 #Estimate residual variances
-PPeer_1~~PPeer_1          # This estimates the PPeerresidual variances
+PPeer_1~~PPeer_1          # This estimates the PPeer residual variances
 PPeer_3~~PPeer_3
 PPeer_5~~PPeer_5
 PPeer_10~~PPeer_10
 PPeer_12~~PPeer_12
 PPeer_14~~PPeer_14
 
-TPeer_1~~TPeer_1          # This estimates the TPeerresidual variances
+TPeer_1~~TPeer_1          # This estimates the TPeer residual variances
 TPeer_3~~TPeer_3
 TPeer_5~~TPeer_5
 TPeer_10~~TPeer_10
@@ -2053,14 +2950,14 @@ dEXTL4 =~ 1*EXTL5
 dEXTL5 =~ 1*EXTL6
 
 #Estimate residual variances
-PPeer_1~~PPeer_1          # This estimates the PPeerresidual variances
+PPeer_1~~PPeer_1          # This estimates the PPeer residual variances
 PPeer_3~~PPeer_3
 PPeer_5~~PPeer_5
 PPeer_10~~PPeer_10
 PPeer_12~~PPeer_12
 PPeer_14~~PPeer_14
 
-TPeer_1~~TPeer_1          # This estimates the TPeerresidual variances
+TPeer_1~~TPeer_1          # This estimates the TPeer residual variances
 TPeer_3~~TPeer_3
 TPeer_5~~TPeer_5
 TPeer_10~~TPeer_10
@@ -2189,14 +3086,14 @@ dEXTL4 =~ 1*EXTL5
 dEXTL5 =~ 1*EXTL6
 
 #Estimate residual variances
-PPeer_1~~PPeer_1          # This estimates the PPeerresidual variances
+PPeer_1~~PPeer_1          # This estimates the PPeer residual variances
 PPeer_3~~PPeer_3
 PPeer_5~~PPeer_5
 PPeer_10~~PPeer_10
 PPeer_12~~PPeer_12
 PPeer_14~~PPeer_14
 
-TPeer_1~~TPeer_1          # This estimates the TPeerresidual variances
+TPeer_1~~TPeer_1          # This estimates the TPeer residual variances
 TPeer_3~~TPeer_3
 TPeer_5~~TPeer_5
 TPeer_10~~TPeer_10
@@ -2325,14 +3222,14 @@ dEXTL4 =~ 1*EXTL5
 dEXTL5 =~ 1*EXTL6
 
 #Estimate residual variances
-PPeer_1~~PPeer_1          # This estimates the PPeerresidual variances
+PPeer_1~~PPeer_1          # This estimates the PPeer residual variances
 PPeer_3~~PPeer_3
 PPeer_5~~PPeer_5
 PPeer_10~~PPeer_10
 PPeer_12~~PPeer_12
 PPeer_14~~PPeer_14
 
-TPeer_1~~TPeer_1          # This estimates the TPeerresidual variances
+TPeer_1~~TPeer_1          # This estimates the TPeer residual variances
 TPeer_3~~TPeer_3
 TPeer_5~~TPeer_5
 TPeer_10~~TPeer_10
@@ -2473,7 +3370,7 @@ PAgg_10~~PAgg_10
 PAgg_12~~PAgg_12
 PAgg_14~~PAgg_14
 
-TAgg_1~~TAgg_1          # This estimates the TAggresidual variances
+TAgg_1~~TAgg_1          # This estimates the TAgg residual variances
 TAgg_3~~TAgg_3
 TAgg_5~~TAgg_5
 TAgg_10~~TAgg_10
@@ -2609,7 +3506,7 @@ PAgg_10~~PAgg_10
 PAgg_12~~PAgg_12
 PAgg_14~~PAgg_14
 
-TAgg_1~~TAgg_1          # This estimates the TAggresidual variances
+TAgg_1~~TAgg_1          # This estimates the TAgg residual variances
 TAgg_3~~TAgg_3
 TAgg_5~~TAgg_5
 TAgg_10~~TAgg_10
@@ -2745,7 +3642,7 @@ PAgg_10~~PAgg_10
 PAgg_12~~PAgg_12
 PAgg_14~~PAgg_14
 
-TAgg_1~~TAgg_1          # This estimates the TAggresidual variances
+TAgg_1~~TAgg_1          # This estimates the TAgg residual variances
 TAgg_3~~TAgg_3
 TAgg_5~~TAgg_5
 TAgg_10~~TAgg_10
@@ -2881,7 +3778,7 @@ PAgg_10~~PAgg_10
 PAgg_12~~PAgg_12
 PAgg_14~~PAgg_14
 
-TAgg_1~~TAgg_1          # This estimates the TAggresidual variances
+TAgg_1~~TAgg_1          # This estimates the TAgg residual variances
 TAgg_3~~TAgg_3
 TAgg_5~~TAgg_5
 TAgg_10~~TAgg_10
@@ -3017,7 +3914,7 @@ PAgg_10~~PAgg_10
 PAgg_12~~PAgg_12
 PAgg_14~~PAgg_14
 
-TAgg_1~~TAgg_1          # This estimates the TAggresidual variances
+TAgg_1~~TAgg_1          # This estimates the TAgg residual variances
 TAgg_3~~TAgg_3
 TAgg_5~~TAgg_5
 TAgg_10~~TAgg_10
@@ -3141,21 +4038,21 @@ dAgg3 =~ 1*Agg4
 dAgg4 =~ 1*Agg5
 dAgg5 =~ 1*Agg6
          
-dINTL1 =~ 1*INTL2           # This defines the change score as measured perfectly by scores on INTL2**
+dINTL1 =~ 1*INTL2           # This defines the change score as measured perfectly by scores on INTL2
 dINTL2 =~ 1*INTL3           
 dINTL3 =~ 1*INTL4
 dINTL4 =~ 1*INTL5
 dINTL5 =~ 1*INTL6
 
 #Estimate residual variances
-PAgg_1~~PAgg_1          # This estimates the PAggresidual variances
+PAgg_1~~PAgg_1          # This estimates the PAgg residual variances
 PAgg_3~~PAgg_3
 PAgg_5~~PAgg_5
 PAgg_10~~PAgg_10
 PAgg_12~~PAgg_12
 PAgg_14~~PAgg_14
 
-TAgg_1~~TAgg_1          # This estimates the TAggresidual variances
+TAgg_1~~TAgg_1          # This estimates the TAgg residual variances
 TAgg_3~~TAgg_3
 TAgg_5~~TAgg_5
 TAgg_10~~TAgg_10
@@ -3284,14 +4181,14 @@ dINTL4 =~ 1*INTL5
 dINTL5 =~ 1*INTL6
 
 #Estimate residual variances
-PAgg_1~~PAgg_1          # This estimates the PAggresidual variances
+PAgg_1~~PAgg_1          # This estimates the PAgg residual variances
 PAgg_3~~PAgg_3
 PAgg_5~~PAgg_5
 PAgg_10~~PAgg_10
 PAgg_12~~PAgg_12
 PAgg_14~~PAgg_14
 
-TAgg_1~~TAgg_1          # This estimates the TAggresidual variances
+TAgg_1~~TAgg_1          # This estimates the TAgg residual variances
 TAgg_3~~TAgg_3
 TAgg_5~~TAgg_5
 TAgg_10~~TAgg_10
@@ -3420,14 +4317,14 @@ dINTL4 =~ 1*INTL5
 dINTL5 =~ 1*INTL6
 
 #Estimate residual variances
-PAgg_1~~PAgg_1          # This estimates the PAggresidual variances
+PAgg_1~~PAgg_1          # This estimates the PAgg residual variances
 PAgg_3~~PAgg_3
 PAgg_5~~PAgg_5
 PAgg_10~~PAgg_10
 PAgg_12~~PAgg_12
 PAgg_14~~PAgg_14
 
-TAgg_1~~TAgg_1          # This estimates the TAggresidual variances
+TAgg_1~~TAgg_1          # This estimates the TAgg residual variances
 TAgg_3~~TAgg_3
 TAgg_5~~TAgg_5
 TAgg_10~~TAgg_10
@@ -3556,14 +4453,14 @@ dINTL4 =~ 1*INTL5
 dINTL5 =~ 1*INTL6
 
 #Estimate residual variances
-PAgg_1~~PAgg_1          # This estimates the PAggresidual variances
+PAgg_1~~PAgg_1          # This estimates the PAgg residual variances
 PAgg_3~~PAgg_3
 PAgg_5~~PAgg_5
 PAgg_10~~PAgg_10
 PAgg_12~~PAgg_12
 PAgg_14~~PAgg_14
 
-TAgg_1~~TAgg_1          # This estimates the TAggresidual variances
+TAgg_1~~TAgg_1          # This estimates the TAgg residual variances
 TAgg_3~~TAgg_3
 TAgg_5~~TAgg_5
 TAgg_10~~TAgg_10
@@ -3692,14 +4589,14 @@ dINTL4 =~ 1*INTL5
 dINTL5 =~ 1*INTL6
 
 #Estimate residual variances
-PAgg_1~~PAgg_1          # This estimates the PAggresidual variances
+PAgg_1~~PAgg_1          # This estimates the PAgg residual variances
 PAgg_3~~PAgg_3
 PAgg_5~~PAgg_5
 PAgg_10~~PAgg_10
 PAgg_12~~PAgg_12
 PAgg_14~~PAgg_14
 
-TAgg_1~~TAgg_1          # This estimates the TAggresidual variances
+TAgg_1~~TAgg_1          # This estimates the TAgg residual variances
 TAgg_3~~TAgg_3
 TAgg_5~~TAgg_5
 TAgg_10~~TAgg_10
@@ -3824,21 +4721,21 @@ dAgg3 =~ 1*Agg4
 dAgg4 =~ 1*Agg5
 dAgg5 =~ 1*Agg6
          
-dEXTL1 =~ 1*EXTL2           # This defines the change score as measured perfectly by scores on EXTL2**
+dEXTL1 =~ 1*EXTL2           # This defines the change score as measured perfectly by scores on EXTL2
 dEXTL2 =~ 1*EXTL3           
 dEXTL3 =~ 1*EXTL4
 dEXTL4 =~ 1*EXTL5
 dEXTL5 =~ 1*EXTL6
 
 #Estimate residual variances
-PAgg_1~~PAgg_1          # This estimates the PAggresidual variances
+PAgg_1~~PAgg_1          # This estimates the PAgg residual variances
 PAgg_3~~PAgg_3
 PAgg_5~~PAgg_5
 PAgg_10~~PAgg_10
 PAgg_12~~PAgg_12
 PAgg_14~~PAgg_14
 
-TAgg_1~~TAgg_1          # This estimates the TAggresidual variances
+TAgg_1~~TAgg_1          # This estimates the TAgg residual variances
 TAgg_3~~TAgg_3
 TAgg_5~~TAgg_5
 TAgg_10~~TAgg_10
@@ -4103,14 +5000,14 @@ dEXTL4 =~ 1*EXTL5
 dEXTL5 =~ 1*EXTL6
 
 #Estimate residual variances
-PAgg_1~~PAgg_1          # This estimates the PAggresidual variances
+PAgg_1~~PAgg_1          # This estimates the PAgg residual variances
 PAgg_3~~PAgg_3
 PAgg_5~~PAgg_5
 PAgg_10~~PAgg_10
 PAgg_12~~PAgg_12
 PAgg_14~~PAgg_14
 
-TAgg_1~~TAgg_1          # This estimates the TAggresidual variances
+TAgg_1~~TAgg_1          # This estimates the TAgg residual variances
 TAgg_3~~TAgg_3
 TAgg_5~~TAgg_5
 TAgg_10~~TAgg_10
@@ -4239,14 +5136,14 @@ dEXTL4 =~ 1*EXTL5
 dEXTL5 =~ 1*EXTL6
 
 #Estimate residual variances
-PAgg_1~~PAgg_1          # This estimates the PAggresidual variances
+PAgg_1~~PAgg_1          # This estimates the PAgg residual variances
 PAgg_3~~PAgg_3
 PAgg_5~~PAgg_5
 PAgg_10~~PAgg_10
 PAgg_12~~PAgg_12
 PAgg_14~~PAgg_14
 
-TAgg_1~~TAgg_1          # This estimates the TAggresidual variances
+TAgg_1~~TAgg_1          # This estimates the TAgg residual variances
 TAgg_3~~TAgg_3
 TAgg_5~~TAgg_5
 TAgg_10~~TAgg_10
@@ -4375,14 +5272,14 @@ dEXTL4 =~ 1*EXTL5
 dEXTL5 =~ 1*EXTL6
 
 #Estimate residual variances
-PAgg_1~~PAgg_1          # This estimates the PAggresidual variances
+PAgg_1~~PAgg_1          # This estimates the PAgg residual variances
 PAgg_3~~PAgg_3
 PAgg_5~~PAgg_5
 PAgg_10~~PAgg_10
 PAgg_12~~PAgg_12
 PAgg_14~~PAgg_14
 
-TAgg_1~~TAgg_1          # This estimates the TAggresidual variances
+TAgg_1~~TAgg_1          # This estimates the TAgg residual variances
 TAgg_3~~TAgg_3
 TAgg_5~~TAgg_5
 TAgg_10~~TAgg_10
@@ -4520,7 +5417,7 @@ PSw_10~~PSw_10
 PSw_12~~PSw_12
 PSw_14~~PSw_14
 
-TSw_1~~TSw_1          # This estimates the TSwresidual variances
+TSw_1~~TSw_1          # This estimates the TSw residual variances
 TSw_3~~TSw_3
 TSw_5~~TSw_5
 TSw_10~~TSw_10
@@ -4656,7 +5553,7 @@ PSw_10~~PSw_10
 PSw_12~~PSw_12
 PSw_14~~PSw_14
 
-TSw_1~~TSw_1          # This estimates the TSwresidual variances
+TSw_1~~TSw_1          # This estimates the TSw residual variances
 TSw_3~~TSw_3
 TSw_5~~TSw_5
 TSw_10~~TSw_10
@@ -4792,7 +5689,7 @@ PSw_10~~PSw_10
 PSw_12~~PSw_12
 PSw_14~~PSw_14
 
-TSw_1~~TSw_1          # This estimates the TSwresidual variances
+TSw_1~~TSw_1          # This estimates the TSw residual variances
 TSw_3~~TSw_3
 TSw_5~~TSw_5
 TSw_10~~TSw_10
@@ -4928,7 +5825,7 @@ PSw_10~~PSw_10
 PSw_12~~PSw_12
 PSw_14~~PSw_14
 
-TSw_1~~TSw_1          # This estimates the TSwresidual variances
+TSw_1~~TSw_1          # This estimates the TSw residual variances
 TSw_3~~TSw_3
 TSw_5~~TSw_5
 TSw_10~~TSw_10
@@ -5064,7 +5961,7 @@ PSw_10~~PSw_10
 PSw_12~~PSw_12
 PSw_14~~PSw_14
 
-TSw_1~~TSw_1          # This estimates the TSwresidual variances
+TSw_1~~TSw_1          # This estimates the TSw residual variances
 TSw_3~~TSw_3
 TSw_5~~TSw_5
 TSw_10~~TSw_10
@@ -5189,21 +6086,21 @@ dSw3 =~ 1*Sw4
 dSw4 =~ 1*Sw5
 dSw5 =~ 1*Sw6
          
-dINTL1 =~ 1*INTL2           # This defines the change score as measured perfectly by scores on INTL2**
+dINTL1 =~ 1*INTL2           # This defines the change score as measured perfectly by scores on INTL2
 dINTL2 =~ 1*INTL3           
 dINTL3 =~ 1*INTL4
 dINTL4 =~ 1*INTL5
 dINTL5 =~ 1*INTL6
 
 #Estimate residual variances
-PSw_1~~PSw_1          # This estimates the PSwresidual variances
+PSw_1~~PSw_1          # This estimates the PSw residual variances
 PSw_3~~PSw_3
 PSw_5~~PSw_5
 PSw_10~~PSw_10
 PSw_12~~PSw_12
 PSw_14~~PSw_14
 
-TSw_1~~TSw_1          # This estimates the TSwresidual variances
+TSw_1~~TSw_1          # This estimates the TSw residual variances
 TSw_3~~TSw_3
 TSw_5~~TSw_5
 TSw_10~~TSw_10
@@ -5332,14 +6229,14 @@ dINTL4 =~ 1*INTL5
 dINTL5 =~ 1*INTL6
 
 #Estimate residual variances
-PSw_1~~PSw_1          # This estimates the PSwresidual variances
+PSw_1~~PSw_1          # This estimates the PSw residual variances
 PSw_3~~PSw_3
 PSw_5~~PSw_5
 PSw_10~~PSw_10
 PSw_12~~PSw_12
 PSw_14~~PSw_14
 
-TSw_1~~TSw_1          # This estimates the TSwresidual variances
+TSw_1~~TSw_1          # This estimates the TSw residual variances
 TSw_3~~TSw_3
 TSw_5~~TSw_5
 TSw_10~~TSw_10
@@ -5468,14 +6365,14 @@ dINTL4 =~ 1*INTL5
 dINTL5 =~ 1*INTL6
 
 #Estimate residual variances
-PSw_1~~PSw_1          # This estimates the PSwresidual variances
+PSw_1~~PSw_1          # This estimates the PSw residual variances
 PSw_3~~PSw_3
 PSw_5~~PSw_5
 PSw_10~~PSw_10
 PSw_12~~PSw_12
 PSw_14~~PSw_14
 
-TSw_1~~TSw_1          # This estimates the TSwresidual variances
+TSw_1~~TSw_1          # This estimates the TSw residual variances
 TSw_3~~TSw_3
 TSw_5~~TSw_5
 TSw_10~~TSw_10
@@ -5604,14 +6501,14 @@ dINTL4 =~ 1*INTL5
 dINTL5 =~ 1*INTL6
 
 #Estimate residual variances
-PSw_1~~PSw_1          # This estimates the PSwresidual variances
+PSw_1~~PSw_1          # This estimates the PSw residual variances
 PSw_3~~PSw_3
 PSw_5~~PSw_5
 PSw_10~~PSw_10
 PSw_12~~PSw_12
 PSw_14~~PSw_14
 
-TSw_1~~TSw_1          # This estimates the TSwresidual variances
+TSw_1~~TSw_1          # This estimates the TSw residual variances
 TSw_3~~TSw_3
 TSw_5~~TSw_5
 TSw_10~~TSw_10
@@ -5740,14 +6637,14 @@ dINTL4 =~ 1*INTL5
 dINTL5 =~ 1*INTL6
 
 #Estimate residual variances
-PSw_1~~PSw_1          # This estimates the PSwresidual variances
+PSw_1~~PSw_1          # This estimates the PSw residual variances
 PSw_3~~PSw_3
 PSw_5~~PSw_5
 PSw_10~~PSw_10
 PSw_12~~PSw_12
 PSw_14~~PSw_14
 
-TSw_1~~TSw_1          # This estimates the TSwresidual variances
+TSw_1~~TSw_1          # This estimates the TSw residual variances
 TSw_3~~TSw_3
 TSw_5~~TSw_5
 TSw_10~~TSw_10
@@ -5872,21 +6769,21 @@ dSw3 =~ 1*Sw4
 dSw4 =~ 1*Sw5
 dSw5 =~ 1*Sw6
          
-dEXTL1 =~ 1*EXTL2           # This defines the change score as measured perfectly by scores on EXTL2**
+dEXTL1 =~ 1*EXTL2           # This defines the change score as measured perfectly by scores on EXTL2
 dEXTL2 =~ 1*EXTL3           
 dEXTL3 =~ 1*EXTL4
 dEXTL4 =~ 1*EXTL5
 dEXTL5 =~ 1*EXTL6
 
 #Estimate residual variances
-PSw_1~~PSw_1          # This estimates the PSwresidual variances
+PSw_1~~PSw_1          # This estimates the PSw residual variances
 PSw_3~~PSw_3
 PSw_5~~PSw_5
 PSw_10~~PSw_10
 PSw_12~~PSw_12
 PSw_14~~PSw_14
 
-TSw_1~~TSw_1          # This estimates the TSwresidual variances
+TSw_1~~TSw_1          # This estimates the TSw residual variances
 TSw_3~~TSw_3
 TSw_5~~TSw_5
 TSw_10~~TSw_10
@@ -6151,14 +7048,14 @@ dEXTL4 =~ 1*EXTL5
 dEXTL5 =~ 1*EXTL6
 
 #Estimate residual variances
-PSw_1~~PSw_1          # This estimates the PSwresidual variances
+PSw_1~~PSw_1          # This estimates the PSw residual variances
 PSw_3~~PSw_3
 PSw_5~~PSw_5
 PSw_10~~PSw_10
 PSw_12~~PSw_12
 PSw_14~~PSw_14
 
-TSw_1~~TSw_1          # This estimates the TSwresidual variances
+TSw_1~~TSw_1          # This estimates the TSw residual variances
 TSw_3~~TSw_3
 TSw_5~~TSw_5
 TSw_10~~TSw_10
@@ -6287,14 +7184,14 @@ dEXTL4 =~ 1*EXTL5
 dEXTL5 =~ 1*EXTL6
 
 #Estimate residual variances
-PSw_1~~PSw_1          # This estimates the PSwresidual variances
+PSw_1~~PSw_1          # This estimates the PSw residual variances
 PSw_3~~PSw_3
 PSw_5~~PSw_5
 PSw_10~~PSw_10
 PSw_12~~PSw_12
 PSw_14~~PSw_14
 
-TSw_1~~TSw_1          # This estimates the TSwresidual variances
+TSw_1~~TSw_1          # This estimates the TSw residual variances
 TSw_3~~TSw_3
 TSw_5~~TSw_5
 TSw_10~~TSw_10
@@ -6423,14 +7320,14 @@ dEXTL4 =~ 1*EXTL5
 dEXTL5 =~ 1*EXTL6
 
 #Estimate residual variances
-PSw_1~~PSw_1          # This estimates the PSwresidual variances
+PSw_1~~PSw_1          # This estimates the PSw residual variances
 PSw_3~~PSw_3
 PSw_5~~PSw_5
 PSw_10~~PSw_10
 PSw_12~~PSw_12
 PSw_14~~PSw_14
 
-TSw_1~~TSw_1          # This estimates the TSwresidual variances
+TSw_1~~TSw_1          # This estimates the TSw residual variances
 TSw_3~~TSw_3
 TSw_5~~TSw_5
 TSw_10~~TSw_10
@@ -6571,7 +7468,7 @@ PPro_10~~PPro_10
 PPro_12~~PPro_12
 PPro_14~~PPro_14
 
-TPro_1~~TPro_1          # This estimates the TProresidual variances
+TPro_1~~TPro_1          # This estimates the TPro residual variances
 TPro_3~~TPro_3
 TPro_5~~TPro_5
 TPro_10~~TPro_10
@@ -6707,7 +7604,7 @@ PPro_10~~PPro_10
 PPro_12~~PPro_12
 PPro_14~~PPro_14
 
-TPro_1~~TPro_1          # This estimates the TProresidual variances
+TPro_1~~TPro_1          # This estimates the TPro residual variances
 TPro_3~~TPro_3
 TPro_5~~TPro_5
 TPro_10~~TPro_10
@@ -6843,7 +7740,7 @@ PPro_10~~PPro_10
 PPro_12~~PPro_12
 PPro_14~~PPro_14
 
-TPro_1~~TPro_1          # This estimates the TProresidual variances
+TPro_1~~TPro_1          # This estimates the TPro residual variances
 TPro_3~~TPro_3
 TPro_5~~TPro_5
 TPro_10~~TPro_10
@@ -6979,7 +7876,7 @@ PPro_10~~PPro_10
 PPro_12~~PPro_12
 PPro_14~~PPro_14
 
-TPro_1~~TPro_1          # This estimates the TProresidual variances
+TPro_1~~TPro_1          # This estimates the TPro residual variances
 TPro_3~~TPro_3
 TPro_5~~TPro_5
 TPro_10~~TPro_10
@@ -7115,7 +8012,7 @@ PPro_10~~PPro_10
 PPro_12~~PPro_12
 PPro_14~~PPro_14
 
-TPro_1~~TPro_1          # This estimates the TProresidual variances
+TPro_1~~TPro_1          # This estimates the TPro residual variances
 TPro_3~~TPro_3
 TPro_5~~TPro_5
 TPro_10~~TPro_10
@@ -7240,21 +8137,21 @@ dPro3 =~ 1*Pro4
 dPro4 =~ 1*Pro5
 dPro5 =~ 1*Pro6
          
-dINTL1 =~ 1*INTL2           # This defines the change score as measured perfectly by scores on INTL2**
+dINTL1 =~ 1*INTL2           # This defines the change score as measured perfectly by scores on INTL2
 dINTL2 =~ 1*INTL3           
 dINTL3 =~ 1*INTL4
 dINTL4 =~ 1*INTL5
 dINTL5 =~ 1*INTL6
 
 #Estimate residual variances
-PPro_1~~PPro_1          # This estimates the PProresidual variances
+PPro_1~~PPro_1          # This estimates the PPro residual variances
 PPro_3~~PPro_3
 PPro_5~~PPro_5
 PPro_10~~PPro_10
 PPro_12~~PPro_12
 PPro_14~~PPro_14
 
-TPro_1~~TPro_1          # This estimates the TProresidual variances
+TPro_1~~TPro_1          # This estimates the TPro residual variances
 TPro_3~~TPro_3
 TPro_5~~TPro_5
 TPro_10~~TPro_10
@@ -7383,14 +8280,14 @@ dINTL4 =~ 1*INTL5
 dINTL5 =~ 1*INTL6
 
 #Estimate residual variances
-PPro_1~~PPro_1          # This estimates the PProresidual variances
+PPro_1~~PPro_1          # This estimates the PPro residual variances
 PPro_3~~PPro_3
 PPro_5~~PPro_5
 PPro_10~~PPro_10
 PPro_12~~PPro_12
 PPro_14~~PPro_14
 
-TPro_1~~TPro_1          # This estimates the TProresidual variances
+TPro_1~~TPro_1          # This estimates the TPro residual variances
 TPro_3~~TPro_3
 TPro_5~~TPro_5
 TPro_10~~TPro_10
@@ -7519,14 +8416,14 @@ dINTL4 =~ 1*INTL5
 dINTL5 =~ 1*INTL6
 
 #Estimate residual variances
-PPro_1~~PPro_1          # This estimates the PProresidual variances
+PPro_1~~PPro_1          # This estimates the PPro residual variances
 PPro_3~~PPro_3
 PPro_5~~PPro_5
 PPro_10~~PPro_10
 PPro_12~~PPro_12
 PPro_14~~PPro_14
 
-TPro_1~~TPro_1          # This estimates the TProresidual variances
+TPro_1~~TPro_1          # This estimates the TPro residual variances
 TPro_3~~TPro_3
 TPro_5~~TPro_5
 TPro_10~~TPro_10
@@ -7655,14 +8552,14 @@ dINTL4 =~ 1*INTL5
 dINTL5 =~ 1*INTL6
 
 #Estimate residual variances
-PPro_1~~PPro_1          # This estimates the PProresidual variances
+PPro_1~~PPro_1          # This estimates the PPro residual variances
 PPro_3~~PPro_3
 PPro_5~~PPro_5
 PPro_10~~PPro_10
 PPro_12~~PPro_12
 PPro_14~~PPro_14
 
-TPro_1~~TPro_1          # This estimates the TProresidual variances
+TPro_1~~TPro_1          # This estimates the TPro residual variances
 TPro_3~~TPro_3
 TPro_5~~TPro_5
 TPro_10~~TPro_10
@@ -7791,14 +8688,14 @@ dINTL4 =~ 1*INTL5
 dINTL5 =~ 1*INTL6
 
 #Estimate residual variances
-PPro_1~~PPro_1          # This estimates the PProresidual variances
+PPro_1~~PPro_1          # This estimates the PPro residual variances
 PPro_3~~PPro_3
 PPro_5~~PPro_5
 PPro_10~~PPro_10
 PPro_12~~PPro_12
 PPro_14~~PPro_14
 
-TPro_1~~TPro_1          # This estimates the TProresidual variances
+TPro_1~~TPro_1          # This estimates the TPro residual variances
 TPro_3~~TPro_3
 TPro_5~~TPro_5
 TPro_10~~TPro_10
@@ -7924,21 +8821,21 @@ dPro3 =~ 1*Pro4
 dPro4 =~ 1*Pro5
 dPro5 =~ 1*Pro6
          
-dEXTL1 =~ 1*EXTL2           # This defines the change score as measured perfectly by scores on EXTL2**
+dEXTL1 =~ 1*EXTL2           # This defines the change score as measured perfectly by scores on EXTL2
 dEXTL2 =~ 1*EXTL3           
 dEXTL3 =~ 1*EXTL4
 dEXTL4 =~ 1*EXTL5
 dEXTL5 =~ 1*EXTL6
 
 #Estimate residual variances
-PPro_1~~PPro_1          # This estimates the PProresidual variances
+PPro_1~~PPro_1          # This estimates the PPro residual variances
 PPro_3~~PPro_3
 PPro_5~~PPro_5
 PPro_10~~PPro_10
 PPro_12~~PPro_12
 PPro_14~~PPro_14
 
-TPro_1~~TPro_1          # This estimates the TProresidual variances
+TPro_1~~TPro_1          # This estimates the TPro residual variances
 TPro_3~~TPro_3
 TPro_5~~TPro_5
 TPro_10~~TPro_10
@@ -8203,14 +9100,14 @@ dEXTL4 =~ 1*EXTL5
 dEXTL5 =~ 1*EXTL6
 
 #Estimate residual variances
-PPro_1~~PPro_1          # This estimates the PProresidual variances
+PPro_1~~PPro_1          # This estimates the PPro residual variances
 PPro_3~~PPro_3
 PPro_5~~PPro_5
 PPro_10~~PPro_10
 PPro_12~~PPro_12
 PPro_14~~PPro_14
 
-TPro_1~~TPro_1          # This estimates the TProresidual variances
+TPro_1~~TPro_1          # This estimates the TPro residual variances
 TPro_3~~TPro_3
 TPro_5~~TPro_5
 TPro_10~~TPro_10
@@ -8339,14 +9236,14 @@ dEXTL4 =~ 1*EXTL5
 dEXTL5 =~ 1*EXTL6
 
 #Estimate residual variances
-PPro_1~~PPro_1          # This estimates the PProresidual variances
+PPro_1~~PPro_1          # This estimates the PPro residual variances
 PPro_3~~PPro_3
 PPro_5~~PPro_5
 PPro_10~~PPro_10
 PPro_12~~PPro_12
 PPro_14~~PPro_14
 
-TPro_1~~TPro_1          # This estimates the TProresidual variances
+TPro_1~~TPro_1          # This estimates the TPro residual variances
 TPro_3~~TPro_3
 TPro_5~~TPro_5
 TPro_10~~TPro_10
@@ -8475,14 +9372,14 @@ dEXTL4 =~ 1*EXTL5
 dEXTL5 =~ 1*EXTL6
 
 #Estimate residual variances
-PPro_1~~PPro_1          # This estimates the PProresidual variances
+PPro_1~~PPro_1          # This estimates the PPro residual variances
 PPro_3~~PPro_3
 PPro_5~~PPro_5
 PPro_10~~PPro_10
 PPro_12~~PPro_12
 PPro_14~~PPro_14
 
-TPro_1~~TPro_1          # This estimates the TProresidual variances
+TPro_1~~TPro_1          # This estimates the TPro residual variances
 TPro_3~~TPro_3
 TPro_5~~TPro_5
 TPro_10~~TPro_10
@@ -8564,6 +9461,82 @@ sPro~~sEXTL                      # This estimates the sPro sEXTL covariance
 '
 
 fit_Pro_EXTL <- lavaan(Pro_EXTL, data=data_wide, missing="FIML", estimator="MLR")
+```
+
+# Chi-square test table
+```{r Chi-square test table, echo=FALSE, results = 'asis'}
+
+#Combine the fit statistics table with the model parameters table
+#table_Peer_MDD <- bind_rows(parameters_Peer_MDD,fitstats_Peer_MDD)
+
+Chi_test_table <- as.data.frame(matrix(ncol=10, nrow=12))
+colnames(Chi_test_table) <- c("Model",rep(c("∆χ2 to Baseline","∆Df","p value"),3))
+
+
+Chi_test_table[2,] <- c("Interpersonal Scar", lavTestLRT(fit_Peer_MDD_B,fit_Peer_MDD_IS)[2,5:7],
+                        lavTestLRT(fit_Peer_INTL_B,fit_Peer_INTL_IS)[2,5:7],
+                        lavTestLRT(fit_Peer_EXTL_B,fit_Peer_EXTL_IS)[2,5:7])
+Chi_test_table[3,] <- c("Interpersonal Risk", lavTestLRT(fit_Peer_MDD_B,fit_Peer_MDD_IR)[2,5:7],
+                        lavTestLRT(fit_Peer_INTL_B,fit_Peer_INTL_IR)[2,5:7],
+                        lavTestLRT(fit_Peer_EXTL_B,fit_Peer_EXTL_IR)[2,5:7])
+Chi_test_table[4,] <- c("Transactional", lavTestLRT(fit_Peer_MDD_B,fit_Peer_MDD_T)[2,5:7],
+                        lavTestLRT(fit_Peer_INTL_B,fit_Peer_INTL_T)[2,5:7],
+                        lavTestLRT(fit_Peer_EXTL_B,fit_Peer_EXTL_T)[2,5:7])
+Chi_test_table[5,] <- c("Developmental", lavTestLRT(fit_Peer_MDD_B,fit_Peer_MDD)[2,5:7],
+                        lavTestLRT(fit_Peer_INTL_B,fit_Peer_INTL)[2,5:7],
+                        lavTestLRT(fit_Peer_EXTL_B,fit_Peer_EXTL)[2,5:7])
+
+Chi_test_table[7,] <- c("Interpersonal Scar", lavTestLRT(fit_Agg_MDD_B,fit_Agg_MDD_IS)[2,5:7],
+                        lavTestLRT(fit_Agg_INTL_B,fit_Agg_INTL_IS)[2,5:7],
+                        lavTestLRT(fit_Agg_EXTL_B,fit_Agg_EXTL_IS)[2,5:7])
+Chi_test_table[8,] <- c("Interpersonal Risk", lavTestLRT(fit_Agg_MDD_B,fit_Agg_MDD_IR)[2,5:7],
+                        lavTestLRT(fit_Agg_INTL_B,fit_Agg_INTL_IR)[2,5:7],
+                        lavTestLRT(fit_Agg_EXTL_B,fit_Agg_EXTL_IR)[2,5:7])
+Chi_test_table[9,] <- c("Transactional", lavTestLRT(fit_Agg_MDD_B,fit_Agg_MDD_T)[2,5:7],
+                        lavTestLRT(fit_Agg_INTL_B,fit_Agg_INTL_T)[2,5:7],
+                        lavTestLRT(fit_Agg_EXTL_B,fit_Agg_EXTL_T)[2,5:7])
+Chi_test_table[10,] <- c("Developmental", lavTestLRT(fit_Agg_MDD_B,fit_Agg_MDD)[2,5:7],
+                         lavTestLRT(fit_Agg_INTL_B,fit_Agg_INTL)[2,5:7],
+                         lavTestLRT(fit_Agg_EXTL_B,fit_Agg_EXTL)[2,5:7])
+
+Chi_test_table[12,] <- c("Interpersonal Scar", lavTestLRT(fit_Sw_MDD_B,fit_Sw_MDD_IS)[2,5:7],
+                        lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL_IS)[2,5:7],
+                        lavTestLRT(fit_Sw_EXTL_B,fit_Sw_EXTL_IS)[2,5:7])
+Chi_test_table[13,] <- c("Interpersonal Risk", lavTestLRT(fit_Sw_MDD_B,fit_Sw_MDD_IR)[2,5:7],
+                        lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL_IR)[2,5:7],
+                        lavTestLRT(fit_Sw_EXTL_B,fit_Sw_EXTL_IR)[2,5:7])
+Chi_test_table[14,] <- c("Transactional", lavTestLRT(fit_Sw_MDD_B,fit_Sw_MDD_T)[2,5:7],
+                        lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL_T)[2,5:7],
+                        lavTestLRT(fit_Sw_EXTL_B,fit_Sw_EXTL_T)[2,5:7])
+Chi_test_table[15,] <- c("Developmental",  lavTestLRT(fit_Sw_MDD_B,fit_Sw_MDD)[2,5:7],
+                        lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL)[2,5:7],
+                        lavTestLRT(fit_Sw_EXTL_B,fit_Sw_EXTL)[2,5:7])
+
+Chi_test_table[17,] <- c("Interpersonal Scar", lavTestLRT(fit_Pro_MDD_B,fit_Pro_MDD_IS)[2,5:7],
+                        lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL_IS)[2,5:7],
+                        lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL_IS)[2,5:7])
+Chi_test_table[18,] <- c("Interpersonal Risk", lavTestLRT(fit_Pro_MDD_B,fit_Pro_MDD_IR)[2,5:7],
+                        lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL_IR)[2,5:7],
+                        lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL_IR)[2,5:7])
+Chi_test_table[19,] <- c("Transactional", lavTestLRT(fit_Pro_MDD_B,fit_Pro_MDD_T)[2,5:7],
+                        lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL_T)[2,5:7],
+                        lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL_T)[2,5:7])
+Chi_test_table[20,] <- c("Developmental", lavTestLRT(fit_Pro_MDD_B,fit_Pro_MDD)[2,5:7],
+                        lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL)[2,5:7],
+                        lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL)[2,5:7])
+
+Chi_test_table[,2:10] <- round(Chi_test_table[,2:10], 2)
+
+Chi_test_table[1,] <- c("Peer Victimization/Rejection",rep("",9))
+Chi_test_table[6,] <- c("Aggression",rep("",9))
+Chi_test_table[11,] <- c("Social Withdrawal",rep("",9))
+Chi_test_table[16,] <- c("Prosocial",rep("",9))
+
+options(knitr.kable.NA="--")
+kable(Chi_test_table, digits=2,
+                        align=c('l',rep('c', 9)),
+                        col.names=c("Model", rep(c("∆χ2 to Baseline","Df","p value"), times=3)),
+      caption="Table 2.Chi-square test of theoretical models compared to baseline models")
 ```
 
 # Model Tables
@@ -8702,6 +9675,8 @@ kable(fitstats_Peer_MDD, digits=3,
 
 ### Agg/EXTL Table
 ```{r Agg/EXTL Table, echo=FALSE}
+list_of_fit_stats <- c("npar","df","logl","chisq","cfi.robust","rmsea.robust","srmr","aic","bic")
+
 #Agg_EXTL
 # Make table of fit statistics
 fitstats_Agg_EXTL <- as.data.frame(matrix(ncol=11,nrow=10))
@@ -8828,967 +9803,4 @@ kable(fitstats_Agg_EXTL, digits=3,
                         align=c('l',rep('c', 10)),
                         col.names=c(" ", rep(c("Agg","EXTL"), times=5)))
 
-```
-
-# Chi-square test table
-```{r Chi-square test table, echo=FALSE, results = 'asis'}
-
-#Combine the fit statistics table with the model parameters table
-#table_Peer_MDD <- bind_rows(parameters_Peer_MDD,fitstats_Peer_MDD)
-
-Chi_test_table <- as.data.frame(matrix(ncol=10, nrow=12))
-colnames(Chi_test_table) <- c("Model",rep(c("∆χ2 to Baseline","∆Df","p value"),3))
-
-
-Chi_test_table[2,] <- c("Interpersonal Scar", lavTestLRT(fit_Peer_MDD_B,fit_Peer_MDD_IS)[2,5:7],
-                        lavTestLRT(fit_Peer_INTL_B,fit_Peer_INTL_IS)[2,5:7],
-                        lavTestLRT(fit_Peer_EXTL_B,fit_Peer_EXTL_IS)[2,5:7])
-Chi_test_table[3,] <- c("Interpersonal Risk", lavTestLRT(fit_Peer_MDD_B,fit_Peer_MDD_IR)[2,5:7],
-                        lavTestLRT(fit_Peer_INTL_B,fit_Peer_INTL_IR)[2,5:7],
-                        lavTestLRT(fit_Peer_EXTL_B,fit_Peer_EXTL_IR)[2,5:7])
-Chi_test_table[4,] <- c("Transactional", lavTestLRT(fit_Peer_MDD_B,fit_Peer_MDD_T)[2,5:7],
-                        lavTestLRT(fit_Peer_INTL_B,fit_Peer_INTL_T)[2,5:7],
-                        lavTestLRT(fit_Peer_EXTL_B,fit_Peer_EXTL_T)[2,5:7])
-Chi_test_table[5,] <- c("Developmental", lavTestLRT(fit_Peer_MDD_B,fit_Peer_MDD)[2,5:7],
-                        lavTestLRT(fit_Peer_INTL_B,fit_Peer_INTL)[2,5:7],
-                        lavTestLRT(fit_Peer_EXTL_B,fit_Peer_EXTL)[2,5:7])
-
-Chi_test_table[7,] <- c("Interpersonal Scar", lavTestLRT(fit_Agg_MDD_B,fit_Agg_MDD_IS)[2,5:7],
-                        lavTestLRT(fit_Agg_INTL_B,fit_Agg_INTL_IS)[2,5:7],
-                        lavTestLRT(fit_Agg_EXTL_B,fit_Agg_EXTL_IS)[2,5:7])
-Chi_test_table[8,] <- c("Interpersonal Risk", lavTestLRT(fit_Agg_MDD_B,fit_Agg_MDD_IR)[2,5:7],
-                        lavTestLRT(fit_Agg_INTL_B,fit_Agg_INTL_IR)[2,5:7],
-                        lavTestLRT(fit_Agg_EXTL_B,fit_Agg_EXTL_IR)[2,5:7])
-Chi_test_table[9,] <- c("Transactional", lavTestLRT(fit_Agg_MDD_B,fit_Agg_MDD_T)[2,5:7],
-                        lavTestLRT(fit_Agg_INTL_B,fit_Agg_INTL_T)[2,5:7],
-                        lavTestLRT(fit_Agg_EXTL_B,fit_Agg_EXTL_T)[2,5:7])
-Chi_test_table[10,] <- c("Developmental", lavTestLRT(fit_Agg_MDD_B,fit_Agg_MDD)[2,5:7],
-                         lavTestLRT(fit_Agg_INTL_B,fit_Agg_INTL)[2,5:7],
-                         lavTestLRT(fit_Agg_EXTL_B,fit_Agg_EXTL)[2,5:7])
-
-Chi_test_table[12,] <- c("Interpersonal Scar", lavTestLRT(fit_Sw_MDD_B,fit_Sw_MDD_IS)[2,5:7],
-                        lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL_IS)[2,5:7],
-                        lavTestLRT(fit_Sw_EXTL_B,fit_Sw_EXTL_IS)[2,5:7])
-Chi_test_table[13,] <- c("Interpersonal Risk", lavTestLRT(fit_Sw_MDD_B,fit_Sw_MDD_IR)[2,5:7],
-                        lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL_IR)[2,5:7],
-                        lavTestLRT(fit_Sw_EXTL_B,fit_Sw_EXTL_IR)[2,5:7])
-Chi_test_table[14,] <- c("Transactional", lavTestLRT(fit_Sw_MDD_B,fit_Sw_MDD_T)[2,5:7],
-                        lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL_T)[2,5:7],
-                        lavTestLRT(fit_Sw_EXTL_B,fit_Sw_EXTL_T)[2,5:7])
-Chi_test_table[15,] <- c("Developmental",  lavTestLRT(fit_Sw_MDD_B,fit_Sw_MDD)[2,5:7],
-                        lavTestLRT(fit_Sw_INTL_B,fit_Sw_INTL)[2,5:7],
-                        lavTestLRT(fit_Sw_EXTL_B,fit_Sw_EXTL)[2,5:7])
-
-Chi_test_table[17,] <- c("Interpersonal Scar", lavTestLRT(fit_Pro_MDD_B,fit_Pro_MDD_IS)[2,5:7],
-                        lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL_IS)[2,5:7],
-                        lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL_IS)[2,5:7])
-Chi_test_table[18,] <- c("Interpersonal Risk", lavTestLRT(fit_Pro_MDD_B,fit_Pro_MDD_IR)[2,5:7],
-                        lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL_IR)[2,5:7],
-                        lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL_IR)[2,5:7])
-Chi_test_table[19,] <- c("Transactional", lavTestLRT(fit_Pro_MDD_B,fit_Pro_MDD_T)[2,5:7],
-                        lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL_T)[2,5:7],
-                        lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL_T)[2,5:7])
-Chi_test_table[20,] <- c("Developmental", lavTestLRT(fit_Pro_MDD_B,fit_Pro_MDD)[2,5:7],
-                        lavTestLRT(fit_Pro_INTL_B,fit_Pro_INTL)[2,5:7],
-                        lavTestLRT(fit_Pro_EXTL_B,fit_Pro_EXTL)[2,5:7])
-
-Chi_test_table[,2:10] <- round(Chi_test_table[,2:10], 2)
-
-Chi_test_table[1,] <- c("Peer Victimization/Rejection",rep("",9))
-Chi_test_table[6,] <- c("Aggression",rep("",9))
-Chi_test_table[11,] <- c("Social Withdrawal",rep("",9))
-Chi_test_table[16,] <- c("Prosocial",rep("",9))
-
-options(knitr.kable.NA="--")
-kable(Chi_test_table, digits=2,
-                        align=c('l',rep('c', 9)),
-                        col.names=c("Model", rep(c("∆χ2 to Baseline","Df","p value"), times=3)),
-      caption="Table 2.Chi-square test of theoretical models compared to baseline models")
-```
-
-# Latent growth curves
-```{r latent growth curves, cache=T}
-#Peer victimization/rejection
-Peer_MDD_growth <- '
-#Defining the latent variables
-Peer1=~1*PPeer_1+1*TPeer_1
-Peer2=~1*PPeer_3+1*TPeer_3
-Peer3=~1*PPeer_5+1*TPeer_5
-Peer4=~1*PPeer_10+1*TPeer_10
-Peer5=~1*PPeer_12+1*TPeer_12
-Peer6=~1*PPeer_14+1*TPeer_14
-
-MDD1=~1*MDDPRP100_1
-MDD2=~1*MDDPRP100_3
-MDD3=~1*MDDPRP100_5
-MDD4=~1*MDDPRP100_10
-MDD5=~1*MDDPRP100_12
-MDD6=~1*MDDPRP100_14
-
-#Estimate residual variances
-PPeer_1~~PPeer_1          # This estimates the PPeer residual variances
-PPeer_3~~PPeer_3
-PPeer_5~~PPeer_5
-PPeer_10~~PPeer_10
-PPeer_12~~PPeer_12
-PPeer_14~~PPeer_14
-
-TPeer_1~~TPeer_1          # This estimates the TPeerresidual variances
-TPeer_3~~TPeer_3
-TPeer_5~~TPeer_5
-TPeer_10~~TPeer_10
-TPeer_12~~TPeer_12
-TPeer_14~~TPeer_14
-
-MDDPRP100_1~~MDDPRP100_1          # This estimates the MDD residual variances
-MDDPRP100_3~~MDDPRP100_3
-MDDPRP100_5~~MDDPRP100_5
-MDDPRP100_10~~MDDPRP100_10
-MDDPRP100_12~~MDDPRP100_12
-MDDPRP100_14~~MDDPRP100_14
-
-
-iPeer=~1*Peer1+ 1*Peer2+ 1*Peer3+ 1*Peer4+ 1*Peer5+ 1*Peer6     # This defines the Peer intercept measurement model
-sPeer=~0*Peer1+ 1*Peer2+ 2*Peer3+ 3*Peer4+ 4*Peer5+ 5*Peer6 # This defines the Peer slope measurement model
-iPeer~1                             # This estimates the Peer intercept intercept (mean)
-iPeer~~iPeer                         # This estimates the Peer intercept variance
-sPeer~1                             # This estimates the Peer slope intercept
-sPeer~~sPeer                         # This estimates the Peer slope variance
-
-iMDD=~1*MDD1+ 1*MDD2+ 1*MDD3+ 1*MDD4+ 1*MDD5+ 1*MDD6  # This defines the MDD intercept measurement model
-sMDD=~0*MDD1+ 1*MDD2+ 2*MDD3+ 3*MDD4+ 4*MDD5+ 5*MDD6 # This defines the MDD slope measurement model
-iMDD~1                             # This estimates the MDD intercept intercept (mean)
-iMDD~~iMDD                         # This estimates the MDD intercept variance
-sMDD~1                             # This estimates the MDD slope intercept
-sMDD~~sMDD                         # This estimates the MDD slope variance
-
-iMDD~~sMDD                      # This estimates the iMDD sMDD covariance
-iMDD~~sPeer                      # This estimates the iMDD sPeer covariance
-iMDD~~iPeer                      # This estimates the iMDD iPeer covariance
-iPeer~~sPeer                      # This estimates the iPeer sPeer covariance
-iPeer~~sMDD                      # This estimates the iPeer sMDD covariance
-sPeer~~sMDD                      # This estimates the sPeer sMDD covariance
-
-
-#Covariates
-iPeer ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-sPeer ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-iMDD ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-sMDD ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-'
-
-fit_Peer_MDD_growth <- lavaan(Peer_MDD_growth, data=data_wide, missing="FIML", estimator="MLR")
-
-
-Peer_INTL_growth <- '
-#Defining the latent variables
-Peer1=~1*PPeer_1+1*TPeer_1
-Peer2=~1*PPeer_3+1*TPeer_3
-Peer3=~1*PPeer_5+1*TPeer_5
-Peer4=~1*PPeer_10+1*TPeer_10
-Peer5=~1*PPeer_12+1*TPeer_12
-Peer6=~1*PPeer_14+1*TPeer_14
-
-INTL1=~1*INTL_1
-INTL2=~1*INTL_3
-INTL3=~1*INTL_5
-INTL4=~1*INTL_10
-INTL5=~1*INTL_12
-INTL6=~1*INTL_14
-
-#Estimate residual variances
-PPeer_1~~PPeer_1          # This estimates the PPeer residual variances
-PPeer_3~~PPeer_3
-PPeer_5~~PPeer_5
-PPeer_10~~PPeer_10
-PPeer_12~~PPeer_12
-PPeer_14~~PPeer_14
-
-TPeer_1~~TPeer_1          # This estimates the TPeerresidual variances
-TPeer_3~~TPeer_3
-TPeer_5~~TPeer_5
-TPeer_10~~TPeer_10
-TPeer_12~~TPeer_12
-TPeer_14~~TPeer_14
-
-INTL_1~~INTL_1          # This estimates the INTL residual variances
-INTL_3~~INTL_3
-INTL_5~~INTL_5
-INTL_10~~INTL_10
-INTL_12~~INTL_12
-INTL_14~~INTL_14
-
-
-iPeer=~1*Peer1+ 1*Peer2+ 1*Peer3+ 1*Peer4+ 1*Peer5+ 1*Peer6     # This defines the Peer intercept measurement model
-sPeer=~0*Peer1+ 1*Peer2+ 2*Peer3+ 3*Peer4+ 4*Peer5+ 5*Peer6 # This defines the Peer slope measurement model
-iPeer~1                             # This estimates the Peer intercept intercept (mean)
-iPeer~~iPeer                         # This estimates the Peer intercept variance
-sPeer~1                             # This estimates the Peer slope intercept
-sPeer~~sPeer                         # This estimates the Peer slope variance
-
-iINTL=~1*INTL1+ 1*INTL2+ 1*INTL3+ 1*INTL4+ 1*INTL5+ 1*INTL6  # This defines the INTL intercept measurement model
-sINTL=~0*INTL1+ 1*INTL2+ 2*INTL3+ 3*INTL4+ 4*INTL5+ 5*INTL6 # This defines the INTL slope measurement model
-iINTL~1                             # This estimates the INTL intercept intercept (mean)
-iINTL~~iINTL                         # This estimates the INTL intercept variance
-sINTL~1                             # This estimates the INTL slope intercept
-sINTL~~sINTL                         # This estimates the INTL slope variance
-
-iINTL~~sINTL                      # This estimates the iINTL sINTL covariance
-iINTL~~sPeer                      # This estimates the iINTL sPeer covariance
-iINTL~~iPeer                      # This estimates the iINTL iPeer covariance
-iPeer~~sPeer                      # This estimates the iPeer sPeer covariance
-iPeer~~sINTL                      # This estimates the iPeer sINTL covariance
-sPeer~~sINTL                      # This estimates the sPeer sINTL covariance
-
-
-#Covariates
-iPeer ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-sPeer ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-iINTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-sINTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-'
-
-fit_Peer_INTL_growth <- lavaan(Peer_INTL_growth, data=data_wide, missing="FIML", estimator="MLR")
-
-
-Peer_EXTL_growth <- '
-#Defining the latent variables
-Peer1=~1*PPeer_1+1*TPeer_1
-Peer2=~1*PPeer_3+1*TPeer_3
-Peer3=~1*PPeer_5+1*TPeer_5
-Peer4=~1*PPeer_10+1*TPeer_10
-Peer5=~1*PPeer_12+1*TPeer_12
-Peer6=~1*PPeer_14+1*TPeer_14
-
-EXTL1=~1*EXTL_1
-EXTL2=~1*EXTL_3
-EXTL3=~1*EXTL_5
-EXTL4=~1*EXTL_10
-EXTL5=~1*EXTL_12
-EXTL6=~1*EXTL_14
-
-#Estimate residual variances
-PPeer_1~~PPeer_1          # This estimates the PPeer residual variances
-PPeer_3~~PPeer_3
-PPeer_5~~PPeer_5
-PPeer_10~~PPeer_10
-PPeer_12~~PPeer_12
-PPeer_14~~PPeer_14
-
-TPeer_1~~TPeer_1          # This estimates the TPeerresidual variances
-TPeer_3~~TPeer_3
-TPeer_5~~TPeer_5
-TPeer_10~~TPeer_10
-TPeer_12~~TPeer_12
-TPeer_14~~TPeer_14
-
-EXTL_1~~EXTL_1          # This estimates the EXTL residual variances
-EXTL_3~~EXTL_3
-EXTL_5~~EXTL_5
-EXTL_10~~EXTL_10
-EXTL_12~~EXTL_12
-EXTL_14~~EXTL_14
-
-
-iPeer=~1*Peer1+ 1*Peer2+ 1*Peer3+ 1*Peer4+ 1*Peer5+ 1*Peer6     # This defines the Peer intercept measurement model
-sPeer=~0*Peer1+ 1*Peer2+ 2*Peer3+ 3*Peer4+ 4*Peer5+ 5*Peer6 # This defines the Peer slope measurement model
-iPeer~1                             # This estimates the Peer intercept intercept (mean)
-iPeer~~iPeer                         # This estimates the Peer intercept variance
-sPeer~1                             # This estimates the Peer slope intercept
-sPeer~~sPeer                         # This estimates the Peer slope variance
-
-iEXTL=~1*EXTL1+ 1*EXTL2+ 1*EXTL3+ 1*EXTL4+ 1*EXTL5+ 1*EXTL6  # This defines the EXTL intercept measurement model
-sEXTL=~0*EXTL1+ 1*EXTL2+ 2*EXTL3+ 3*EXTL4+ 4*EXTL5+ 5*EXTL6 # This defines the EXTL slope measurement model
-iEXTL~1                             # This estimates the EXTL intercept intercept (mean)
-iEXTL~~iEXTL                         # This estimates the EXTL intercept variance
-sEXTL~1                             # This estimates the EXTL slope intercept
-sEXTL~~sEXTL                         # This estimates the EXTL slope variance
-
-iEXTL~~sEXTL                      # This estimates the iEXTL sEXTL covariance
-iEXTL~~sPeer                      # This estimates the iEXTL sPeer covariance
-iEXTL~~iPeer                      # This estimates the iEXTL iPeer covariance
-iPeer~~sPeer                      # This estimates the iPeer sPeer covariance
-iPeer~~sEXTL                      # This estimates the iPeer sEXTL covariance
-sPeer~~sEXTL                      # This estimates the sPeer sEXTL covariance
-
-
-#Covariates
-iPeer ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-sPeer ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-iEXTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-sEXTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-'
-
-fit_Peer_EXTL_growth <- lavaan(Peer_EXTL_growth, data=data_wide, missing="FIML", estimator="MLR")
-
-
-#Aggression
-Agg_MDD_growth <- '
-#Defining the latent variables
-Agg1=~1*PAgg_1+1*TAgg_1
-Agg2=~1*PAgg_3+1*TAgg_3
-Agg3=~1*PAgg_5+1*TAgg_5
-Agg4=~1*PAgg_10+1*TAgg_10
-Agg5=~1*PAgg_12+1*TAgg_12
-Agg6=~1*PAgg_14+1*TAgg_14
-
-MDD1=~1*MDDPRP100_1
-MDD2=~1*MDDPRP100_3
-MDD3=~1*MDDPRP100_5
-MDD4=~1*MDDPRP100_10
-MDD5=~1*MDDPRP100_12
-MDD6=~1*MDDPRP100_14
-
-#Estimate residual variances
-PAgg_1~~PAgg_1          # This estimates the PAgg residual variances
-PAgg_3~~PAgg_3
-PAgg_5~~PAgg_5
-PAgg_10~~PAgg_10
-PAgg_12~~PAgg_12
-PAgg_14~~PAgg_14
-
-TAgg_1~~TAgg_1          # This estimates the TAggresidual variances
-TAgg_3~~TAgg_3
-TAgg_5~~TAgg_5
-TAgg_10~~TAgg_10
-TAgg_12~~TAgg_12
-TAgg_14~~TAgg_14
-
-MDDPRP100_1~~MDDPRP100_1          # This estimates the MDD residual variances
-MDDPRP100_3~~MDDPRP100_3
-MDDPRP100_5~~MDDPRP100_5
-MDDPRP100_10~~MDDPRP100_10
-MDDPRP100_12~~MDDPRP100_12
-MDDPRP100_14~~MDDPRP100_14
-
-
-iAgg=~1*Agg1+ 1*Agg2+ 1*Agg3+ 1*Agg4+ 1*Agg5+ 1*Agg6     # This defines the Agg intercept measurement model
-sAgg=~0*Agg1+ 1*Agg2+ 2*Agg3+ 3*Agg4+ 4*Agg5+ 5*Agg6 # This defines the Agg slope measurement model
-iAgg~1                             # This estimates the Agg intercept intercept (mean)
-iAgg~~iAgg                         # This estimates the Agg intercept variance
-sAgg~1                             # This estimates the Agg slope intercept
-sAgg~~sAgg                         # This estimates the Agg slope variance
-
-iMDD=~1*MDD1+ 1*MDD2+ 1*MDD3+ 1*MDD4+ 1*MDD5+ 1*MDD6  # This defines the MDD intercept measurement model
-sMDD=~0*MDD1+ 1*MDD2+ 2*MDD3+ 3*MDD4+ 4*MDD5+ 5*MDD6 # This defines the MDD slope measurement model
-iMDD~1                             # This estimates the MDD intercept intercept (mean)
-iMDD~~iMDD                         # This estimates the MDD intercept variance
-sMDD~1                             # This estimates the MDD slope intercept
-sMDD~~sMDD                         # This estimates the MDD slope variance
-
-iMDD~~sMDD                      # This estimates the iMDD sMDD covariance
-iMDD~~sAgg                      # This estimates the iMDD sAgg covariance
-iMDD~~iAgg                      # This estimates the iMDD iAgg covariance
-iAgg~~sAgg                      # This estimates the iAgg sAgg covariance
-iAgg~~sMDD                      # This estimates the iAgg sMDD covariance
-sAgg~~sMDD                      # This estimates the sAgg sMDD covariance
-
-
-#Covariates
-iAgg ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-sAgg ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-iMDD ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-sMDD ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-'
-
-fit_Agg_MDD_growth <- lavaan(Agg_MDD_growth, data=data_wide, missing="FIML", estimator="MLR")
-
-
-Agg_INTL_growth <- '
-#Defining the latent variables
-Agg1=~1*PAgg_1+1*TAgg_1
-Agg2=~1*PAgg_3+1*TAgg_3
-Agg3=~1*PAgg_5+1*TAgg_5
-Agg4=~1*PAgg_10+1*TAgg_10
-Agg5=~1*PAgg_12+1*TAgg_12
-Agg6=~1*PAgg_14+1*TAgg_14
-
-INTL1=~1*INTL_1
-INTL2=~1*INTL_3
-INTL3=~1*INTL_5
-INTL4=~1*INTL_10
-INTL5=~1*INTL_12
-INTL6=~1*INTL_14
-
-#Estimate residual variances
-PAgg_1~~PAgg_1          # This estimates the PAgg residual variances
-PAgg_3~~PAgg_3
-PAgg_5~~PAgg_5
-PAgg_10~~PAgg_10
-PAgg_12~~PAgg_12
-PAgg_14~~PAgg_14
-
-TAgg_1~~TAgg_1          # This estimates the TAggresidual variances
-TAgg_3~~TAgg_3
-TAgg_5~~TAgg_5
-TAgg_10~~TAgg_10
-TAgg_12~~TAgg_12
-TAgg_14~~TAgg_14
-
-INTL_1~~INTL_1          # This estimates the INTL residual variances
-INTL_3~~INTL_3
-INTL_5~~INTL_5
-INTL_10~~INTL_10
-INTL_12~~INTL_12
-INTL_14~~INTL_14
-
-
-iAgg=~1*Agg1+ 1*Agg2+ 1*Agg3+ 1*Agg4+ 1*Agg5+ 1*Agg6     # This defines the Agg intercept measurement model
-sAgg=~0*Agg1+ 1*Agg2+ 2*Agg3+ 3*Agg4+ 4*Agg5+ 5*Agg6 # This defines the Agg slope measurement model
-iAgg~1                             # This estimates the Agg intercept intercept (mean)
-iAgg~~iAgg                         # This estimates the Agg intercept variance
-sAgg~1                             # This estimates the Agg slope intercept
-sAgg~~sAgg                         # This estimates the Agg slope variance
-
-iINTL=~1*INTL1+ 1*INTL2+ 1*INTL3+ 1*INTL4+ 1*INTL5+ 1*INTL6  # This defines the INTL intercept measurement model
-sINTL=~0*INTL1+ 1*INTL2+ 2*INTL3+ 3*INTL4+ 4*INTL5+ 5*INTL6 # This defines the INTL slope measurement model
-iINTL~1                             # This estimates the INTL intercept intercept (mean)
-iINTL~~iINTL                         # This estimates the INTL intercept variance
-sINTL~1                             # This estimates the INTL slope intercept
-sINTL~~sINTL                         # This estimates the INTL slope variance
-
-iINTL~~sINTL                      # This estimates the iINTL sINTL covariance
-iINTL~~sAgg                      # This estimates the iINTL sAgg covariance
-iINTL~~iAgg                      # This estimates the iINTL iAgg covariance
-iAgg~~sAgg                      # This estimates the iAgg sAgg covariance
-iAgg~~sINTL                      # This estimates the iAgg sINTL covariance
-sAgg~~sINTL                      # This estimates the sAgg sINTL covariance
-
-
-#Covariates
-iAgg ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-sAgg ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-iINTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-sINTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-'
-
-fit_Agg_INTL_growth <- lavaan(Agg_INTL_growth, data=data_wide, missing="FIML", estimator="MLR")
-
-
-Agg_EXTL_growth <- '
-#Defining the latent variables
-Agg1=~1*PAgg_1+1*TAgg_1
-Agg2=~1*PAgg_3+1*TAgg_3
-Agg3=~1*PAgg_5+1*TAgg_5
-Agg4=~1*PAgg_10+1*TAgg_10
-Agg5=~1*PAgg_12+1*TAgg_12
-Agg6=~1*PAgg_14+1*TAgg_14
-
-EXTL1=~1*EXTL_1
-EXTL2=~1*EXTL_3
-EXTL3=~1*EXTL_5
-EXTL4=~1*EXTL_10
-EXTL5=~1*EXTL_12
-EXTL6=~1*EXTL_14
-
-#Estimate residual variances
-PAgg_1~~PAgg_1          # This estimates the PAgg residual variances
-PAgg_3~~PAgg_3
-PAgg_5~~PAgg_5
-PAgg_10~~PAgg_10
-PAgg_12~~PAgg_12
-PAgg_14~~PAgg_14
-
-TAgg_1~~TAgg_1          # This estimates the TAggresidual variances
-TAgg_3~~TAgg_3
-TAgg_5~~TAgg_5
-TAgg_10~~TAgg_10
-TAgg_12~~TAgg_12
-TAgg_14~~TAgg_14
-
-EXTL_1~~EXTL_1          # This estimates the EXTL residual variances
-EXTL_3~~EXTL_3
-EXTL_5~~EXTL_5
-EXTL_10~~EXTL_10
-EXTL_12~~EXTL_12
-EXTL_14~~EXTL_14
-
-
-iAgg=~1*Agg1+ 1*Agg2+ 1*Agg3+ 1*Agg4+ 1*Agg5+ 1*Agg6     # This defines the Agg intercept measurement model
-sAgg=~0*Agg1+ 1*Agg2+ 2*Agg3+ 3*Agg4+ 4*Agg5+ 5*Agg6 # This defines the Agg slope measurement model
-iAgg~1                             # This estimates the Agg intercept intercept (mean)
-iAgg~~iAgg                         # This estimates the Agg intercept variance
-sAgg~1                             # This estimates the Agg slope intercept
-sAgg~~sAgg                         # This estimates the Agg slope variance
-
-iEXTL=~1*EXTL1+ 1*EXTL2+ 1*EXTL3+ 1*EXTL4+ 1*EXTL5+ 1*EXTL6  # This defines the EXTL intercept measurement model
-sEXTL=~0*EXTL1+ 1*EXTL2+ 2*EXTL3+ 3*EXTL4+ 4*EXTL5+ 5*EXTL6 # This defines the EXTL slope measurement model
-iEXTL~1                             # This estimates the EXTL intercept intercept (mean)
-iEXTL~~iEXTL                         # This estimates the EXTL intercept variance
-sEXTL~1                             # This estimates the EXTL slope intercept
-sEXTL~~sEXTL                         # This estimates the EXTL slope variance
-
-iEXTL~~sEXTL                      # This estimates the iEXTL sEXTL covariance
-iEXTL~~sAgg                      # This estimates the iEXTL sAgg covariance
-iEXTL~~iAgg                      # This estimates the iEXTL iAgg covariance
-iAgg~~sAgg                      # This estimates the iAgg sAgg covariance
-iAgg~~sEXTL                      # This estimates the iAgg sEXTL covariance
-sAgg~~sEXTL                      # This estimates the sAgg sEXTL covariance
-
-
-#Covariates
-iAgg ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-sAgg ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-iEXTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-sEXTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-'
-
-fit_Agg_EXTL_growth <- lavaan(Agg_EXTL_growth, data=data_wide, missing="FIML", estimator="MLR")
-
-
-##Social Withdrawal
-Sw_MDD_growth <- '
-#Defining the latent variables
-Sw1=~1*PSw_1+1*TSw_1
-Sw2=~1*PSw_3+1*TSw_3
-Sw3=~1*PSw_5+1*TSw_5
-Sw4=~1*PSw_10+1*TSw_10
-Sw5=~1*PSw_12+1*TSw_12
-Sw6=~1*PSw_14+1*TSw_14
-
-MDD1=~1*MDDPRP100_1
-MDD2=~1*MDDPRP100_3
-MDD3=~1*MDDPRP100_5
-MDD4=~1*MDDPRP100_10
-MDD5=~1*MDDPRP100_12
-MDD6=~1*MDDPRP100_14
-
-#Estimate residual variances
-PSw_1~~PSw_1          # This estimates the PSw residual variances
-PSw_3~~PSw_3
-PSw_5~~PSw_5
-PSw_10~~PSw_10
-PSw_12~~PSw_12
-PSw_14~~PSw_14
-
-TSw_1~~TSw_1          # This estimates the TSwresidual variances
-TSw_3~~TSw_3
-TSw_5~~TSw_5
-TSw_10~~TSw_10
-TSw_12~~TSw_12
-TSw_14~~TSw_14
-
-MDDPRP100_1~~MDDPRP100_1          # This estimates the MDD residual variances
-MDDPRP100_3~~MDDPRP100_3
-MDDPRP100_5~~MDDPRP100_5
-MDDPRP100_10~~MDDPRP100_10
-MDDPRP100_12~~MDDPRP100_12
-MDDPRP100_14~~MDDPRP100_14
-
-
-iSw=~1*Sw1+ 1*Sw2+ 1*Sw3+ 1*Sw4+ 1*Sw5+ 1*Sw6     # This defines the Sw intercept measurement model
-sSw=~0*Sw1+ 1*Sw2+ 2*Sw3+ 3*Sw4+ 4*Sw5+ 5*Sw6 # This defines the Sw slope measurement model
-iSw~1                             # This estimates the Sw intercept intercept (mean)
-iSw~~iSw                         # This estimates the Sw intercept variance
-sSw~1                             # This estimates the Sw slope intercept
-sSw~~sSw                         # This estimates the Sw slope variance
-
-iMDD=~1*MDD1+ 1*MDD2+ 1*MDD3+ 1*MDD4+ 1*MDD5+ 1*MDD6  # This defines the MDD intercept measurement model
-sMDD=~0*MDD1+ 1*MDD2+ 2*MDD3+ 3*MDD4+ 4*MDD5+ 5*MDD6 # This defines the MDD slope measurement model
-iMDD~1                             # This estimates the MDD intercept intercept (mean)
-iMDD~~iMDD                         # This estimates the MDD intercept variance
-sMDD~1                             # This estimates the MDD slope intercept
-sMDD~~sMDD                         # This estimates the MDD slope variance
-
-iMDD~~sMDD                      # This estimates the iMDD sMDD covariance
-iMDD~~sSw                      # This estimates the iMDD sSw covariance
-iMDD~~iSw                      # This estimates the iMDD iSw covariance
-iSw~~sSw                      # This estimates the iSw sSw covariance
-iSw~~sMDD                      # This estimates the iSw sMDD covariance
-sSw~~sMDD                      # This estimates the sSw sMDD covariance
-
-
-#Covariates
-iSw ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-sSw ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-iMDD ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-sMDD ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-'
-
-fit_Sw_MDD_growth <- lavaan(Sw_MDD_growth, data=data_wide, missing="FIML", estimator="MLR")
-
-
-Sw_INTL_growth <- '
-#Defining the latent variables
-Sw1=~1*PSw_1+1*TSw_1
-Sw2=~1*PSw_3+1*TSw_3
-Sw3=~1*PSw_5+1*TSw_5
-Sw4=~1*PSw_10+1*TSw_10
-Sw5=~1*PSw_12+1*TSw_12
-Sw6=~1*PSw_14+1*TSw_14
-
-INTL1=~1*INTL_1
-INTL2=~1*INTL_3
-INTL3=~1*INTL_5
-INTL4=~1*INTL_10
-INTL5=~1*INTL_12
-INTL6=~1*INTL_14
-
-#Estimate residual variances
-PSw_1~~PSw_1          # This estimates the PSw residual variances
-PSw_3~~PSw_3
-PSw_5~~PSw_5
-PSw_10~~PSw_10
-PSw_12~~PSw_12
-PSw_14~~PSw_14
-
-TSw_1~~TSw_1          # This estimates the TSwresidual variances
-TSw_3~~TSw_3
-TSw_5~~TSw_5
-TSw_10~~TSw_10
-TSw_12~~TSw_12
-TSw_14~~TSw_14
-
-INTL_1~~INTL_1          # This estimates the INTL residual variances
-INTL_3~~INTL_3
-INTL_5~~INTL_5
-INTL_10~~INTL_10
-INTL_12~~INTL_12
-INTL_14~~INTL_14
-
-
-iSw=~1*Sw1+ 1*Sw2+ 1*Sw3+ 1*Sw4+ 1*Sw5+ 1*Sw6     # This defines the Sw intercept measurement model
-sSw=~0*Sw1+ 1*Sw2+ 2*Sw3+ 3*Sw4+ 4*Sw5+ 5*Sw6 # This defines the Sw slope measurement model
-iSw~1                             # This estimates the Sw intercept intercept (mean)
-iSw~~iSw                         # This estimates the Sw intercept variance
-sSw~1                             # This estimates the Sw slope intercept
-sSw~~sSw                         # This estimates the Sw slope variance
-
-iINTL=~1*INTL1+ 1*INTL2+ 1*INTL3+ 1*INTL4+ 1*INTL5+ 1*INTL6  # This defines the INTL intercept measurement model
-sINTL=~0*INTL1+ 1*INTL2+ 2*INTL3+ 3*INTL4+ 4*INTL5+ 5*INTL6 # This defines the INTL slope measurement model
-iINTL~1                             # This estimates the INTL intercept intercept (mean)
-iINTL~~iINTL                         # This estimates the INTL intercept variance
-sINTL~1                             # This estimates the INTL slope intercept
-sINTL~~sINTL                         # This estimates the INTL slope variance
-
-iINTL~~sINTL                      # This estimates the iINTL sINTL covariance
-iINTL~~sSw                      # This estimates the iINTL sSw covariance
-iINTL~~iSw                      # This estimates the iINTL iSw covariance
-iSw~~sSw                      # This estimates the iSw sSw covariance
-iSw~~sINTL                      # This estimates the iSw sINTL covariance
-sSw~~sINTL                      # This estimates the sSw sINTL covariance
-
-
-#Covariates
-iSw ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-sSw ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-iINTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-sINTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-'
-
-fit_Sw_INTL_growth <- lavaan(Sw_INTL_growth, data=data_wide, missing="FIML", estimator="MLR")
-
-
-Sw_EXTL_growth <- '
-#Defining the latent variables
-Sw1=~1*PSw_1+1*TSw_1
-Sw2=~1*PSw_3+1*TSw_3
-Sw3=~1*PSw_5+1*TSw_5
-Sw4=~1*PSw_10+1*TSw_10
-Sw5=~1*PSw_12+1*TSw_12
-Sw6=~1*PSw_14+1*TSw_14
-
-EXTL1=~1*EXTL_1
-EXTL2=~1*EXTL_3
-EXTL3=~1*EXTL_5
-EXTL4=~1*EXTL_10
-EXTL5=~1*EXTL_12
-EXTL6=~1*EXTL_14
-
-#Estimate residual variances
-PSw_1~~PSw_1          # This estimates the PSw residual variances
-PSw_3~~PSw_3
-PSw_5~~PSw_5
-PSw_10~~PSw_10
-PSw_12~~PSw_12
-PSw_14~~PSw_14
-
-TSw_1~~TSw_1          # This estimates the TSwresidual variances
-TSw_3~~TSw_3
-TSw_5~~TSw_5
-TSw_10~~TSw_10
-TSw_12~~TSw_12
-TSw_14~~TSw_14
-
-EXTL_1~~EXTL_1          # This estimates the EXTL residual variances
-EXTL_3~~EXTL_3
-EXTL_5~~EXTL_5
-EXTL_10~~EXTL_10
-EXTL_12~~EXTL_12
-EXTL_14~~EXTL_14
-
-
-iSw=~1*Sw1+ 1*Sw2+ 1*Sw3+ 1*Sw4+ 1*Sw5+ 1*Sw6     # This defines the Sw intercept measurement model
-sSw=~0*Sw1+ 1*Sw2+ 2*Sw3+ 3*Sw4+ 4*Sw5+ 5*Sw6 # This defines the Sw slope measurement model
-iSw~1                             # This estimates the Sw intercept intercept (mean)
-iSw~~iSw                         # This estimates the Sw intercept variance
-sSw~1                             # This estimates the Sw slope intercept
-sSw~~sSw                         # This estimates the Sw slope variance
-
-iEXTL=~1*EXTL1+ 1*EXTL2+ 1*EXTL3+ 1*EXTL4+ 1*EXTL5+ 1*EXTL6  # This defines the EXTL intercept measurement model
-sEXTL=~0*EXTL1+ 1*EXTL2+ 2*EXTL3+ 3*EXTL4+ 4*EXTL5+ 5*EXTL6 # This defines the EXTL slope measurement model
-iEXTL~1                             # This estimates the EXTL intercept intercept (mean)
-iEXTL~~iEXTL                         # This estimates the EXTL intercept variance
-sEXTL~1                             # This estimates the EXTL slope intercept
-sEXTL~~sEXTL                         # This estimates the EXTL slope variance
-
-iEXTL~~sEXTL                      # This estimates the iEXTL sEXTL covariance
-iEXTL~~sSw                      # This estimates the iEXTL sSw covariance
-iEXTL~~iSw                      # This estimates the iEXTL iSw covariance
-iSw~~sSw                      # This estimates the iSw sSw covariance
-iSw~~sEXTL                      # This estimates the iSw sEXTL covariance
-sSw~~sEXTL                      # This estimates the sSw sEXTL covariance
-
-
-#Covariates
-iSw ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-sSw ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-iEXTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-sEXTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-'
-
-fit_Sw_EXTL_growth <- lavaan(Sw_EXTL_growth, data=data_wide, missing="FIML", estimator="MLR")
-
-
-##Prosocial
-Pro_MDD_growth <- '
-#Defining the latent variables
-Pro1=~1*PPro_1+1*TPro_1
-Pro2=~1*PPro_3+1*TPro_3
-Pro3=~1*PPro_5+1*TPro_5
-Pro4=~1*PPro_10+1*TPro_10
-Pro5=~1*PPro_12+1*TPro_12
-Pro6=~1*PPro_14+1*TPro_14
-
-MDD1=~1*MDDPRP100_1
-MDD2=~1*MDDPRP100_3
-MDD3=~1*MDDPRP100_5
-MDD4=~1*MDDPRP100_10
-MDD5=~1*MDDPRP100_12
-MDD6=~1*MDDPRP100_14
-
-#Estimate residual variances
-PPro_1~~PPro_1          # This estimates the PPro residual variances
-PPro_3~~PPro_3
-PPro_5~~PPro_5
-PPro_10~~PPro_10
-PPro_12~~PPro_12
-PPro_14~~PPro_14
-
-TPro_1~~TPro_1          # This estimates the TProresidual variances
-TPro_3~~TPro_3
-TPro_5~~TPro_5
-TPro_10~~TPro_10
-TPro_12~~TPro_12
-TPro_14~~TPro_14
-
-MDDPRP100_1~~MDDPRP100_1          # This estimates the MDD residual variances
-MDDPRP100_3~~MDDPRP100_3
-MDDPRP100_5~~MDDPRP100_5
-MDDPRP100_10~~MDDPRP100_10
-MDDPRP100_12~~MDDPRP100_12
-MDDPRP100_14~~MDDPRP100_14
-
-
-iPro=~1*Pro1+ 1*Pro2+ 1*Pro3+ 1*Pro4+ 1*Pro5+ 1*Pro6     # This defines the Pro intercept measurement model
-sPro=~0*Pro1+ 1*Pro2+ 2*Pro3+ 3*Pro4+ 4*Pro5+ 5*Pro6 # This defines the Pro slope measurement model
-iPro~1                             # This estimates the Pro intercept intercept (mean)
-iPro~~iPro                         # This estimates the Pro intercept variance
-sPro~1                             # This estimates the Pro slope intercept
-sPro~~sPro                         # This estimates the Pro slope variance
-
-iMDD=~1*MDD1+ 1*MDD2+ 1*MDD3+ 1*MDD4+ 1*MDD5+ 1*MDD6  # This defines the MDD intercept measurement model
-sMDD=~0*MDD1+ 1*MDD2+ 2*MDD3+ 3*MDD4+ 4*MDD5+ 5*MDD6 # This defines the MDD slope measurement model
-iMDD~1                             # This estimates the MDD intercept intercept (mean)
-iMDD~~iMDD                         # This estimates the MDD intercept variance
-sMDD~1                             # This estimates the MDD slope intercept
-sMDD~~sMDD                         # This estimates the MDD slope variance
-
-iMDD~~sMDD                      # This estimates the iMDD sMDD covariance
-iMDD~~sPro                      # This estimates the iMDD sPro covariance
-iMDD~~iPro                      # This estimates the iMDD iPro covariance
-iPro~~sPro                      # This estimates the iPro sPro covariance
-iPro~~sMDD                      # This estimates the iPro sMDD covariance
-sPro~~sMDD                      # This estimates the sPro sMDD covariance
-
-
-#Covariates
-iPro ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-sPro ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-iMDD ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-sMDD ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-'
-
-fit_Pro_MDD_growth <- lavaan(Pro_MDD_growth, data=data_wide, missing="FIML", estimator="MLR")
-
-
-Pro_INTL_growth <- '
-#Defining the latent variables
-Pro1=~1*PPro_1+1*TPro_1
-Pro2=~1*PPro_3+1*TPro_3
-Pro3=~1*PPro_5+1*TPro_5
-Pro4=~1*PPro_10+1*TPro_10
-Pro5=~1*PPro_12+1*TPro_12
-Pro6=~1*PPro_14+1*TPro_14
-
-INTL1=~1*INTL_1
-INTL2=~1*INTL_3
-INTL3=~1*INTL_5
-INTL4=~1*INTL_10
-INTL5=~1*INTL_12
-INTL6=~1*INTL_14
-
-#Estimate residual variances
-PPro_1~~PPro_1          # This estimates the PPro residual variances
-PPro_3~~PPro_3
-PPro_5~~PPro_5
-PPro_10~~PPro_10
-PPro_12~~PPro_12
-PPro_14~~PPro_14
-
-TPro_1~~TPro_1          # This estimates the TProresidual variances
-TPro_3~~TPro_3
-TPro_5~~TPro_5
-TPro_10~~TPro_10
-TPro_12~~TPro_12
-TPro_14~~TPro_14
-
-INTL_1~~INTL_1          # This estimates the INTL residual variances
-INTL_3~~INTL_3
-INTL_5~~INTL_5
-INTL_10~~INTL_10
-INTL_12~~INTL_12
-INTL_14~~INTL_14
-
-
-iPro=~1*Pro1+ 1*Pro2+ 1*Pro3+ 1*Pro4+ 1*Pro5+ 1*Pro6     # This defines the Pro intercept measurement model
-sPro=~0*Pro1+ 1*Pro2+ 2*Pro3+ 3*Pro4+ 4*Pro5+ 5*Pro6 # This defines the Pro slope measurement model
-iPro~1                             # This estimates the Pro intercept intercept (mean)
-iPro~~iPro                         # This estimates the Pro intercept variance
-sPro~1                             # This estimates the Pro slope intercept
-sPro~~sPro                         # This estimates the Pro slope variance
-
-iINTL=~1*INTL1+ 1*INTL2+ 1*INTL3+ 1*INTL4+ 1*INTL5+ 1*INTL6  # This defines the INTL intercept measurement model
-sINTL=~0*INTL1+ 1*INTL2+ 2*INTL3+ 3*INTL4+ 4*INTL5+ 5*INTL6 # This defines the INTL slope measurement model
-iINTL~1                             # This estimates the INTL intercept intercept (mean)
-iINTL~~iINTL                         # This estimates the INTL intercept variance
-sINTL~1                             # This estimates the INTL slope intercept
-sINTL~~sINTL                         # This estimates the INTL slope variance
-
-iINTL~~sINTL                      # This estimates the iINTL sINTL covariance
-iINTL~~sPro                      # This estimates the iINTL sPro covariance
-iINTL~~iPro                      # This estimates the iINTL iPro covariance
-iPro~~sPro                      # This estimates the iPro sPro covariance
-iPro~~sINTL                      # This estimates the iPro sINTL covariance
-sPro~~sINTL                      # This estimates the sPro sINTL covariance
-
-
-#Covariates
-iPro ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-sPro ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-iINTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-sINTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-'
-
-fit_Pro_INTL_growth <- lavaan(Pro_INTL_growth, data=data_wide, missing="FIML", estimator="MLR")
-
-
-Pro_EXTL_growth <- '
-#Defining the latent variables
-Pro1=~1*PPro_1+1*TPro_1
-Pro2=~1*PPro_3+1*TPro_3
-Pro3=~1*PPro_5+1*TPro_5
-Pro4=~1*PPro_10+1*TPro_10
-Pro5=~1*PPro_12+1*TPro_12
-Pro6=~1*PPro_14+1*TPro_14
-
-EXTL1=~1*EXTL_1
-EXTL2=~1*EXTL_3
-EXTL3=~1*EXTL_5
-EXTL4=~1*EXTL_10
-EXTL5=~1*EXTL_12
-EXTL6=~1*EXTL_14
-
-#Estimate residual variances
-PPro_1~~PPro_1          # This estimates the PPro residual variances
-PPro_3~~PPro_3
-PPro_5~~PPro_5
-PPro_10~~PPro_10
-PPro_12~~PPro_12
-PPro_14~~PPro_14
-
-TPro_1~~TPro_1          # This estimates the TProresidual variances
-TPro_3~~TPro_3
-TPro_5~~TPro_5
-TPro_10~~TPro_10
-TPro_12~~TPro_12
-TPro_14~~TPro_14
-
-EXTL_1~~EXTL_1          # This estimates the EXTL residual variances
-EXTL_3~~EXTL_3
-EXTL_5~~EXTL_5
-EXTL_10~~EXTL_10
-EXTL_12~~EXTL_12
-EXTL_14~~EXTL_14
-
-
-iPro=~1*Pro1+ 1*Pro2+ 1*Pro3+ 1*Pro4+ 1*Pro5+ 1*Pro6     # This defines the Pro intercept measurement model
-sPro=~0*Pro1+ 1*Pro2+ 2*Pro3+ 3*Pro4+ 4*Pro5+ 5*Pro6 # This defines the Pro slope measurement model
-iPro~1                             # This estimates the Pro intercept intercept (mean)
-iPro~~iPro                         # This estimates the Pro intercept variance
-sPro~1                             # This estimates the Pro slope intercept
-sPro~~sPro                         # This estimates the Pro slope variance
-
-iEXTL=~1*EXTL1+ 1*EXTL2+ 1*EXTL3+ 1*EXTL4+ 1*EXTL5+ 1*EXTL6  # This defines the EXTL intercept measurement model
-sEXTL=~0*EXTL1+ 1*EXTL2+ 2*EXTL3+ 3*EXTL4+ 4*EXTL5+ 5*EXTL6 # This defines the EXTL slope measurement model
-iEXTL~1                             # This estimates the EXTL intercept intercept (mean)
-iEXTL~~iEXTL                         # This estimates the EXTL intercept variance
-sEXTL~1                             # This estimates the EXTL slope intercept
-sEXTL~~sEXTL                         # This estimates the EXTL slope variance
-
-iEXTL~~sEXTL                      # This estimates the iEXTL sEXTL covariance
-iEXTL~~sPro                      # This estimates the iEXTL sPro covariance
-iEXTL~~iPro                      # This estimates the iEXTL iPro covariance
-iPro~~sPro                      # This estimates the iPro sPro covariance
-iPro~~sEXTL                      # This estimates the iPro sEXTL covariance
-sPro~~sEXTL                      # This estimates the sPro sEXTL covariance
-
-
-#Covariates
-iPro ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-sPro ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-iEXTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-sEXTL ~ sex_01 + ethin + T1Income_to_Need + IQ + T1_ACES_sum + first_MDDBP
-'
-
-fit_Pro_EXTL_growth <- lavaan(Pro_EXTL_growth, data=data_wide, missing="FIML", estimator="MLR")
-```
-
-```{r Concatenating growth model results into a table}
-Growth_results <- as.data.frame(matrix(nrow=16, ncol=6))
-colnames(Growth_results) <- c("1","2","3","MDD_Estimate","ANX_Estimate","EXTL_Estimate")
-
-#Peer growth model results
-Growth_results[1:4,1:4] <- parameterEstimates(fit_Peer_MDD_growth, standardized=T)[c(73,70,71,74),c(1:3,11)]
-Growth_results[1:4,5] <- parameterEstimates(fit_Peer_INTL_growth, standardized=T)[c(73,70,71,74),c(11)]
-Growth_results[1:4,6] <- parameterEstimates(fit_Peer_EXTL_growth, standardized=T)[c(73,70,71,74),c(11)]
-
-#Agg growth model results
-Growth_results[5:8,1:4] <- parameterEstimates(fit_Agg_MDD_growth, standardized=T)[c(73,70,71,74),c(1:3,11)]
-Growth_results[5:8,5] <- parameterEstimates(fit_Agg_INTL_growth, standardized=T)[c(73,70,71,74),c(11)]
-Growth_results[5:8,6] <- parameterEstimates(fit_Agg_EXTL_growth, standardized=T)[c(73,70,71,74),c(11)]
-
-#Sw growth model results
-Growth_results[9:12,1:4] <- parameterEstimates(fit_Sw_MDD_growth, standardized=T)[c(73,70,71,74),c(1:3,11)]
-Growth_results[9:12,5] <- parameterEstimates(fit_Sw_INTL_growth, standardized=T)[c(73,70,71,74),c(11)]
-Growth_results[9:12,6] <- parameterEstimates(fit_Sw_EXTL_growth, standardized=T)[c(73,70,71,74),c(11)]
-
-#Pro growth model results
-Growth_results[13:16,1:4] <- parameterEstimates(fit_Pro_MDD_growth, standardized=T)[c(73,70,71,74),c(1:3,11)]
-Growth_results[13:16,5] <- parameterEstimates(fit_Pro_INTL_growth, standardized=T)[c(73,70,71,74),c(11)]
-Growth_results[13:16,6] <- parameterEstimates(fit_Pro_EXTL_growth, standardized=T)[c(73,70,71,74),c(11)]
-
-Growth_results[,4:6] <- round(Growth_results[,4:6], 3)
-
-kable(Growth_results, align=c('l',rep('c', 10)))
 ```
